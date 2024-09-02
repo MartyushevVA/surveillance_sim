@@ -31,11 +31,6 @@ char *double_to_string(double value)
     return res;
 }
 
-void raw_strcat(char dest[], char src[])
-{
-
-}
-
 char *struct_to_string(Student student, const char title[])
 {
     int namelen = strlen(student.name);
