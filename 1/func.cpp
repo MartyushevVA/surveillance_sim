@@ -2,12 +2,22 @@
 using namespace std;
 using namespace lab1;
 
-int size_of_string(char string[])
+int size_of_char(const char *string)
 {
     int size = 0;
     while (string[size])
         size++;
     return size;
+}
+
+void chars_concat(char *dest, const char *src)
+{
+    int pos = 0, i = 0;
+    while (dest[pos])
+        pos++;
+    while (src[i])
+        dest[pos + i] = src[i++];
+    dest[pos + i] = 0;
 }
 
 char *double_to_string(double value)
@@ -24,33 +34,74 @@ char *double_to_string(double value)
         str[i] = doubt + '0';
         doubpart -= doubt;
     }
-    char *res = new char[size_of_string(str) + 1]{0};
-    for (int i = 0; i < size_of_string(str); i++)
+    char *res = new char[size_of_char(str) + 1]{0};
+    for (int i = 0; i < size_of_char(str); i++)
         res[i] = str[i];
     delete[] str;
     return res;
 }
 
-char *struct_to_string(Student student, const char title[])
+char *struct_to_string(Student student, const char *title)
 {
-    int namelen = strlen(student.name);
-    int grouplen = strlen(student.group);
-    char* grade_string = double_to_string(student.grade);
-    int gradelen = strlen(grade_string);
-    int titlelen = strlen(title);
-    char* java_prop = new char[3 * titlelen + 25]{0};
-    strcat(java_prop, title);
-    strcat(java_prop, ".name=");
-    strcat(java_prop, student.name);
-    strcat(java_prop, "\n");
-    strcat(java_prop, title);
-    strcat(java_prop, ".group=");
-    strcat(java_prop, student.group);
-    strcat(java_prop, "\n");
-    strcat(java_prop, title);
-    strcat(java_prop, ".grade=");
-    strcat(java_prop, grade_string);
-    strcat(java_prop, "\n\0");
+    int namelen = size_of_char(student.name);
+    int grouplen = size_of_char(student.group);
+    char *grade_string = double_to_string(student.grade);
+    int gradelen = size_of_char(grade_string);
+    int titlelen = size_of_char(title);
+    char *java_prop = new char[3 * titlelen + 25]{0};
+    chars_concat(java_prop, title);
+    chars_concat(java_prop, ".name=");
+    chars_concat(java_prop, student.name);
+    chars_concat(java_prop, "\n");
+    chars_concat(java_prop, title);
+    chars_concat(java_prop, ".group=");
+    chars_concat(java_prop, student.group);
+    chars_concat(java_prop, "\n");
+    chars_concat(java_prop, title);
+    chars_concat(java_prop, ".grade=");
+    chars_concat(java_prop, grade_string);
+    chars_concat(java_prop, "\n\0");
+    return java_prop;
+}
+
+void chars_concat(char *dest, const char *src, size_t src_size)
+{
+    int pos = 0, i = 0;
+    while (dest[pos])
+        pos++;
+    for (int i = 0; i < src_size; i++)
+        dest[pos + i] = src[i++];
+    dest[pos + i] = 0;
+}
+
+char *struct_to_string(Student student, const char *title, size_t len)
+{
+    int namelen = size_of_char(student.name);
+    int grouplen = size_of_char(student.group);
+    char *grade_string = double_to_string(student.grade);
+    int gradelen = size_of_char(grade_string);
+    char *java_prop = new char[3 * len + 25]{0};
+    chars_concat(java_prop, title, len);
+    chars_concat(java_prop, ".name=");
+    chars_concat(java_prop, student.name);
+    chars_concat(java_prop, "\n");
+    chars_concat(java_prop, title, len);
+    chars_concat(java_prop, ".group=");
+    chars_concat(java_prop, student.group);
+    chars_concat(java_prop, "\n");
+    chars_concat(java_prop, title, len);
+    chars_concat(java_prop, ".grade=");
+    chars_concat(java_prop, grade_string);
+    chars_concat(java_prop, "\n\0");
+    return java_prop;
+}
+
+string struct_to_string(Student student, string title)
+{
+    string name = string(student.name);
+    string group = string(student.group);
+    string grade = string(double_to_string(student.grade));
+    string java_prop = title + ".name=" + name + "\n" + title + ".group=" + group + "\n" + title + ".grade=" + grade + "\n";
     return java_prop;
 }
 
@@ -91,9 +142,29 @@ Student string_to_struct(const char *java_prop)
 {
     Student student;
     char *temp = get_info_after(java_prop, "name");
-    student.name = (char *)calloc((strlen(temp) + 1), sizeof(char));
+    student.name = new char[size_of_char(temp)+1]{0};
     char *temp = get_info_after(java_prop, "group");
-    student.group = (char *)calloc((strlen(temp) + 1), sizeof(char));
+    student.group = new char[size_of_char(temp)+1]{0};
+    char *temp = get_info_after(java_prop, "grade");
+    student.grade = string_to_double(temp);
+}
+Student string_to_struct(const char *java_prop, size_t len)
+{
+    Student student;
+    char *temp = get_info_after(java_prop, "name");
+    student.name = new char[size_of_char(temp)+1]{0};
+    char *temp = get_info_after(java_prop, "group");
+    student.group = new char[size_of_char(temp)+1]{0};
+    char *temp = get_info_after(java_prop, "grade");
+    student.grade = string_to_double(temp);
+}
+Student string_to_struct(string java_prop)
+{
+    Student student;
+    char *temp = get_info_after(java_prop, "name");
+    student.name = new char[size_of_char(temp)+1]{0};
+    char *temp = get_info_after(java_prop, "group");
+    student.group = new char[size_of_char(temp)+1]{0};
     char *temp = get_info_after(java_prop, "grade");
     student.grade = string_to_double(temp);
 }
