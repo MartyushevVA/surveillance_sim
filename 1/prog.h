@@ -4,17 +4,23 @@
 #include <iostream>
 #include <string>
 #include <limits>
+#include <cstring>
+#include <cmath>
 
 namespace lab1
 {
     struct Student
     {
         char *name;
-        char *group;
+        char group[8];
         double grade;
     };
 
-    char *struct_to_string(Student, char *);
-    Student string_to_struct(char *);
+    std::string struct_to_string(const Student &, const char *);
+    std::string struct_to_string(const Student &, const char *, size_t);
+    std::string struct_to_string(const Student &, const std::string &);
+    Student string_to_struct(const char *);
+    Student string_to_struct(const char *, size_t);
+    Student string_to_struct(std::string &);
 }
 #endif
