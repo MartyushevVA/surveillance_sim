@@ -105,7 +105,7 @@ string struct_to_string(Student student, string title)
     return java_prop;
 }
 
-char *get_info_after(const char *src, char *infotype)
+char *get_info_after(const char *src, char *infotype, size_t len = 0)
 {
     static int pos = 0;
     int length = 0;
@@ -114,7 +114,7 @@ char *get_info_after(const char *src, char *infotype)
     pos++;
     while (src[pos + length] != '\n')
         length++;
-    char *data = (char *)calloc(length + 1, sizeof(char));
+    char *data = new char[length + 1]{0};
     for (int i = 0; i < length; i++)
         data[i] = src[pos + i];
     return data;
@@ -133,7 +133,7 @@ double string_to_double(char *value)
 {
     int multiplier = 0;
     double res = value[0] - '0';
-    for (int i = 0; i < strlen(value); i++)
+    for (int i = 0; i < size_of_char(value); i++)
         res = (value[i] - '0') / (simple_power(10, multiplier++));
     return res;
 }
@@ -142,29 +142,29 @@ Student string_to_struct(const char *java_prop)
 {
     Student student;
     char *temp = get_info_after(java_prop, "name");
-    student.name = new char[size_of_char(temp)+1]{0};
+    student.name = new char[size_of_char(temp) + 1]{0};
     char *temp = get_info_after(java_prop, "group");
-    student.group = new char[size_of_char(temp)+1]{0};
+    student.group = new char[size_of_char(temp) + 1]{0};
     char *temp = get_info_after(java_prop, "grade");
     student.grade = string_to_double(temp);
 }
 Student string_to_struct(const char *java_prop, size_t len)
 {
     Student student;
-    char *temp = get_info_after(java_prop, "name");
-    student.name = new char[size_of_char(temp)+1]{0};
-    char *temp = get_info_after(java_prop, "group");
-    student.group = new char[size_of_char(temp)+1]{0};
-    char *temp = get_info_after(java_prop, "grade");
+    char *temp = get_info_after(java_prop, "name", len);
+    student.name = new char[size_of_char(temp) + 1]{0};
+    char *temp = get_info_after(java_prop, "group", len);
+    student.group = new char[size_of_char(temp) + 1]{0};
+    char *temp = get_info_after(java_prop, "grade", len);
     student.grade = string_to_double(temp);
 }
 Student string_to_struct(string java_prop)
 {
     Student student;
     char *temp = get_info_after(java_prop, "name");
-    student.name = new char[size_of_char(temp)+1]{0};
+    student.name = new char[size_of_char(temp) + 1]{0};
     char *temp = get_info_after(java_prop, "group");
-    student.group = new char[size_of_char(temp)+1]{0};
+    student.group = new char[size_of_char(temp) + 1]{0};
     char *temp = get_info_after(java_prop, "grade");
     student.grade = string_to_double(temp);
 }
