@@ -45,7 +45,7 @@ void dstring_to_struct()
     std::string java_prop;
     std::cout << "Введите java prop строку: ";
     std::cin >> java_prop;
-    Student student = string_to_struct(java_prop);
+    Student &student = string_to_struct(java_prop);
     std::cout << "{name=" << student.name << ", group=" << student.group << ", grade=" << student.grade << "};" << std::endl;
 }
 

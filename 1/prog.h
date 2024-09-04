@@ -20,6 +20,6 @@ namespace lab1
     std::string struct_to_string(const Student &, const std::string &);
     Student string_to_struct(const char *);
     Student string_to_struct(const char *, size_t);
-    Student string_to_struct(std::string &);
+    Student string_to_struct(const std::string &);
 }
 #endif
