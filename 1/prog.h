@@ -3,16 +3,15 @@
 
 #include <iostream>
 #include <string>
-#include <limits>
 #include <cstring>
 #include <cmath>
-
+//#mrpenis
 namespace lab1
 {
     struct Student
     {
-        char *name;
-        char group[8];
+        std::string name;
+        std::string group;
         double grade;
     };
 
