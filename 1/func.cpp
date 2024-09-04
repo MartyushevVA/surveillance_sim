@@ -83,37 +83,7 @@ std::string lab1::struct_to_string(const Student &student, const std::string &ti
     return java_prop;
 }
 
-char *get_info_after(const char *src, char *infotype)
-{
-    static int pos = 0;
-    int length = 0;
-    while (src[pos] != '=')
-        pos++;
-    pos++;
-    while (src[pos + length] != '\n')
-        length++;
-    char *data = new char[length + 1]{};
-    for (int i = 0; i < length; i++)
-        data[i] = src[pos + i];
-    return data;
-}
-
-char *get_info_after(const char *src, size_t len, char *infotype)
-{
-    static int pos = 0;
-    int length = 0;
-    while (src[pos] != '=')
-        pos++;
-    pos++;
-    while (src[pos + length] != '\n')
-        length++;
-    char *data = new char[length + 1]{};
-    for (int i = 0; i < length; i++)
-        data[i] = src[pos + i];
-    return data;
-}
-
-char *get_info_after(std::string src, char *infotype)
+char *get_info_after(std::string src, const char *infotype)
 {
     static int pos = 0;
     int length = 0;
@@ -137,7 +107,7 @@ double string_to_double(char *value)
     return res;
 }
 
-void my_strcpy_ndel(char* dest, char *src)
+void my_strcpy_ndel(char *dest, char *src)
 {
     int i = 0;
     while (src[i])
@@ -159,42 +129,23 @@ void my_strcpy_ndel(std::string &dest, char *src)
     delete[] src;
 }
 
-Student lab1::string_to_struct(const char *java_prop)
-{
-    Student student;
-    char *temp = get_info_after(java_prop, "name");
-    student.name = new char[strlen(temp) + 1]{};
-    my_strcpy_ndel(student.name, temp);
-    temp = get_info_after(java_prop, "group");
-    my_strcpy_ndel(student.group, temp);
-    temp = get_info_after(java_prop, "grade");
-    student.grade = string_to_double(temp);
-    delete[] temp;
-    return student;
-}
-Student lab1::string_to_struct(const char *java_prop, size_t len)
-{
-    Student student;
-    char *temp = get_info_after(java_prop, "name");
-    student.name = new char[strlen(temp) + 1]{};
-    my_strcpy_ndel(student.name, temp);
-    temp = get_info_after(java_prop, "group");
-    my_strcpy_ndel(student.group, temp);
-    temp = get_info_after(java_prop, "grade");
-    student.grade = string_to_double(temp);
-    delete[] temp;
-    return student;
-}
 Student lab1::string_to_struct(std::string &java_prop)
 {
     Student student;
-    char *temp = get_info_after(java_prop, "name");
-    student.name = new char[strlen(temp) + 1]{};
-    my_strcpy_ndel(student.name, temp);
-    temp = get_info_after(java_prop, "group");
-    my_strcpy_ndel(student.group, temp);
-    temp = get_info_after(java_prop, "grade");
-    student.grade = string_to_double(temp);
-    delete[] temp;
+    student.name = std::string(get_info_after(java_prop, "name"));
+    student.group = std::string(get_info_after(java_prop, "group"));
+    student.grade = std::stod(get_info_after(java_prop, "grade"));
     return student;
+}
+
+Student lab1::string_to_struct(const char *java_prop)
+{
+    std::string jv_pp = std::string(java_prop);
+    return string_to_struct(jv_pp);
+}
+
+Student lab1::string_to_struct(const char *java_prop, size_t length)
+{
+    std::string jv_pp = std::string(java_prop, length);
+    return string_to_struct(jv_pp);
 }
