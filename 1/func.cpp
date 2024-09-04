@@ -88,7 +88,7 @@ std::string get_info_after(const std::string &src, const char *infotype)
     size_t base = src.find(infotype);
     std::string result;
     base += (std::string(infotype).length() + 1);
-    while(src[base]!=',')
+    while (src[base] != ',' && src[base] != '\0')
     {
         result += src[base];
         base++;
@@ -96,21 +96,40 @@ std::string get_info_after(const std::string &src, const char *infotype)
     return result;
 }
 
-double string_to_double(std::string value)
+/*double string_to_double(const std::string& str)
 {
-    int multiplier = 0;
+    double result = 0.0;
+    result += (str[0] - '0');
+    size_t i = 1;
+    if (i < str.length() && str[i] == '.')
+    {
+        i++;
+        double multiplier = 0.1;
+        while (i < str.length() && str[i] >= '0' && str[i] <= '9')
+        {
+            result += (str[i] - '0') * multiplier;
+            multiplier *= 0.1;
+            i++;
+        }
+    }
+    return result;
+}*/
+
+double string_to_double(const std::string value)
+{
+    double multiplier = 0.1;
     double res = value[0] - '0';
-    for (int i = 0; i < value.length(); i++)
-        res = (value[i] - '0') / (std::pow(10, multiplier++));
+    for (int i = 2; i < value.length() && value[i] >= '0' && value[i] <= '9'; i++)
+    {
+        res += (value[i] - '0') * multiplier;
+        multiplier *= 0.1;
+    }
     return res;
 }
 
-Student lab1::string_to_struct(const std::string &java_prop)
+Student lab1::string_to_struct(const std::string java_prop)
 {
-    Student student;
-    student.name = get_info_after(java_prop, "name");
-    student.group = get_info_after(java_prop, "group");
-    student.grade = string_to_double(get_info_after(java_prop, "grade"));
+    Student student = {get_info_after(java_prop, "name"), get_info_after(java_prop, "group"), string_to_double(get_info_after(java_prop, "grade"))};
     return student;
 }
 
