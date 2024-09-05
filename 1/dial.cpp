@@ -32,6 +32,7 @@ void d_struct_to_string()
         if (!std::cin.good())
         {
             std::cin.clear();
+            std::cin.ignore(std::numeric_limits<std::streamsize>::max(), '\n');
             throw std::runtime_error("Неверный ввод, попробуйте снова.");
         }
         std::cout << "Введите имя: ";
@@ -39,6 +40,7 @@ void d_struct_to_string()
         if (!std::cin.good())
         {
             std::cin.clear();
+            std::cin.ignore(std::numeric_limits<std::streamsize>::max(), '\n');
             throw std::runtime_error("Неверный ввод, попробуйте снова.");
         }
         std::cout << "Введите группу: ";
@@ -46,6 +48,7 @@ void d_struct_to_string()
         if (!std::cin.good())
         {
             std::cin.clear();
+            std::cin.ignore(std::numeric_limits<std::streamsize>::max(), '\n');
             throw std::runtime_error("Неверный ввод, попробуйте снова.");
         }
         std::cout << "Введите оценку: ";
@@ -53,6 +56,7 @@ void d_struct_to_string()
         if (!std::cin.good())
         {
             std::cin.clear();
+            std::cin.ignore(std::numeric_limits<std::streamsize>::max(), '\n');
             throw std::runtime_error("Неверный ввод, попробуйте снова.");
         }
     }
@@ -78,6 +82,7 @@ void d_struct_to_string()
             if (!std::cin.good())
             {
                 std::cin.clear();
+                std::cin.ignore(std::numeric_limits<std::streamsize>::max(), '\n');
                 throw std::runtime_error("Неверный ввод, попробуйте снова.");
             }
             switch (option)
@@ -153,6 +158,7 @@ void d_string_to_struct()
             if (!std::cin.good())
             {
                 std::cin.clear();
+                std::cin.ignore(std::numeric_limits<std::streamsize>::max(), '\n');
                 throw std::runtime_error("Неверный ввод, попробуйте снова.");
             }
             switch (option)
@@ -198,6 +204,7 @@ void dl::dialog()
             if (!std::cin.good())
             {
                 std::cin.clear();
+                std::cin.ignore(std::numeric_limits<std::streamsize>::max(), '\n');
                 throw std::runtime_error("Неверный ввод, попробуйте снова.");
             }
             switch (option)
