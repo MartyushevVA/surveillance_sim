@@ -1,6 +1,54 @@
 #include "dial.h"
 #include "func.h"
 
+bool check_group(std::string text)
+{
+    if (text.length() != 7)
+        return false;
+    if (text[0] != 'B' && text[0] != 'S' && text[0] != 'M' && text[0] != 'A')
+        return false;
+    if (text[1] < '0' || text[1] > '9')
+        return false;
+    if (text[2] < '0' || text[2] > '9')
+        return false;
+    if (text[3] != '-')
+        return false;
+    if (text[4] < '0' || text[4] > '9')
+        return false;
+    if (text[5] < '0' || text[5] > '9')
+        return false;
+    if (text[6] < '0' || text[6] > '9')
+        return false;
+    return true;
+}
+
+bool check_word(std::string text)
+{
+    std::string *banwords = new std::string[7]{"name", "group", "grade", "=", ".", ",", " "};
+    for (int i = 0; i < 7; i++)
+        if (text.find(banwords[i]) != std::string::npos)
+            return false;
+    return true;
+}
+
+bool check_java_format(std::string text)
+{
+    // проверить строку по маске в идеале
+    //
+    //
+    //
+    //
+    //
+    //
+    //
+    return true;
+}
+
+bool check_grade(double num)
+{
+    return 2 <= num <= 5;
+}
+
 void s_struct(const lab1::Student student, std::string title)
 {
     std::cout << lab1::struct_to_string(student, title);
@@ -35,6 +83,12 @@ void d_struct_to_string()
             std::cin.ignore(std::numeric_limits<std::streamsize>::max(), '\n');
             throw std::runtime_error("Неверный ввод, попробуйте снова.");
         }
+        if (!check_word(title))
+        {
+            std::cin.clear();
+            std::cin.ignore(std::numeric_limits<std::streamsize>::max(), '\n');
+            throw std::runtime_error("Ошибка формата, повторите ввод.");
+        }
         std::cout << "Введите имя: ";
         std::cin >> student.name;
         if (!std::cin.good())
@@ -42,6 +96,12 @@ void d_struct_to_string()
             std::cin.clear();
             std::cin.ignore(std::numeric_limits<std::streamsize>::max(), '\n');
             throw std::runtime_error("Неверный ввод, попробуйте снова.");
+        }
+        if (!check_word(student.name))
+        {
+            std::cin.clear();
+            std::cin.ignore(std::numeric_limits<std::streamsize>::max(), '\n');
+            throw std::runtime_error("Ошибка формата, повторите ввод.");
         }
         std::cout << "Введите группу: ";
         std::cin >> student.group;
@@ -51,6 +111,12 @@ void d_struct_to_string()
             std::cin.ignore(std::numeric_limits<std::streamsize>::max(), '\n');
             throw std::runtime_error("Неверный ввод, попробуйте снова.");
         }
+        if (!check_group(student.group))
+        {
+            std::cin.clear();
+            std::cin.ignore(std::numeric_limits<std::streamsize>::max(), '\n');
+            throw std::runtime_error("Ошибка формата, повторите ввод.");
+        }
         std::cout << "Введите оценку: ";
         std::cin >> student.grade;
         if (!std::cin.good())
@@ -58,6 +124,12 @@ void d_struct_to_string()
             std::cin.clear();
             std::cin.ignore(std::numeric_limits<std::streamsize>::max(), '\n');
             throw std::runtime_error("Неверный ввод, попробуйте снова.");
+        }
+        if (!check_grade(student.grade))
+        {
+            std::cin.clear();
+            std::cin.ignore(std::numeric_limits<std::streamsize>::max(), '\n');
+            throw std::runtime_error("Ошибка формата, повторите ввод.");
         }
     }
     catch (const std::runtime_error &e)
@@ -144,6 +216,12 @@ void d_string_to_struct()
     std::cout << "Введите java prop строку: ";
     std::cin.ignore(std::numeric_limits<std::streamsize>::max(), '\n');
     getline(std::cin, java_prop);
+    if (!check_java_format(java_prop))
+    {
+        std::cin.clear();
+        std::cin.ignore(std::numeric_limits<std::streamsize>::max(), '\n');
+        throw std::runtime_error("Ошибка формата, повторите ввод.");
+    }
     int option = 0;
     while (true)
     {
