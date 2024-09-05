@@ -22,21 +22,17 @@ std::string lab1::struct_to_string(const Student &student, const char *title, si
 std::string get_info_after(const std::string &src, const char *infotype)
 {
     size_t base = src.find(infotype);
-    std::string result;
-    base += (std::string(infotype).length() + 1);
-    while (src[base] != ',' && src[base] != '\0')
-    {
-        result += src[base];
-        base++;
-    }
-    return result;
+    size_t start = src.find('=', base) + 1;
+    size_t compos = src.find(',', start), nullpos = src.find('\0', start);
+    size_t end = std::min(compos, nullpos);
+    return src.substr(start, end-start);
 }
 
 double string_to_double(const std::string &value)
 {
     double multiplier = 0.1;
     double res = value[0] - '0';
-    for (size_t i = 2; i < value.length() && value[i] >= '0' && value[i] <= '9'; i++)
+    for (size_t i = 2; i < value.length(); i++)
     {
         res += (value[i] - '0') * multiplier;
         multiplier *= 0.1;

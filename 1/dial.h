@@ -3,11 +3,10 @@
 
 #include <iostream>
 #include <string>
+#include <limits>
 
 namespace dl
 {
-    int get_option();
-    void dstruct_to_string();
-    void dstring_to_struct();
+    void dialog();
 }
 #endif
