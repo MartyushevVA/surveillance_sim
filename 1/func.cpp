@@ -1,7 +1,7 @@
-#include "prog.h"
+#include "func.h"
 using namespace lab1;
 
-char *my_realloc(char *src, size_t oldSize, size_t newSize)
+/*char *my_realloc(char *src, size_t oldSize, size_t newSize)
 {
     char *newArr = new char[newSize]{};
     for (int i = 0; i < (newSize > oldSize ? oldSize : newSize); i++)
@@ -51,7 +51,7 @@ char *double_to_string(double value)
         doubpart -= doubt;
     }
     return my_realloc(str, 10, strlen(str) + 1);
-}
+}*/
 
 std::string lab1::struct_to_string(const Student &student, const std::string &title)
 {
@@ -96,30 +96,11 @@ std::string get_info_after(const std::string &src, const char *infotype)
     return result;
 }
 
-/*double string_to_double(const std::string& str)
-{
-    double result = 0.0;
-    result += (str[0] - '0');
-    size_t i = 1;
-    if (i < str.length() && str[i] == '.')
-    {
-        i++;
-        double multiplier = 0.1;
-        while (i < str.length() && str[i] >= '0' && str[i] <= '9')
-        {
-            result += (str[i] - '0') * multiplier;
-            multiplier *= 0.1;
-            i++;
-        }
-    }
-    return result;
-}*/
-
 double string_to_double(const std::string value)
 {
     double multiplier = 0.1;
     double res = value[0] - '0';
-    for (int i = 2; i < value.length() && value[i] >= '0' && value[i] <= '9'; i++)
+    for (size_t i = 2; i < value.length() && value[i] >= '0' && value[i] <= '9'; i++)
     {
         res += (value[i] - '0') * multiplier;
         multiplier *= 0.1;

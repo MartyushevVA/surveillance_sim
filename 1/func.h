@@ -1,9 +1,7 @@
-#ifndef PROG_H
-#define PROG_H
+#ifndef FUNC_H
+#define FUNC_H
 
-#include <iostream>
 #include <string>
-#include <cstring>
 #include <cmath>
 
 namespace lab1
