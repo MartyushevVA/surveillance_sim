@@ -3,9 +3,10 @@
 
 bool check_group(std::string text)
 {
+    const std::string aproved_letters = "BbSsMmAa";
     if (text.length() != 7)
         return false;
-    if (text[0] != 'B' && text[0] != 'S' && text[0] != 'M' && text[0] != 'A')
+    if (aproved_letters.find(text[0]) == std::string::npos)
         return false;
     if (text[1] < '0' || text[1] > '9')
         return false;
@@ -28,25 +29,24 @@ bool check_word(std::string text)
     for (int i = 0; i < 7; i++)
         if (text.find(banwords[i]) != std::string::npos)
             return false;
+    delete[] banwords;
     return true;
 }
 
-bool check_java_format(std::string text)
+bool check_java_format(std::string)
 {
     // проверить строку по маске в идеале
-    //
-    //
-    //
-    //
-    //
-    //
-    //
     return true;
 }
 
 bool check_grade(double num)
 {
-    return 2 <= num <= 5;
+    return 2 <= num && num <= 5;
+}
+
+bool check_option(int)
+{
+    return true;
 }
 
 void s_struct(const lab1::Student student, std::string title)
@@ -60,6 +60,7 @@ void nt_struct(const lab1::Student student, std::string title)
     for (std::size_t i = 0; i < title.length(); ++i)
         nt[i] = title[i];
     std::cout << lab1::struct_to_string(student, nt);
+    delete[] nt;
 }
 void ca_struct(const lab1::Student student, std::string title)
 {
@@ -67,92 +68,141 @@ void ca_struct(const lab1::Student student, std::string title)
     for (std::size_t i = 0; i < title.length(); ++i)
         nt[i] = title[i];
     std::cout << lab1::struct_to_string(student, nt, title.length());
+    delete[] nt;
 }
 
-std::string getStringwThrows(const std::string &msg)
+std::string getStringwThrows(const std::string &msg, bool checker(std::string))
 {
     std::string input;
     std::cout << msg;
-    std::cin >> input;
-    if (std::cin.eof())
-        throw 0;
-    if (!std::cin.good())
+    while (true)
     {
-        std::cin.clear();
-        std::cin.ignore(std::numeric_limits<std::streamsize>::max(), '\n');
-        throw std::runtime_error("Неверный ввод, попробуйте снова.");
+        std::cin >> input;
+        if (std::cin.eof())
+            throw 0;
+        if (!std::cin.good())
+        {
+            std::cin.clear();
+            std::cin.ignore(std::numeric_limits<std::streamsize>::max(), '\n');
+            std::cout << "Неверный ввод, попробуйте снова." << std::endl;
+        }
+        if (!checker(input))
+        {
+            std::cin.clear();
+            std::cin.ignore(std::numeric_limits<std::streamsize>::max(), '\n');
+            std::cout << "Ошибка формата, повторите ввод." << std::endl;
+        }
+        else
+            return input;
     }
-    return input;
+}
+
+std::string getJPropwThrows(const std::string &msg, bool checker(std::string))
+{
+    std::string input;
+    std::cout << msg;
+    while (true)
+    {
+        std::cin.ignore(std::numeric_limits<std::streamsize>::max(), '\n');
+        getline(std::cin, input);
+        if (std::cin.eof())
+            throw 0;
+        if (!std::cin.good())
+        {
+            std::cin.clear();
+            std::cin.ignore(std::numeric_limits<std::streamsize>::max(), '\n');
+            std::cout << "Неверный ввод, попробуйте снова." << std::endl;
+        }
+        if (!checker(input))
+        {
+            std::cin.clear();
+            std::cin.ignore(std::numeric_limits<std::streamsize>::max(), '\n');
+            std::cout << "Ошибка формата, повторите ввод." << std::endl;
+        }
+        else
+            return input;
+    }
+}
+
+double getDoublewThrows(const std::string &msg, bool checker(double))
+{
+    double input;
+    std::cout << msg;
+    while (true)
+    {
+        std::cin >> input;
+        if (std::cin.eof())
+            throw 0;
+        if (!std::cin.good())
+        {
+            std::cin.clear();
+            std::cin.ignore(std::numeric_limits<std::streamsize>::max(), '\n');
+            std::cout << "Неверный ввод, попробуйте снова." << std::endl;
+        }
+        if (!checker(input))
+        {
+            std::cin.clear();
+            std::cin.ignore(std::numeric_limits<std::streamsize>::max(), '\n');
+            std::cout << "Ошибка формата, повторите ввод." << std::endl;
+        }
+        else
+            return input;
+    }
+}
+
+int getIntwThrows(const std::string &msg, bool checker(int))
+{
+    int input;
+    std::cout << msg;
+    while (true)
+    {
+        std::cin >> input;
+        if (std::cin.eof())
+            throw 0;
+        if (!std::cin.good())
+        {
+            std::cin.clear();
+            std::cin.ignore(std::numeric_limits<std::streamsize>::max(), '\n');
+            std::cout << "Неверный ввод, попробуйте снова." << std::endl;
+        }
+        if (!checker(input))
+        {
+            std::cin.clear();
+            std::cin.ignore(std::numeric_limits<std::streamsize>::max(), '\n');
+            std::cout << "Ошибка формата, повторите ввод." << std::endl;
+        }
+        else
+            return input;
+    }
 }
 
 void d_struct_to_string()
 {
     lab1::Student student;
     std::string title;
-    try
-    {
-        title = getStringwThrows("Введите название структуры (заголовок): ");
-        if (!check_word(title))
-        {
-            std::cin.clear();
-            std::cin.ignore(std::numeric_limits<std::streamsize>::max(), '\n');
-            throw std::runtime_error("Ошибка формата, повторите ввод.");
-        }
-        student.name = getStringwThrows("Введите имя: ");
-        if (!check_word(student.name))
-        {
-            std::cin.clear();
-            std::cin.ignore(std::numeric_limits<std::streamsize>::max(), '\n');
-            throw std::runtime_error("Ошибка формата, повторите ввод.");
-        }
-        student.group = getStringwThrows("Введите группу: ");
-        if (!check_group(student.group))
-        {
-            std::cin.clear();
-            std::cin.ignore(std::numeric_limits<std::streamsize>::max(), '\n');
-            throw std::runtime_error("Ошибка формата, повторите ввод.");
-        }
-        student.grade = std::stod(getStringwThrows("Введите оценку: "));
-        if (!check_grade(student.grade))
-        {
-            std::cin.clear();
-            std::cin.ignore(std::numeric_limits<std::streamsize>::max(), '\n');
-            throw std::runtime_error("Ошибка формата, повторите ввод.");
-        }
-    }
-    catch (const std::runtime_error &e)
-    {
-        std::cout << e.what() << std::endl;
-    }
-    catch (...)
-    {
-        throw;
-    }
-    int option = 0;
+    title = getStringwThrows("Введите название структуры (заголовок): ", check_word);
+    student.name = getStringwThrows("Введите имя: ", check_word);
+    student.group = getStringwThrows("Введите группу: ", check_group);
+    student.grade = getDoublewThrows("Введите оценку: ", check_grade);
+    int option;
     while (true)
     {
-        std::cout << "Выберите вариант перегрузки функции (конвертация заголовка): " << std::endl
-                  << "1) Нуль-терминированная строка" << std::endl
-                  << "2) Массив символов и количество" << std::endl
-                  << "3) Экземляр класса string" << std::endl
-                  << "4) Выход" << std::endl;
         try
         {
-            option = std::stoi(getStringwThrows(""));
+            option = getIntwThrows("Выберите вариант перегрузки функции (конвертация заголовка):\n1) Нуль-терминированная строка\n2) Массив символов и количество\n3) Экземляр класса string\n4) Назад\n", check_option);
             switch (option)
             {
             case 1:
                 nt_struct(student, title);
-                return;
+                break;
             case 2:
                 ca_struct(student, title);
-                return;
+                break;
             case 3:
                 s_struct(student, title);
-                return;
+                break;
             case 4:
-                std::cout << "Выход из программы." << std::endl;
-                throw 0;
+                throw " ";
             default:
                 throw std::runtime_error("Число вне допустимого диапазона значений. Повторите ввод.");
             }
@@ -181,6 +231,7 @@ void nt_string(const std::string java_prop)
         njp[i] = java_prop[i];
     lab1::Student student = lab1::string_to_struct(njp);
     std::cout << "{name=" << student.name << ", group=" << student.group << ", grade=" << student.grade << "};" << std::endl;
+    delete[] njp;
 }
 
 void ca_string(const std::string java_prop)
@@ -190,31 +241,19 @@ void ca_string(const std::string java_prop)
         njp[i] = java_prop[i];
     lab1::Student student = lab1::string_to_struct(njp, java_prop.length());
     std::cout << "{name=" << student.name << ", group=" << student.group << ", grade=" << student.grade << "};" << std::endl;
+    delete[] njp;
 }
 
 void d_string_to_struct()
 {
     std::string java_prop;
-    std::cout << "Введите java prop строку: ";
-    std::cin.ignore(std::numeric_limits<std::streamsize>::max(), '\n');
-    getline(std::cin, java_prop);
-    if (!check_java_format(java_prop))
-    {
-        std::cin.clear();
-        std::cin.ignore(std::numeric_limits<std::streamsize>::max(), '\n');
-        throw std::runtime_error("Ошибка формата, повторите ввод.");
-    }
+    java_prop = getJPropwThrows("Введите java prop строку:", check_java_format);
     int option = 0;
     while (true)
     {
-        std::cout << "Выберите вариант перегрузки функции: " << std::endl
-                  << "1) Нуль-терминированная строка" << std::endl
-                  << "2) Массив символов и количество" << std::endl
-                  << "3) Экземляр класса string" << std::endl
-                  << "4) Выход" << std::endl;
         try
         {
-            option = std::stoi(getStringwThrows(""));
+            option = getIntwThrows("Выберите вариант перегрузки функции (конвертация заголовка):\n1) Нуль-терминированная строка\n2) Массив символов и количество\n3) Экземляр класса string\n4) Выход\n", check_option);
             switch (option)
             {
             case 1:
@@ -248,13 +287,9 @@ void dl::dialog()
     int option = 0;
     while (true)
     {
-        std::cout << "Выберите опцию: " << std::endl
-                  << "1) Структура --> java properties" << std::endl
-                  << "2) Java properties --> структура" << std::endl
-                  << "3) Выход" << std::endl;
         try
         {
-            option = std::stoi(getStringwThrows(""));
+            option = getIntwThrows("Выберите опцию:\n1) Структура --> java properties\n2) Java properties --> структура\n3) Выход\n", check_option);
             switch (option)
             {
             case 1:
@@ -272,10 +307,6 @@ void dl::dialog()
         catch (const std::runtime_error &e)
         {
             std::cout << e.what() << std::endl;
-        }
-        catch (const std::bad_alloc &ba)
-        {
-            std::cerr << "Недостаточно памяти" << std::endl;
         }
         catch (const int)
         {
