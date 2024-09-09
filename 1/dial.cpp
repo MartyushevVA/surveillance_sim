@@ -100,17 +100,16 @@ std::string getString(const std::string &msg, std::function<bool(std::string)> c
 std::string getJProp(const std::string &msg, std::function<bool(std::string)> checker)
 {
     std::string jprop;
-    std::string input;
-    std::cout << msg;
+    std::cout << msg << std::endl;
+    std::cin.ignore(std::numeric_limits<std::streamsize>::max(), '\n');
     while (true)
     {
-        std::cin >> input;
-        if (!input.length())
+        std::string input;
+        getline(std::cin, input);
+        if (input.empty())
         {
-            if (!check_java_format(jprop))
+            if (!checker(jprop))
             {
-                std::cin.clear();
-                std::cin.ignore(std::numeric_limits<std::streamsize>::max(), '\n');
                 jprop = "";
                 std::cout << "Неверный формат, попробуйте снова." << std::endl;
             }
@@ -127,7 +126,7 @@ std::string getJProp(const std::string &msg, std::function<bool(std::string)> ch
             std::cout << "Неверный ввод, попробуйте снова." << std::endl;
         }
         else
-            jprop += input;
+            jprop += input + " ";
     }
 }
 
@@ -237,7 +236,7 @@ void nt_string(const std::string java_prop)
     for (std::size_t i = 0; i < java_prop.length(); ++i)
         njp[i] = java_prop[i];
     lab1::Student student = lab1::string_to_struct(njp);
-    std::cout << "{name=" << student.name << ", group=" << student.group << ", grade=" << student.grade << "};" << std::endl;
+    std::cout << "{name=\"" << student.name << "\", group=" << student.group << ", grade=" << student.grade << "};" << std::endl;
     delete[] njp;
 }
 
@@ -247,7 +246,7 @@ void ca_string(const std::string java_prop)
     for (std::size_t i = 0; i < java_prop.length(); ++i)
         njp[i] = java_prop[i];
     lab1::Student student = lab1::string_to_struct(njp, java_prop.length());
-    std::cout << "{name=\"" << student.name << "\", group=" << student.group << "\", grade=" << student.grade << "};" << std::endl;
+    std::cout << "{name=\"" << student.name << "\", group=" << student.group << ", grade=" << student.grade << "};" << std::endl;
     delete[] njp;
 }
 
