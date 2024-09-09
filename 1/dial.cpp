@@ -71,7 +71,7 @@ void ca_struct(const lab1::Student student, std::string title)
     delete[] nt;
 }
 
-std::string getStringwThrows(const std::string &msg, bool checker(std::string))
+std::string getString(const std::string &msg, bool checker(std::string))
 {
     std::string input;
     std::cout << msg;
@@ -97,34 +97,41 @@ std::string getStringwThrows(const std::string &msg, bool checker(std::string))
     }
 }
 
-std::string getJPropwThrows(const std::string &msg, bool checker(std::string))
+std::string getJProp(const std::string &msg, std::function<bool> checker(std::string))
 {
+    std::string jprop;
     std::string input;
     std::cout << msg;
     while (true)
     {
-        std::cin.ignore(std::numeric_limits<std::streamsize>::max(), '\n');
-        getline(std::cin, input);
+        std::cin >> input;
+        if (!input.length())
+        {
+            if (!check_java_format(jprop))
+            {
+                std::cin.clear();
+                std::cin.ignore(std::numeric_limits<std::streamsize>::max(), '\n');
+                jprop = "";
+                std::cout << "Неверный формат, попробуйте снова." << std::endl;
+            }
+            else
+                return jprop;
+        }
         if (std::cin.eof())
             throw 0;
         if (!std::cin.good())
         {
             std::cin.clear();
             std::cin.ignore(std::numeric_limits<std::streamsize>::max(), '\n');
+            jprop = "";
             std::cout << "Неверный ввод, попробуйте снова." << std::endl;
         }
-        if (!checker(input))
-        {
-            std::cin.clear();
-            std::cin.ignore(std::numeric_limits<std::streamsize>::max(), '\n');
-            std::cout << "Ошибка формата, повторите ввод." << std::endl;
-        }
         else
-            return input;
+            jprop += input;
     }
 }
 
-double getDoublewThrows(const std::string &msg, bool checker(double))
+double getDouble(const std::string &msg, bool checker(double))
 {
     double input;
     std::cout << msg;
@@ -150,7 +157,7 @@ double getDoublewThrows(const std::string &msg, bool checker(double))
     }
 }
 
-int getIntwThrows(const std::string &msg, bool checker(int))
+int getInt(const std::string &msg, bool checker(int))
 {
     int input;
     std::cout << msg;
@@ -180,16 +187,16 @@ void d_struct_to_string()
 {
     lab1::Student student;
     std::string title;
-    title = getStringwThrows("Введите название структуры (заголовок): ", check_word);
-    student.name = getStringwThrows("Введите имя: ", check_word);
-    student.group = getStringwThrows("Введите группу: ", check_group);
-    student.grade = getDoublewThrows("Введите оценку: ", check_grade);
+    title = getString("Введите название структуры (заголовок): ", check_word);
+    student.name = getString("Введите имя: ", check_word);
+    student.group = getString("Введите группу: ", check_group);
+    student.grade = getDouble("Введите оценку: ", check_grade);
     int option;
     while (true)
     {
         try
         {
-            option = getIntwThrows("Выберите вариант перегрузки функции (конвертация заголовка):\n1) Нуль-терминированная строка\n2) Массив символов и количество\n3) Экземляр класса string\n4) Назад\n", check_option);
+            option = getInt("Выберите вариант перегрузки функции (конвертация заголовка):\n1) Нуль-терминированная строка\n2) Массив символов и количество\n3) Экземляр класса string\n4) Назад\n", check_option);
             switch (option)
             {
             case 1:
@@ -236,24 +243,24 @@ void nt_string(const std::string java_prop)
 
 void ca_string(const std::string java_prop)
 {
-    char *njp = new char[java_prop.length()];
+    char *njp = new char[java_prop.length()]{};
     for (std::size_t i = 0; i < java_prop.length(); ++i)
         njp[i] = java_prop[i];
     lab1::Student student = lab1::string_to_struct(njp, java_prop.length());
-    std::cout << "{name=" << student.name << ", group=" << student.group << ", grade=" << student.grade << "};" << std::endl;
+    std::cout << "{name=\"" << student.name << "\", group=" << student.group << "\", grade=" << student.grade << "};" << std::endl;
     delete[] njp;
 }
 
 void d_string_to_struct()
 {
     std::string java_prop;
-    java_prop = getJPropwThrows("Введите java prop строку:", check_java_format);
+    java_prop = getJProp("Введите java prop строку:", check_java_format);
     int option = 0;
     while (true)
     {
         try
         {
-            option = getIntwThrows("Выберите вариант перегрузки функции (конвертация заголовка):\n1) Нуль-терминированная строка\n2) Массив символов и количество\n3) Экземляр класса string\n4) Выход\n", check_option);
+            option = getInt("Выберите вариант перегрузки функции (конвертация заголовка):\n1) Нуль-терминированная строка\n2) Массив символов и количество\n3) Экземляр класса string\n4) Выход\n", check_option);
             switch (option)
             {
             case 1:
@@ -289,7 +296,7 @@ void dl::dialog()
     {
         try
         {
-            option = getIntwThrows("Выберите опцию:\n1) Структура --> java properties\n2) Java properties --> структура\n3) Выход\n", check_option);
+            option = getInt("Выберите опцию:\n1) Структура --> java properties\n2) Java properties --> структура\n3) Выход\n", check_option);
             switch (option)
             {
             case 1:

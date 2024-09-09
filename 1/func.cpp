@@ -32,7 +32,7 @@ double string_to_double(const std::string &value)
 {
     double multiplier = 0.1;
     double res = value[0] - '0';
-    for (size_t i = 2; i < value.length(); i++)
+    for (size_t i = 2; i < value.length() - 1; i++)
     {
         res += (value[i] - '0') * multiplier;
         multiplier *= 0.1;
