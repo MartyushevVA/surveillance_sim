@@ -71,7 +71,7 @@ void ca_struct(const lab1::Student student, std::string title)
     delete[] nt;
 }
 
-std::string getString(const std::string &msg, bool checker(std::string))
+std::string getString(const std::string &msg, std::function<bool(std::string)> checker)
 {
     std::string input;
     std::cout << msg;
@@ -97,7 +97,7 @@ std::string getString(const std::string &msg, bool checker(std::string))
     }
 }
 
-std::string getJProp(const std::string &msg, std::function<bool> checker(std::string))
+std::string getJProp(const std::string &msg, std::function<bool(std::string)> checker)
 {
     std::string jprop;
     std::string input;
@@ -131,7 +131,7 @@ std::string getJProp(const std::string &msg, std::function<bool> checker(std::st
     }
 }
 
-double getDouble(const std::string &msg, bool checker(double))
+double getDouble(const std::string &msg, std::function<bool(double)> checker)
 {
     double input;
     std::cout << msg;
@@ -157,7 +157,7 @@ double getDouble(const std::string &msg, bool checker(double))
     }
 }
 
-int getInt(const std::string &msg, bool checker(int))
+int getInt(const std::string &msg, std::function<bool(int)> checker)
 {
     int input;
     std::cout << msg;
