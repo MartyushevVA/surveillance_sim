@@ -2,7 +2,10 @@
 #define FUNC_H
 
 #include <string>
+#include <algorithm>
+#include <stdexcept>
 #include <cmath>
+#include <iostream>
 
 namespace lab1
 {
@@ -19,5 +22,9 @@ namespace lab1
     Student string_to_struct(const char *);
     Student string_to_struct(const char *, size_t);
     Student string_to_struct(const std::string &);
+    bool check_group(const std::string &);
+    bool check_word(const std::string &);
+    bool check_grade(double);
+    bool check_java_format(const std::string &);
 }
 #endif
