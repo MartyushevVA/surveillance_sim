@@ -3,23 +3,16 @@ using namespace lab1;
 
 bool lab1::check_group(const std::string &text)
 {
-    const std::string aproved_letters = "BbSsMmAa";
-    if (text.length() != 7)
+    const std::string aproved_letters = "BbБбSsСсMmМмAaАа";
+    const size_t *masked_nums = new size_t[5]{1, 2, 4, 5, 6};
+    if (text.length() != 7 || aproved_letters.find(text[0]) == std::string::npos)
         return false;
-    if (aproved_letters.find(text[0]) == std::string::npos)
-        return false;
-    if (text[1] < '0' || text[1] > '9')
-        return false;
-    if (text[2] < '0' || text[2] > '9')
+    if (std::any_of(masked_nums, masked_nums + 5, [&](int pos)
+                    { text[pos] < '0' || text[pos] > '9'; }))
         return false;
     if (text[3] != '-')
         return false;
-    if (text[4] < '0' || text[4] > '9')
-        return false;
-    if (text[5] < '0' || text[5] > '9')
-        return false;
-    if (text[6] < '0' || text[6] > '9')
-        return false;
+
     return true;
 }
 
