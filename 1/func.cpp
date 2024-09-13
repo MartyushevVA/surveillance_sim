@@ -3,30 +3,24 @@ using namespace lab1;
 
 bool lab1::check_group(const std::string &text)
 {
-    const std::string aproved_letters = "BbБбSsСсMmМмAaАа";
-    const size_t *masked_nums = new size_t[5]{1, 2, 4, 5, 6};
+    const std::string aproved_letters = "BbSsMmAa";
+    const size_t masked_nums[5]{1, 2, 4, 5, 6};
     if (text.length() != 7 || aproved_letters.find(text[0]) == std::string::npos)
         return false;
-    if (std::any_of(masked_nums, masked_nums + 5, [&](int pos)
-                    { text[pos] < '0' || text[pos] > '9'; }))
+    if (std::any_of(std::begin(masked_nums), std::end(masked_nums), [text](size_t pos)
+                    { return text[pos] < '0' || text[pos] > '9'; }))
         return false;
     if (text[3] != '-')
         return false;
-
     return true;
 }
 
 bool lab1::check_word(const std::string &text)
 {
-    std::string banwords[]{"name", "group", "grade", "=", ".", ",", " "};
-    std::for_each(banwords->begin(), banwords->end(), [&](std::string word)
-                  {
-        if (text.find(word) != std::string::npos)
-        {
-            delete[] banwords;
-            return false;
-        } });
-    delete[] banwords;
+    const std::string banwords[7]{"name", "group", "grade", "=", ".", ",", " "};
+    if (std::any_of(std::begin(banwords), std::end(banwords), [text](const std::string &word)
+                    { return text.find(word) != std::string::npos; }))
+        return false;
     return true;
 }
 
@@ -43,15 +37,11 @@ bool lab1::check_grade(double num)
 
 std::string lab1::struct_to_string(const Student &student, const std::string &title)
 {
-    bool *checks = new bool[4]{check_word(title), check_word(student.name), check_group(student.group), check_grade(student.grade)};
+    bool checks[4]{check_word(title), check_word(student.name), check_group(student.group), check_grade(student.grade)};
     try
     {
         if (std::find(checks, checks + 4, false) != checks + 4)
-        {
-            delete[] checks;
             throw std::runtime_error("Ошибка формата.");
-        }
-        delete[] checks;
         std::string java_prop = title + ".name=" + student.name + "\n" + title + ".group=" + student.group + "\n" + title + ".grade=" + std::to_string(student.grade) + "\n";
         return java_prop;
     }

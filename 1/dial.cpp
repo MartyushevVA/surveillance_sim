@@ -81,24 +81,23 @@ T getData(const std::string &msg, std::function<bool(T)> checker)
             std::cin.ignore(std::numeric_limits<std::streamsize>::max(), '\n');
             std::cout << "Ошибка формата, повторите ввод." << std::endl;
         }
-        return input;
+        else
+            return input;
     }
 }
 
 void d_struct_to_string()
 {
     lab1::Student student;
-    std::string title;
-    title = getData<std::string>("Введите название структуры (заголовок): ", lab1::check_word);
+    std::string title = getData<std::string>("Введите название структуры (заголовок): ", lab1::check_word);
     student.name = getData<std::string>("Введите имя: ", lab1::check_word);
     student.group = getData<std::string>("Введите группу: ", lab1::check_group);
     student.grade = getData<double>("Введите оценку: ", lab1::check_grade);
-    int option;
     while (true)
     {
         try
         {
-            option = getData<int>("Выберите вариант перегрузки функции (конвертация заголовка):\n1) Нуль-терминированная строка\n2) Массив символов и количество\n3) Экземляр класса string\n4) Назад\n", check_option);
+            int option = getData<int>("Выберите вариант перегрузки функции (конвертация заголовка):\n1) Нуль-терминированная строка\n2) Массив символов и количество\n3) Экземляр класса string\n4) Назад\n", check_option);
             switch (option)
             {
             case 1:
@@ -153,27 +152,25 @@ void ca_string(const std::string java_prop)
 
 void d_string_to_struct()
 {
-    std::string java_prop;
-    java_prop = getJProp("Введите java prop строку:", lab1::check_java_format);
-    int option = 0;
+    std::string java_prop = getJProp("Введите java prop строку:", lab1::check_java_format);
     while (true)
     {
         try
         {
-            option = getData<int>("Выберите вариант перегрузки функции (конвертация заголовка):\n1) Нуль-терминированная строка\n2) Массив символов и количество\n3) Экземляр класса string\n4) Выход\n", check_option);
+            int option = getData<int>("Выберите вариант перегрузки функции (конвертация заголовка):\n1) Нуль-терминированная строка\n2) Массив символов и количество\n3) Экземляр класса string\n4) Назад \n", check_option);
             switch (option)
             {
             case 1:
                 nt_string(java_prop);
-                return;
+                break;
             case 2:
                 ca_string(java_prop);
-                return;
+                break;
             case 3:
                 s_string(java_prop);
-                return;
+                break;
             case 4:
-                throw 0;
+                throw " ";
             default:
                 throw std::runtime_error("Число вне допустимого диапазона значений. Повторите ввод.");
             }
@@ -191,12 +188,11 @@ void d_string_to_struct()
 
 void dl::dialog()
 {
-    int option = 0;
     while (true)
     {
         try
         {
-            option = getData<int>("Выберите опцию:\n1) Структура --> java properties\n2) Java properties --> структура\n3) Выход\n", check_option);
+            int option = getData<int>("Выберите опцию:\n1) Структура --> java properties\n2) Java properties --> структура\n3) Выход\n", check_option);
             switch (option)
             {
             case 1:
