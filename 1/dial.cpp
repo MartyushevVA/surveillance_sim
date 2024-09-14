@@ -46,7 +46,7 @@ std::string getJProp(const std::string &msg, std::function<bool(std::string)> ch
                 return jprop;
         }
         if (std::cin.eof())
-            throw 0;
+            throw std::invalid_argument("Завершение работы.");
         if (!std::cin.good())
         {
             std::cin.clear();
@@ -68,7 +68,7 @@ T getData(const std::string &msg, std::function<bool(T)> checker)
     {
         std::cin >> input;
         if (std::cin.eof())
-            throw 0;
+            throw std::invalid_argument("Завершение работы.");
         if (!std::cin.good())
         {
             std::cin.clear();
@@ -110,14 +110,19 @@ void d_struct_to_string()
                 s_struct(student, title);
                 break;
             case 4:
-                throw " ";
+                throw std::runtime_error("Возвращение на предыдущий этап.");
             default:
-                throw std::runtime_error("Число вне допустимого диапазона значений. Повторите ввод.");
+                throw std::range_error("Число вне допустимого диапазона значений. Повторите ввод.");
             }
+        }
+        catch (const std::range_error &e)
+        {
+            std::cerr << e.what() << std::endl;
         }
         catch (const std::runtime_error &e)
         {
             std::cout << e.what() << std::endl;
+            return;
         }
         catch (...)
         {
@@ -170,14 +175,19 @@ void d_string_to_struct()
                 s_string(java_prop);
                 break;
             case 4:
-                throw " ";
+                throw std::runtime_error("Возвращение на предыдущий этап.");
             default:
-                throw std::runtime_error("Число вне допустимого диапазона значений. Повторите ввод.");
+                throw std::range_error("Число вне допустимого диапазона значений. Повторите ввод.");
             }
+        }
+        catch (const std::range_error &e)
+        {
+            std::cerr << e.what() << std::endl;
         }
         catch (const std::runtime_error &e)
         {
             std::cout << e.what() << std::endl;
+            return;
         }
         catch (...)
         {
@@ -204,15 +214,16 @@ void dl::dialog()
             case 3:
                 return;
             default:
-                throw std::runtime_error("Число вне допустимого диапазона значений. Повторите ввод.");
+                throw std::range_error("Число вне допустимого диапазона значений. Повторите ввод.");
             }
         }
-        catch (const std::runtime_error &e)
+        catch (const std::range_error &e)
+        {
+            std::cerr << e.what() << std::endl;
+        }
+        catch (const std::invalid_argument &e)
         {
             std::cout << e.what() << std::endl;
-        }
-        catch (const int)
-        {
             return;
         }
         catch (...)
