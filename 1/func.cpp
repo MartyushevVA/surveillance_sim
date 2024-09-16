@@ -24,10 +24,35 @@ bool lab1::check_word(const std::string &text)
     return true;
 }
 
-bool lab1::check_java_format(const std::string &)
+bool lab1::check_java_format(const std::string &input)
 {
-    // проверить строку по маске в идеале
-    return true;
+    std::istringstream stream(input);
+    std::string line;
+    std::string title;
+    std::string name = {};
+    std::string group = {};
+    std::string grade = {};
+    while (stream>>line)
+    {
+        size_t dotpos = line.find('.');
+        if (dotpos == std::string::npos)
+            return false;
+        std::string curtitle = line.substr(0, dotpos);
+        std::string field = line.substr(dotpos + 1);
+        if (title.empty())
+            title = curtitle;
+        else if (title != curtitle)
+            return false;
+        if (field.find("name=") == 0)
+            name = field.substr(5);
+        else if (field.find("group=") == 0)
+            group = field.substr(6);
+        else if (field.find("grade=") == 0)
+            grade = field.substr(6);
+        else
+            return false;
+    }
+    return !name.empty() && !group.empty() && !grade.empty();
 }
 
 bool lab1::check_grade(double num)
