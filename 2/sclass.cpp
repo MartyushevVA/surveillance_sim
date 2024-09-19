@@ -1,6 +1,4 @@
-#include <string>
-#include <algorithm>
-#include <stdexcept>
+#include "sclass.h"
 
 class task
 {
@@ -39,10 +37,7 @@ public:
     size_t getLast() { return last; }
     void setName(std::string name) { this->name = name; }
     void setGrade(int grade) { this->grade = grade; }
-    void setBegin(size_t begin) { 
-        
-        
-        this->first = begin; }
+    void setBegin(size_t begin) { this->first = begin; }
     void setEnd(size_t end) { this->last = end; }
 
     task operator+(task t)
@@ -84,3 +79,11 @@ public:
         return sheets;
     }
 };
+
+void taskOut()
+{
+}
+
+void taskIn()
+{
+}
