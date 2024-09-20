@@ -1,10 +1,6 @@
 #include "sclass.h"
 #include "hclass.h"
-#define ALLCTD 100
 
-class task
-{
-};
 class stack
 {
 private:
@@ -51,11 +47,15 @@ public:
     }
     task extractNextUngraded()
     {
-        // извлечение следующей работы без оценки;
         if (isEmpty())
             throw std::runtime_error("Стек пуст");
         size_t pos = this->size - 1;
-        while ()
+        while (this->vector[pos].getGrade())
+            pos--;
+        task item = this->vector[pos];
+        std::copy(this->vector[pos+1], this->vector[this->size], this->vector[pos]);
+        this->vector[--this->size] = task();
+        return item;
     }
 };
 
