@@ -1,6 +1,9 @@
-#include "hclass.h"
 #include "sclass.h"
+#include "hclass.h"
 
+class task
+{
+};
 class stack
 {
 private:
@@ -10,50 +13,47 @@ private:
 public:
     stack()
     {
-        size = 0;
+        this->size = 0;
     }
     stack(size_t size, task space[])
     {
-        
+        this->space = new task[size];
+        for (size_t i = 0; i < size; i++)
+            this->space[i] = space[i];
+        this->size = size;
     }
 
-    stack operator+(stack t)
+    void operator+=(task t)
     {
-        bool conditions[2]{this->name != t.getName(), t.first != this->last + 1};
-        if (std::any_of(std::begin(conditions), std::end(conditions), [](bool cond)
-                        { return cond; }))
-            throw std::runtime_error("Невозможно объединить такие работы");
-        return stack(this->name, this->grade, this->first, t.getLast());
+        this->size++;
+        task *temp = new task[size];
+        std::copy(this->space, this->space + this->size, temp);
+        delete[] this->space;
+        this->space = temp;
+        this->space[this->size - 1] = t;
     }
 
-    bool operator==(stack t)
+    task pop()
     {
-        return this->name == t.getName() && this->first == t.getFirst();
+        if (!this->size)
+            throw std::runtime_error("Стек пуст");
+        this->size--;
+        task item = this->space[this->size];
+        task *temp = new task[this->size];
+        std::copy(this->space, this->space + this->size, temp);
+        delete[] this->space;
+        this->space = temp;
+        return item;
     }
 
-    bool operator<(stack t)
+    bool isEmpty() //он как то еще должен быть фуловым
     {
-        if (this->name >= t.getName())
-            return false;
-        if (this->first >= t.getFirst())
-            return false;
-        return true;
+        return !this->size;
     }
 
-    void evaluate(int grade)
+    ~stack()
     {
-        if (grade < 2 && grade > 5)
-            throw std::runtime_error("Невозможно поставить такую оценку");
-        this->grade = grade;
-    }
-
-    stack *fragmentation()
-    {
-        stack *sheets = new stack[last - first];
-        size_t pointer = 0;
-        for (size_t i = first; i < last; i++)
-            sheets[pointer++] = stack(name, 0, i, i);
-        return sheets;
+        delete[] space;
     }
 };
 

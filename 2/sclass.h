@@ -6,5 +6,6 @@
 #include <string>
 
 class task;
+class stack;
 
 #endif
