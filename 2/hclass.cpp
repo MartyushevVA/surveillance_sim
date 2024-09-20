@@ -1,5 +1,6 @@
 #include "sclass.h"
 #include "hclass.h"
+#define ALLCTD 100
 
 class task
 {
@@ -8,52 +9,53 @@ class stack
 {
 private:
     size_t size;
-    task *space;
+    task vector[ALLCTD]{};
+    bool isEmpty() { return !size; }
 
 public:
     stack()
     {
         this->size = 0;
     }
-    stack(size_t size, task space[])
+    stack(const size_t size, const task space[])
     {
-        this->space = new task[size];
-        for (size_t i = 0; i < size; i++)
-            this->space[i] = space[i];
+        std::copy(space, space + size * sizeof(task), this->vector);
         this->size = size;
     }
-
-    void operator+=(task t)
+    void operator+=(const task &t)
     {
-        this->size++;
-        task *temp = new task[size];
-        std::copy(this->space, this->space + this->size, temp);
-        delete[] this->space;
-        this->space = temp;
-        this->space[this->size - 1] = t;
+        if (this->size == ALLCTD)
+            throw std::bad_alloc();
+        this->vector[this->size++] = t;
     }
-
     task pop()
     {
-        if (!this->size)
+        if (isEmpty())
             throw std::runtime_error("Стек пуст");
-        this->size--;
-        task item = this->space[this->size];
-        task *temp = new task[this->size];
-        std::copy(this->space, this->space + this->size, temp);
-        delete[] this->space;
-        this->space = temp;
+        task item = this->vector[--this->size];
+        this->vector[this->size] = task();
         return item;
     }
-
-    bool isEmpty() //он как то еще должен быть фуловым
+    double fullness()
     {
-        return !this->size;
+        return !this->size ? 0 : (this->size == ALLCTD ? 2 : 1);
     }
-
-    ~stack()
+    void unioning()
     {
-        delete[] space;
+        // объединение всех разбитых на части работ (то есть после выполнения операции для
+        // каждого студента должно остаться только по одной работе, если это возможно);
+    }
+    task *fragmentation()
+    {
+        // разбиение всех работ в стопке на отдельные листы;
+    }
+    task extractNextUngraded()
+    {
+        // извлечение следующей работы без оценки;
+        if (isEmpty())
+            throw std::runtime_error("Стек пуст");
+        size_t pos = this->size - 1;
+        while ()
     }
 };
 

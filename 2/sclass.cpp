@@ -30,16 +30,14 @@ public:
         this->first = 0;
         this->last = 0;
     }
-
     std::string getName() { return name; }
     int getGrade() { return grade; }
     size_t getFirst() { return first; }
     size_t getLast() { return last; }
     void setName(std::string name) { this->name = name; }
     void setGrade(int grade) { this->grade = grade; }
-    void setBegin(size_t begin) { this->first = begin; }
-    void setEnd(size_t end) { this->last = end; }
-
+    void setFirst(size_t first) { this->first = first; }
+    void setLast(size_t last) { this->last = last; }
     task operator+(task t)
     {
         bool conditions[2]{this->name != t.getName(), t.first != this->last + 1};
@@ -48,12 +46,10 @@ public:
             throw std::runtime_error("Невозможно объединить такие работы");
         return task(this->name, this->grade, this->first, t.getLast());
     }
-
     bool operator==(task t)
     {
         return this->name == t.getName() && this->first == t.getFirst();
     }
-
     bool operator<(task t)
     {
         if (this->name >= t.getName())
@@ -62,14 +58,12 @@ public:
             return false;
         return true;
     }
-
     void evaluate(int grade)
     {
         if (grade < 2 && grade > 5)
             throw std::runtime_error("Невозможно поставить такую оценку");
         this->grade = grade;
     }
-
     task *fragmentation()
     {
         task *sheets = new task[last - first];
