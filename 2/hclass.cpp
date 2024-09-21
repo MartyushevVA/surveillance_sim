@@ -1,24 +1,29 @@
 #include "sclass.h"
 #include "hclass.h"
+#define ALLCTD 300
+
+namespace hcofuncs
+{
+}
 
 class stack
 {
 private:
     size_t size;
-    task vector[ALLCTD]{};
-    bool isEmpty() { return size == 0; }
+    task vector[];
 
 public:
     stack()
     {
+        vector[ALLCTD] = {};
         size = 0;
     }
-    stack(const size_t size, const task space[])
+    stack(size_t size, const task (&space)[])
     {
-        std::copy(space, space + size * sizeof(task), this->vector);
+        std::copy(space, space + size * sizeof(task), vector);
         this->size = size;
     }
-    void operator+=(const task t)
+    void operator+=(const task &t)
     {
         if (size == ALLCTD)
             throw std::bad_alloc();
@@ -26,58 +31,69 @@ public:
     }
     task pop()
     {
-        if (isEmpty())
+        if (size == 0)
             throw std::runtime_error("Стек пуст");
         task item = vector[--size];
         vector[size] = task();
         return item;
     }
-    double fullness()
+    int fullness() const
     {
         return size == 0 ? 0 : (size == ALLCTD ? 2 : 1);
     }
     void unioning()
     {
-        size_t pos = size;
-        while (pos--)
+        task buf[ALLCTD] = {};
+        task item;
+        size_t edge = 0;
+        while (size)
         {
-            task item = pop();
-            for (size_t ind = 0; ind < size; ind++) //std::for_each
-                if (item.getName() == vector[ind].getName())
-                {
-                    item = item < vector[ind] ? item + vector[ind] : vector[ind] + item;
-                    pos--;
-                }
-            operator+=(item);
+            item = this->pop();
+            size_t samepos = scofuncs::find(buf, edge, item);
+            if (samepos != edge)
+                buf[samepos] = item < buf[samepos] ? item + buf[samepos] : buf[samepos] + item;
+            else
+                buf[edge++] = item;
         }
+        delete[] vector;
+        scofuncs::copy(vector, buf, edge);
+        size = edge;
     }
     void fragmentation()
     {
-        if (isEmpty())
-            throw std::runtime_error("Стек пуст");
-        size_t initSize = size;
-        size_t pos = 0;
-        while (pos++ < initSize) //
+        task buf[ALLCTD] = {};
+        task item;
+        size_t edge = 0;
+        while (size)
         {
-            if (vector[pos].getNumOfSheets() == 1)
-                continue;
-            task *sheets = vector[pos].fragmentation();
-            for (size_t ind = 0; ind < vector[pos].getNumOfSheets(); ++ind)
-                *this += sheets[ind];
+            item = this->pop();
+            task *sheets = item.fragmentation();
+            std::for_each(sheets, sheets + item.getNumOfSheets() * sizeof(task), [&buf, &edge](task sheet)
+                          { buf[edge++] = sheet; });
             delete[] sheets;
         }
+        delete[] vector;
+        scofuncs::copy(vector, buf, edge);
+        size = edge;
     }
     task extractNextUngraded()
     {
-        if (isEmpty())
-            throw std::runtime_error("Стек пуст");
-        size_t pos = size - 1;
-        while (vector[pos].getGrade()) //std::find_if
-            pos--;
-        task item = vector[pos];
-        std::copy(vector[pos + 1], vector[this->size], vector[pos]);
-        vector[--size] = task();
-        return item;
+        task buf[ALLCTD] = {};
+        task item;
+        size_t edge = 0;
+        while (size)
+        {
+            item = this->pop();
+            if (item.getGrade())
+                buf[edge++] = item;
+            else
+            {
+                std::for_each(buf, buf + edge * sizeof(task), [this](task t)
+                              { *this += (t); });
+                delete[] buf;
+                return item;
+            }
+        }
     }
 };
 

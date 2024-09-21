@@ -4,27 +4,32 @@
 #include <algorithm>
 #include <stdexcept>
 #include <string>
-
 class task
 {
 public:
     task();
-    task(std::string, int, size_t, size_t);
-    task(std::string);
-    std::string getName() const;
+    task(std::string name, int grade, size_t first, size_t last);
+    task(std::string name);
+    std::string getName();
     int getGrade() const;
     size_t getFirst() const;
     size_t getLast() const;
-    void setName(const std::string);
-    void setGrade(const int);
-    void setFirst(const size_t);
-    void setLast(const size_t);
-    task operator+(const task);
-    bool operator==(const task);
-    bool operator<(const task);
-    void evaluate(const int);
-    task *fragmentation();
-    int getNumOfSheets();
+    void setName(std::string name);
+    void setGrade(int grade);
+    void setFirst(size_t first);
+    void setLast(size_t last);
+    task operator+(const task &t) const;
+    bool operator==(const task &t) const;
+    bool operator<(const task &t) const;
+    void evaluate(int grade);
+    task *fragmentation() const;
+    int getNumOfSheets() const;
+};
+
+namespace scofuncs
+{
+    size_t find(const task space[], size_t size, task findable);
+    void copy(task (&destination)[], task source[], size_t sourceSize);
 };
 
 #endif

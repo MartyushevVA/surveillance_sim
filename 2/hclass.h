@@ -1,18 +1,18 @@
 #ifndef HCLASS_H
 #define HCLASS_H
-#define ALLCTD 300
+
 #include <string>
 
 class stack
 {
 public:
     stack();
-    stack(const size_t, const task[]);
-    void operator+=(const task);
+    stack(size_t size, const task (&space)[]);
+    void operator+=(const task &t);
     task pop();
-    double fullness();
+    int fullness() const;
     void unioning();
-    task *fragmentation();
+    void fragmentation();
     task extractNextUngraded();
 };
 
