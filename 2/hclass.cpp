@@ -6,12 +6,12 @@ class stack
 private:
     size_t size;
     task vector[ALLCTD]{};
-    bool isEmpty() { return !size; }
+    bool isEmpty() { return size == 0; }
 
 public:
     stack()
     {
-        this->size = 0;
+        size = 0;
     }
     stack(const size_t size, const task space[])
     {
@@ -20,49 +20,49 @@ public:
     }
     void operator+=(const task t)
     {
-        if (this->size == ALLCTD)
+        if (size == ALLCTD)
             throw std::bad_alloc();
-        this->vector[this->size++] = t;
+        vector[size++] = t;
     }
     task pop()
     {
         if (isEmpty())
             throw std::runtime_error("Стек пуст");
-        task item = this->vector[--this->size];
-        this->vector[this->size] = task();
+        task item = vector[--size];
+        vector[size] = task();
         return item;
     }
     double fullness()
     {
-        return !this->size ? 0 : (this->size == ALLCTD ? 2 : 1);
+        return size == 0 ? 0 : (size == ALLCTD ? 2 : 1);
     }
     void unioning()
     {
-        size_t pos = this->size;
+        size_t pos = size;
         while (pos--)
         {
-            task item = this->pop();
-            for (size_t ind = 0; ind < this->size; ind++)
-                if (item.getName() == this->vector[ind].getName())
+            task item = pop();
+            for (size_t ind = 0; ind < size; ind++) //std::for_each
+                if (item.getName() == vector[ind].getName())
                 {
-                    item = item < this->vector[ind] ? item + this->vector[ind] : this->vector[ind] + item;
+                    item = item < vector[ind] ? item + vector[ind] : vector[ind] + item;
                     pos--;
                 }
-            this->operator+=(item);
+            operator+=(item);
         }
     }
     void fragmentation()
     {
         if (isEmpty())
             throw std::runtime_error("Стек пуст");
-        size_t initSize = this->size;
+        size_t initSize = size;
         size_t pos = 0;
-        while (pos++ < initSize)
+        while (pos++ < initSize) //
         {
-            if (this->vector[pos].getNumOfSheets() == 1)
+            if (vector[pos].getNumOfSheets() == 1)
                 continue;
-            task *sheets = this->vector[pos].fragmentation();
-            for (size_t ind = 0; ind < this->vector[pos].getNumOfSheets(); ++ind)
+            task *sheets = vector[pos].fragmentation();
+            for (size_t ind = 0; ind < vector[pos].getNumOfSheets(); ++ind)
                 *this += sheets[ind];
             delete[] sheets;
         }
@@ -71,12 +71,12 @@ public:
     {
         if (isEmpty())
             throw std::runtime_error("Стек пуст");
-        size_t pos = this->size - 1;
-        while (this->vector[pos].getGrade())
+        size_t pos = size - 1;
+        while (vector[pos].getGrade()) //std::find_if
             pos--;
-        task item = this->vector[pos];
-        std::copy(this->vector[pos + 1], this->vector[this->size], this->vector[pos]);
-        this->vector[--this->size] = task();
+        task item = vector[pos];
+        std::copy(vector[pos + 1], vector[this->size], vector[pos]);
+        vector[--size] = task();
         return item;
     }
 };
