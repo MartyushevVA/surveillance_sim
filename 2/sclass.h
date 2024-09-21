@@ -61,4 +61,7 @@ namespace ofuncs
     void copy(task *destination, task source[], size_t sourceSize);
 }
 
+std::ostream &operator<<(std::ostream &os, const task &task);
+std::istream &operator>>(std::istream &in, task &task);
+
 #endif

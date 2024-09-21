@@ -34,15 +34,71 @@ stack::stack(size_t size, const task (&space)[])
     this->size = size;
 }
 
+stack::stack(const stack &other)
+{
+    size = other.size;
+    allctd = other.allctd;
+    vector = new task[allctd];
+    std::copy(other.vector, other.vector + other.size, vector);
+}
+
+stack::stack(stack &&other)
+{
+    size = other.size;
+    allctd = other.allctd;
+    vector = other.vector;
+    other.size = 0;
+    other.allctd = 0;
+    other.vector = nullptr;
+}
+
 stack::~stack()
 {
     delete[] vector;
+}
+
+stack &stack::operator=(const stack &other)
+{
+    if (this != &other)
+    {
+        size = other.size;
+        allctd = other.allctd;
+        vector = new task[allctd];
+        std::copy(other.vector, other.vector + other.size, vector);
+    }
+    return *this;
 }
 
 void stack::operator+=(const task &t)
 {
     smoothResize();
     vector[size++] = t;
+}
+
+std::ostream &operator<<(std::ostream &os, const stack &stack)
+{
+    std::string output;
+    task item;
+    for (size_t num = 0; num < stack.size; num++)
+    {
+        item = stack.vector[num];
+        output += item.getName() += std::string(": ") += std::to_string(item.getGrade()) += std::string(" ") += std::to_string(item.getFirst()) += std::string("<->") += std::to_string(item.getLast()) += "\n";
+    }
+    return os << output;
+}
+
+std::istream &operator>>(std::istream &in, stack &stack)
+{
+    size_t size;
+    task item;
+    in >> size;
+    for (size_t ind = 0; ind < size; ind++)
+    {
+        in >> item;
+        stack.smoothResize();
+        stack += item;
+    }
+    return in;
 }
 
 task stack::pop()

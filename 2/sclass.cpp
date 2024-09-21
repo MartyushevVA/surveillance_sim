@@ -13,8 +13,7 @@ void ofuncs::copy(task *destination, task source[], size_t sourceSize)
 {
     if (destination == nullptr || source == nullptr)
         throw std::runtime_error("Destination or source pointer is null.");
-    for (size_t ind = 0; ind < sourceSize; ++ind)
-        destination[ind] = source[ind];
+    std::copy(source, source + sourceSize, destination);
     delete[] source;
 }
 
@@ -79,6 +78,27 @@ bool task::operator<(const task &t) const
     if (this->first >= t.getFirst())
         return false;
     return true;
+}
+
+std::ostream &operator<<(std::ostream &os, const task &task)
+{
+    return os << task.getName() << ": " << task.getGrade() << " " << task.getFirst() << "<->" << task.getLast();
+}
+
+std::istream &operator>>(std::istream &in, task &task)
+{
+    std::string name;
+    int grade;
+    size_t first, last;
+    in >> name >> grade >> first >> last;
+    if (in)
+    {
+        task.setName(name);
+        task.setGrade(grade);
+        task.setFirst(first);
+        task.setLast(last);
+    }
+    return in;
 }
 
 void task::evaluate(int grade)
