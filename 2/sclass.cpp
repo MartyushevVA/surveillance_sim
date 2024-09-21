@@ -10,7 +10,7 @@ namespace scofuncs
         return size;
     }
 
-    void copy(task (&destination)[], task source[], size_t sourceSize)
+    void copy(task *destination, task source[], size_t sourceSize)
     {
         for (size_t ind = 0; ind < sourceSize; ++ind)
             destination[ind] = source[ind];
@@ -38,8 +38,8 @@ task::task(std::string name)
 {
     this->name = name;
     this->grade = 0;
-    this->first = 1;
-    this->last = 1;
+    this->first = 0;
+    this->last = 0;
 }
 
 std::string task::getName() const { return name; }

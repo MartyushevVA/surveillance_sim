@@ -1,21 +1,45 @@
 #include "hclass.h"
 
+void stack::smoothResize(size_t newAllctd = 0)
+{
+    if (!newAllctd)
+    {
+        if (size * 2 < allctd)
+            newAllctd = allctd / 2;
+        if (size > 4 * allctd / 5)
+            newAllctd = allctd * 2;
+        else
+            return;
+    }
+    task *newArray = new task[newAllctd]{};
+    std::copy(vector, vector + size, newArray);
+    delete[] vector;
+    vector = newArray;
+    allctd = newAllctd;
+}
+
 stack::stack()
 {
-    vector[ALLCTD] = {};
+    task *vector = new task[10]{};
     size = 0;
+    allctd = 0;
 }
 
 stack::stack(size_t size, const task (&space)[])
 {
-    std::copy(space, space + size * sizeof(task), vector);
+    smoothResize(2 * size);
+    std::copy(space, space + size, vector);
     this->size = size;
+}
+
+stack::~stack()
+{
+    delete[] vector;
 }
 
 void stack::operator+=(const task &t)
 {
-    if (size == ALLCTD)
-        throw std::bad_alloc();
+    smoothResize();
     vector[size++] = t;
 }
 
@@ -28,11 +52,11 @@ task stack::pop()
     return item;
 }
 
-int stack::fullness() const { return size == 0 ? 0 : (size == ALLCTD ? 2 : 1); }
+int stack::fullness() const { return size == 0 ? 0 : (size == allctd ? 2 : 1); }
 
 void stack::unioning()
 {
-    task buf[ALLCTD] = {};
+    task *buf = new task[allctd]{};
     task item;
     size_t edge = 0;
     while (size)
@@ -50,24 +74,35 @@ void stack::unioning()
 
 void stack::fragmentation()
 {
-    task buf[ALLCTD] = {};
+    size_t bufallctd = allctd;
+    task *buf = new task[bufallctd]{};
     task item;
     size_t edge = 0;
     while (size)
     {
         item = this->pop();
         task *sheets = item.fragmentation();
-        std::for_each(sheets, sheets + item.getNumOfSheets() * sizeof(task), [&buf, &edge](task sheet)
-                      { buf[edge++] = sheet; });
+        std::for_each(sheets, sheets + item.getNumOfSheets() * sizeof(task), [&buf, &edge, &bufallctd](task sheet)
+                      {
+            if (edge == bufallctd)
+            {
+                bufallctd*=2;
+                task* newBuf = new task[bufallctd]{};
+                std::copy(buf, buf+edge, newBuf);
+                delete[] buf;
+                buf = newBuf;
+            }
+            buf[edge++] = sheet; });
         delete[] sheets;
     }
+    smoothResize(2 * edge);
     scofuncs::copy(vector, buf, edge);
     size = edge;
 }
 
 task stack::extractNextUngraded()
 {
-    task buf[ALLCTD] = {};
+    task *buf = new task[allctd]{};
     task item;
     size_t edge = 0;
     if (size == 0)
@@ -79,7 +114,7 @@ task stack::extractNextUngraded()
             buf[edge++] = item;
         else
         {
-            std::for_each(buf, buf + edge * sizeof(task), [this](task t)
+            std::for_each(buf, buf + edge, [this](task t)
                           { *this += (t); });
             return item;
         }

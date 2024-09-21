@@ -1,13 +1,11 @@
 #ifndef DIAL_H
 #define DIAL_H
 
-#include <iostream>
-#include <string>
-#include <limits>
-#include <functional>
+#include "alllibs.h"
+#include "sclass.h"
+#include "hclass.h"
 
-namespace dl
-{
-    void dialog();
-}
+
+void dialog();
+
 #endif

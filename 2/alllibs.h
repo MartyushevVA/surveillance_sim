@@ -4,5 +4,8 @@
 #include <algorithm>
 #include <stdexcept>
 #include <string>
+#include <iostream>
+#include <limits>
+#include <functional>
 
 #endif

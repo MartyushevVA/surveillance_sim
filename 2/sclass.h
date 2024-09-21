@@ -34,7 +34,7 @@ public:
 namespace scofuncs
 {
     size_t find(const task space[], size_t size, task findable);
-    void copy(task (&destination)[], task source[], size_t sourceSize);
+    void copy(task *destination, task source[], size_t sourceSize);
 };
 
 #endif
