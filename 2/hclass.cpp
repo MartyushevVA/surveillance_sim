@@ -18,7 +18,7 @@ public:
         std::copy(space, space + size * sizeof(task), this->vector);
         this->size = size;
     }
-    void operator+=(const task &t)
+    void operator+=(const task t)
     {
         if (this->size == ALLCTD)
             throw std::bad_alloc();
@@ -38,8 +38,18 @@ public:
     }
     void unioning()
     {
-        // объединение всех разбитых на части работ (то есть после выполнения операции для
-        // каждого студента должно остаться только по одной работе, если это возможно);
+        size_t pos = this->size;
+        while (pos--)
+        {
+            task item = this->pop();
+            for (size_t ind = 0; ind < this->size; ind++)
+                if (item.getName() == this->vector[ind].getName())
+                {
+                    item = item < this->vector[ind] ? item + this->vector[ind] : this->vector[ind] + item;
+                    pos--;
+                }
+            this->operator+=(item);
+        }
     }
     void fragmentation()
     {

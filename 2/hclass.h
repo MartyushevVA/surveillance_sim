@@ -8,8 +8,8 @@ class stack
 public:
     stack();
     stack(const size_t, const task[]);
-    void operator+=(const task &);
-    void pop();
+    void operator+=(const task);
+    task pop();
     double fullness();
     void unioning();
     task *fragmentation();

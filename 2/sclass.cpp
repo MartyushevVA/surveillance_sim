@@ -30,15 +30,15 @@ public:
         this->first = 0;
         this->last = 0;
     }
-    std::string getName() { return name; }
-    int getGrade() { return grade; }
-    size_t getFirst() { return first; }
-    size_t getLast() { return last; }
-    void setName(std::string name) { this->name = name; }
-    void setGrade(int grade) { this->grade = grade; }
-    void setFirst(size_t first) { this->first = first; }
-    void setLast(size_t last) { this->last = last; }
-    task operator+(task t)
+    std::string getName() const { return name; }
+    int getGrade() const { return grade; }
+    size_t getFirst() const { return first; }
+    size_t getLast() const { return last; }
+    void setName(const std::string name) { this->name = name; }
+    void setGrade(const int grade) { this->grade = grade; }
+    void setFirst(const size_t first) { this->first = first; }
+    void setLast(const size_t last) { this->last = last; }
+    task operator+(const task t)
     {
         bool conditions[2]{this->name != t.getName(), t.first != this->last + 1};
         if (std::any_of(std::begin(conditions), std::end(conditions), [](bool cond)
@@ -46,11 +46,11 @@ public:
             throw std::runtime_error("Невозможно объединить такие работы");
         return task(this->name, this->grade, this->first, t.getLast());
     }
-    bool operator==(task t)
+    bool operator==(const task t)
     {
         return this->name == t.getName() && this->first == t.getFirst();
     }
-    bool operator<(task t)
+    bool operator<(const task t)
     {
         if (this->name >= t.getName())
             return false;
@@ -58,7 +58,7 @@ public:
             return false;
         return true;
     }
-    void evaluate(int grade)
+    void evaluate(const int grade)
     {
         if (grade < 2 && grade > 5)
             throw std::runtime_error("Невозможно поставить такую оценку");
@@ -70,6 +70,7 @@ public:
         size_t pointer = 0;
         for (size_t i = first; i < last; i++)
             sheets[pointer++] = task(name, 0, i, i);
+        sheets[0].grade = grade;
         return sheets;
     }
     int getNumOfSheets()
