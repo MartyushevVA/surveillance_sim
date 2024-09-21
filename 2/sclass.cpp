@@ -1,21 +1,21 @@
 #include "sclass.h"
 
-namespace scofuncs
+size_t ofuncs::find(const task space[], size_t size, task findable)
 {
-    size_t find(const task space[], size_t size, task findable)
-    {
-        for (size_t ind = 0; ind < size; ++ind)
-            if (space[ind].getName() == findable.getName())
-                return ind;
-        return size;
-    }
-
-    void copy(task *destination, task source[], size_t sourceSize)
-    {
-        for (size_t ind = 0; ind < sourceSize; ++ind)
-            destination[ind] = source[ind];
-        delete[] source;
-    }
+    if (space == nullptr)
+        throw std::runtime_error("The task space pointer is null.");
+    for (size_t ind = 0; ind < size; ++ind)
+        if (space[ind].getName() == findable.getName())
+            return ind;
+    throw TaskNotFoundException("Task not found in the provided space.");
+}
+void ofuncs::copy(task *destination, task source[], size_t sourceSize)
+{
+    if (destination == nullptr || source == nullptr)
+        throw std::runtime_error("Destination or source pointer is null.");
+    for (size_t ind = 0; ind < sourceSize; ++ind)
+        destination[ind] = source[ind];
+    delete[] source;
 }
 
 task::task()
@@ -61,9 +61,9 @@ void task::setLast(size_t last) { this->last = last; }
 task task::operator+(const task &t) const
 {
     bool conditions[2]{this->name != t.getName(), t.first != this->last + 1};
-    if (std::any_of(std::begin(conditions), std::end(conditions), [](bool cond)
+    if (std::any_of(conditions, conditions + 2, [](bool cond)
                     { return cond; }))
-        throw std::runtime_error("Невозможно объединить такие работы");
+        throw ofuncs::WrongPositioningException("Unable to combine these works.");
     return task(this->name, this->grade, this->first, t.getLast());
 }
 
@@ -84,13 +84,15 @@ bool task::operator<(const task &t) const
 void task::evaluate(int grade)
 {
     if (grade < 2 && grade > 5)
-        throw std::runtime_error("Невозможно поставить такую оценку");
+        throw ofuncs::UnexpectedGradeException("Unable to mark work like that.");
     this->grade = grade;
 }
 
 task *task::fragmentation() const
 {
     task *sheets = new task[last - first + 1];
+    if (sheets == nullptr)
+        throw std::runtime_error("Memory allocation failed.");
     size_t pointer = 0;
     for (size_t i = first; i < last; i++)
         sheets[pointer++] = task(name, 0, i, i);

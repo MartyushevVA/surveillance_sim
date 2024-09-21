@@ -12,6 +12,8 @@ void stack::smoothResize(size_t newAllctd = 0)
             return;
     }
     task *newArray = new task[newAllctd]{};
+    if (newArray == nullptr)
+        throw std::runtime_error("Memory allocation failed.");
     std::copy(vector, vector + size, newArray);
     delete[] vector;
     vector = newArray;
@@ -20,7 +22,7 @@ void stack::smoothResize(size_t newAllctd = 0)
 
 stack::stack()
 {
-    task *vector = new task[10]{};
+    vector = new task[10]{};
     size = 0;
     allctd = 0;
 }
@@ -46,7 +48,7 @@ void stack::operator+=(const task &t)
 task stack::pop()
 {
     if (size == 0)
-        throw std::runtime_error("Стек пуст");
+        throw ofuncs::EmptyStackException("Current stack is empty.");
     task item = vector[--size];
     vector[size] = task();
     return item;
@@ -57,18 +59,20 @@ int stack::fullness() const { return size == 0 ? 0 : (size == allctd ? 2 : 1); }
 void stack::unioning()
 {
     task *buf = new task[allctd]{};
+    if (buf == nullptr)
+        throw std::runtime_error("Memory allocation failed.");
     task item;
     size_t edge = 0;
     while (size)
     {
         item = this->pop();
-        size_t samepos = scofuncs::find(buf, edge, item);
+        size_t samepos = ofuncs::find(buf, edge, item);
         if (samepos != edge)
             buf[samepos] = item < buf[samepos] ? item + buf[samepos] : buf[samepos] + item;
         else
             buf[edge++] = item;
     }
-    scofuncs::copy(vector, buf, edge);
+    ofuncs::copy(vector, buf, edge);
     size = edge;
 }
 
@@ -76,18 +80,26 @@ void stack::fragmentation()
 {
     size_t bufallctd = allctd;
     task *buf = new task[bufallctd]{};
+    if (buf == nullptr)
+        throw std::runtime_error("Memory allocation failed.");
     task item;
     size_t edge = 0;
     while (size)
     {
         item = this->pop();
         task *sheets = item.fragmentation();
-        std::for_each(sheets, sheets + item.getNumOfSheets() * sizeof(task), [&buf, &edge, &bufallctd](task sheet)
+        std::for_each(sheets, sheets + item.getNumOfSheets() * sizeof(task), [&buf, &edge, &bufallctd, &sheets](task sheet)
                       {
             if (edge == bufallctd)
             {
                 bufallctd*=2;
                 task* newBuf = new task[bufallctd]{};
+                if (newBuf == nullptr)
+                {
+                    delete[] buf;
+                    delete[] sheets;
+                    throw std::runtime_error("Memory allocation failed.");
+                }
                 std::copy(buf, buf+edge, newBuf);
                 delete[] buf;
                 buf = newBuf;
@@ -96,17 +108,19 @@ void stack::fragmentation()
         delete[] sheets;
     }
     smoothResize(2 * edge);
-    scofuncs::copy(vector, buf, edge);
+    ofuncs::copy(vector, buf, edge);
     size = edge;
 }
 
 task stack::extractNextUngraded()
 {
     task *buf = new task[allctd]{};
+    if (buf == nullptr)
+        throw std::runtime_error("Memory allocation failed.");
     task item;
     size_t edge = 0;
     if (size == 0)
-        throw std::runtime_error("Стек пуст");
+        throw ofuncs::EmptyStackException("Current stack is empty.");
     while (size)
     {
         item = this->pop();
@@ -119,7 +133,7 @@ task stack::extractNextUngraded()
             return item;
         }
     }
-    throw std::runtime_error("Неоцененных работ нет");
+    throw ofuncs::TaskNotFoundException("There's no ungraded works.");
 }
 
 void stackOut()

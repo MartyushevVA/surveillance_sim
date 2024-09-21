@@ -31,10 +31,34 @@ public:
     int getNumOfSheets() const;
 };
 
-namespace scofuncs
+namespace ofuncs
 {
+    class EmptyStackException : public std::range_error
+    {
+    public:
+        EmptyStackException(const std::string &message)
+            : std::range_error(message) {}
+    };
+    class TaskNotFoundException : public std::runtime_error
+    {
+    public:
+        TaskNotFoundException(const std::string &message)
+            : std::runtime_error(message) {}
+    };
+    class WrongPositioningException : public std::runtime_error
+    {
+    public:
+        WrongPositioningException(const std::string &message)
+            : std::runtime_error(message) {}
+    };
+    class UnexpectedGradeException : public std::range_error
+    {
+    public:
+        UnexpectedGradeException(const std::string &message)
+            : std::range_error(message) {}
+    };
     size_t find(const task space[], size_t size, task findable);
     void copy(task *destination, task source[], size_t sourceSize);
-};
+}
 
 #endif
