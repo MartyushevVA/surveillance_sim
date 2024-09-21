@@ -41,9 +41,21 @@ public:
         // объединение всех разбитых на части работ (то есть после выполнения операции для
         // каждого студента должно остаться только по одной работе, если это возможно);
     }
-    task *fragmentation()
+    void fragmentation()
     {
-        // разбиение всех работ в стопке на отдельные листы;
+        if (isEmpty())
+            throw std::runtime_error("Стек пуст");
+        size_t initSize = this->size;
+        size_t pos = 0;
+        while (pos++ < initSize)
+        {
+            if (this->vector[pos].getNumOfSheets() == 1)
+                continue;
+            task *sheets = this->vector[pos].fragmentation();
+            for (size_t ind = 0; ind < this->vector[pos].getNumOfSheets(); ++ind)
+                *this += sheets[ind];
+            delete[] sheets;
+        }
     }
     task extractNextUngraded()
     {
@@ -53,7 +65,7 @@ public:
         while (this->vector[pos].getGrade())
             pos--;
         task item = this->vector[pos];
-        std::copy(this->vector[pos+1], this->vector[this->size], this->vector[pos]);
+        std::copy(this->vector[pos + 1], this->vector[this->size], this->vector[pos]);
         this->vector[--this->size] = task();
         return item;
     }

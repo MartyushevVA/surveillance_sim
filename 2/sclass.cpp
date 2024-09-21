@@ -72,6 +72,10 @@ public:
             sheets[pointer++] = task(name, 0, i, i);
         return sheets;
     }
+    int getNumOfSheets()
+    {
+        return this->last - this->first + 1;
+    }
 };
 
 void taskOut()

@@ -24,6 +24,7 @@ public:
     bool operator<(task);
     void evaluate(int);
     task *fragmentation();
+    int getNumOfSheets();
 };
 
 #endif
