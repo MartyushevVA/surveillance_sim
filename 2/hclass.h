@@ -1,10 +1,16 @@
 #ifndef HCLASS_H
 #define HCLASS_H
+#define ALLCTD 300
 
-#include <string>
+#include "alllibs.h"
+#include "sclass.h"
 
 class stack
 {
+private:
+    size_t size;
+    task vector[];
+
 public:
     stack();
     stack(size_t size, const task (&space)[]);

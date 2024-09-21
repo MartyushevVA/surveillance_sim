@@ -1,16 +1,21 @@
 #ifndef SCLASS_H
 #define SCLASS_H
 
-#include <algorithm>
-#include <stdexcept>
-#include <string>
+#include "alllibs.h"
+
 class task
 {
+private:
+    std::string name;
+    int grade;
+    size_t first;
+    size_t last;
+
 public:
     task();
     task(std::string name, int grade, size_t first, size_t last);
     task(std::string name);
-    std::string getName();
+    std::string getName() const;
     int getGrade() const;
     size_t getFirst() const;
     size_t getLast() const;
