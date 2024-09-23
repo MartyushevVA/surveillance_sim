@@ -114,7 +114,7 @@ task *task::fragmentation() const
     if (sheets == nullptr)
         throw std::runtime_error("Memory allocation failed.");
     size_t pointer = 0;
-    for (size_t i = first; i < last; i++)
+    for (size_t i = first; i < last + 1; i++)
         sheets[pointer++] = task(name, 0, i, i);
     sheets[0].grade = grade;
     return sheets;

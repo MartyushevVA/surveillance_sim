@@ -69,10 +69,11 @@ stack &stack::operator=(const stack &other)
     return *this;
 }
 
-void stack::operator+=(const task &t)
+stack &stack::operator+=(const task &t)
 {
     smoothResize();
     vector[size++] = t;
+    return *this;
 }
 
 std::ostream &operator<<(std::ostream &os, const stack &stack)
