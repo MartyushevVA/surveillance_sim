@@ -9,73 +9,69 @@ size_t ofuncs::find(const task space[], size_t size, task findable)
             return ind;
     throw TaskNotFoundException("Task not found in the provided space.");
 }
-void ofuncs::copy(task *destination, task source[], size_t sourceSize)
-{
-    if (destination == nullptr || source == nullptr)
-        throw std::runtime_error("Destination or source pointer is null.");
-    std::copy(source, source + sourceSize, destination);
-    delete[] source;
-}
 
-task::task()
-{
-    name = "none";
-    grade = 0;
-    first = 0;
-    last = 0;
-}
+task::task() {}
 
 task::task(std::string name, int grade, size_t first, size_t last)
 {
-    this->name = name;
-    this->grade = grade;
-    this->first = first;
-    this->last = last;
+    setName(name);
+    setGrade(grade);
+    setFirst(first);
+    setLast(last);
 }
 
-task::task(std::string name)
+task::task(std::string name) { setName(name); }
+
+std::string task::getName() const { return name_; }
+
+int task::getGrade() const { return grade_; }
+
+size_t task::getFirst() const { return first_; }
+
+size_t task::getLast() const { return last_; }
+
+void task::setName(std::string name) { name_ = name; }
+
+void task::setGrade(int grade)
 {
-    this->name = name;
-    this->grade = 0;
-    this->first = 0;
-    this->last = 0;
+    if (grade < 2 || grade > 5)
+        throw std::range_error("Out of range");
+    grade_ = grade;
 }
 
-std::string task::getName() const { return name; }
+void task::setFirst(size_t first)
+{
+    if (first < 1 || first > last_)
+        throw std::range_error("Out of range");
+    first_ = first;
+}
 
-int task::getGrade() const { return grade; }
-
-size_t task::getFirst() const { return first; }
-
-size_t task::getLast() const { return last; }
-
-void task::setName(std::string name) { this->name = name; }
-
-void task::setGrade(int grade) { this->grade = grade; }
-
-void task::setFirst(size_t first) { this->first = first; }
-
-void task::setLast(size_t last) { this->last = last; }
+void task::setLast(size_t last)
+{
+    if (last < 1 || last < first_)
+        throw std::range_error("Out of range");
+    last_ = last;
+}
 
 task task::operator+(const task &t) const
 {
-    bool conditions[2]{this->name != t.getName(), t.first != this->last + 1};
+    bool conditions[2]{name_ != t.getName(), t.first_ != last_ + 1};
     if (std::any_of(conditions, conditions + 2, [](bool cond)
                     { return cond; }))
         throw ofuncs::WrongPositioningException("Unable to combine these works.");
-    return task(this->name, this->grade, this->first, t.getLast());
+    return task(name_, grade_, first_, t.getLast());
 }
 
 bool task::operator==(const task &t) const
 {
-    return this->name == t.getName() && this->first == t.getFirst();
+    return name_ == t.getName() && first_ == t.getFirst();
 }
 
 bool task::operator<(const task &t) const
 {
-    if (this->name >= t.getName())
+    if (name_ >= t.getName())
         return false;
-    if (this->first >= t.getFirst())
+    if (first_ >= t.getFirst())
         return false;
     return true;
 }
@@ -105,27 +101,19 @@ void task::evaluate(int grade)
 {
     if (grade < 2 && grade > 5)
         throw ofuncs::UnexpectedGradeException("Unable to mark work like that.");
-    this->grade = grade;
+    grade_ = grade;
 }
 
 task *task::fragmentation() const
 {
-    task *sheets = new task[last - first + 1];
+    task *sheets = new task[last_ - first_ + 1];
     if (sheets == nullptr)
         throw std::runtime_error("Memory allocation failed.");
     size_t pointer = 0;
-    for (size_t i = first; i < last + 1; i++)
-        sheets[pointer++] = task(name, 0, i, i);
-    sheets[0].grade = grade;
+    for (size_t i = first_; i < last_ + 1; i++)
+        sheets[pointer++] = task(name_, 0, i, i);
+    sheets[0].grade_ = grade_;
     return sheets;
 }
 
-int task::getNumOfSheets() const { return this->last - this->first + 1; }
-
-void taskOut()
-{
-}
-
-void taskIn()
-{
-}
+int task::getNumOfSheets() const { return last_ - first_ + 1; }

@@ -109,6 +109,7 @@ void dsimple()
         break;
     }
     default:
+        delete[] arr;
         return;
     }
 }
@@ -130,7 +131,7 @@ void dhard()
     }
     case 1: // добавление работы
     {
-        task elem = task();
+        task elem = {};
         std::cout << "Введите добавляемую работу: ";
         std::cin >> elem;
         std::cout << "Результат: " << (arr += elem) << std::endl;

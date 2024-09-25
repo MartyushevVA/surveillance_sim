@@ -10,9 +10,9 @@ class stack
     friend std::istream &operator>>(std::istream &in, stack &stack);
 
 private:
-    size_t size;
-    size_t allctd;
-    task *vector;
+    size_t size_;
+    size_t allctd_;
+    task *vector_;
 
 public:
     stack();
