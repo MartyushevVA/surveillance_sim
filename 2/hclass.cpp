@@ -76,13 +76,14 @@ stack &stack::operator+=(const task &t)
     return *this;
 }
 
-std::ostream &operator<<(std::ostream &os, const stack &stack)
+std::ostream &operator<<(std::ostream &os, const stack &st)
 {
     std::string output;
+    stack copied = stack(st);
     task item;
-    for (size_t num = 0; num < stack.size_; num++)
+    for (size_t num = 0; num < st.size_; num++)
     {
-        item = stack.vector_[num];
+        item = copied.pop();
         output += item.getName() += std::string(": ") += std::to_string(item.getGrade()) += std::string(" ") += std::to_string(item.getFirst()) += std::string("<->") += std::to_string(item.getLast()) += "\n";
     }
     return os << output;
