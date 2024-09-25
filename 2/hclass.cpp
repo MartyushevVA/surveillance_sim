@@ -57,10 +57,11 @@ stack::~stack()
     delete[] vector_;
 }
 
-stack &stack::operator=(const stack &other)
+stack &stack::operator=(stack &&other)
 {
     if (this != &other)
     {
+        delete[] vector_;
         size_ = other.size_;
         allctd_ = other.allctd_;
         vector_ = new task[allctd_];
