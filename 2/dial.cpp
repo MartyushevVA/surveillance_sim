@@ -109,7 +109,6 @@ void dsimple()
         break;
     }
     default:
-        delete[] arr;
         return;
     }
 }

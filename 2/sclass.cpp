@@ -1,6 +1,6 @@
 #include "sclass.h"
 
-size_t ofuncs::find(const task space[], size_t size, task findable)
+size_t ofuncs::find(const task space[], size_t size, const task& findable)
 {
     if (space == nullptr)
         throw std::runtime_error("The task space pointer is null.");
@@ -41,14 +41,14 @@ void task::setGrade(int grade)
 
 void task::setFirst(size_t first)
 {
-    if (first < 1 || first > last_)
+    if (last_ != 0 && last_ < first)
         throw std::range_error("Out of range");
     first_ = first;
 }
 
 void task::setLast(size_t last)
 {
-    if (last < 1 || last < first_)
+    if (first_ > last)
         throw std::range_error("Out of range");
     last_ = last;
 }
@@ -99,19 +99,22 @@ std::istream &operator>>(std::istream &in, task &task)
 
 void task::evaluate(int grade)
 {
-    if (grade < 2 && grade > 5)
+    if (grade < 2 || grade > 5)
         throw ofuncs::UnexpectedGradeException("Unable to mark work like that.");
     grade_ = grade;
 }
 
-task *task::fragmentation() const
+task* task::fragmentation() const
 {
-    task *sheets = new task[last_ - first_ + 1];
+    task* sheets = new task[last_ - first_ + 1];
     if (sheets == nullptr)
         throw std::runtime_error("Memory allocation failed.");
     size_t pointer = 0;
-    for (size_t i = first_; i < last_ + 1; i++)
+    for (size_t i = first_; i <= last_; i++)
+    {
         sheets[pointer++] = task(name_, 0, i, i);
+        std::cout<<i<<std::endl;
+    }
     sheets[0].grade_ = grade_;
     return sheets;
 }

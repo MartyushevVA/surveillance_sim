@@ -8,8 +8,8 @@ class task
 private:
     std::string name_ = "none";
     int grade_ = 0;
-    size_t first_ = 1;
-    size_t last_ = 1;
+    size_t first_ = 0;
+    size_t last_ = 0;
 
 public:
     task();
@@ -57,7 +57,7 @@ namespace ofuncs
         UnexpectedGradeException(const std::string &message)
             : std::range_error(message) {}
     };
-    size_t find(const task space[], size_t size, task findable);
+    size_t find(const task space[], size_t size, const task &findable);
 }
 
 std::ostream &operator<<(std::ostream &os, const task &task);
