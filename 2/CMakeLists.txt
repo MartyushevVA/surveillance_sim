@@ -2,7 +2,7 @@ cmake_minimum_required(VERSION 3.16)
 project(lab2)
 set(CMAKE_CXX_STANDARD 20)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
-set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Wall -Wextra -lgtest -lgtest_main -pthread")
+set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Wall -Wextra -lgtest -lgtest_main -pthread -fprofile-arcs -ftest-coverage")
 
 
 add_library(simple_class sclass.h sclass.cpp alllibs.h)

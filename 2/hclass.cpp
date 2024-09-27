@@ -1,19 +1,17 @@
 #include "hclass.h"
 
-void stack::smoothResize(size_t newAllctd = 0)
+void stack::smoothResize(size_t newAllctd)
 {
-    if (!newAllctd)
+    if (newAllctd == 0)
     {
         if (size_ * 2 < allctd_)
             newAllctd = allctd_ / 2;
-        if (size_ > 4 * allctd_ / 5)
+        else if (size_ > 4 * allctd_ / 5)
             newAllctd = allctd_ * 2;
         else
             return;
     }
-    task *newArray = new task[newAllctd]{};
-    if (newArray == nullptr)
-        throw std::runtime_error("Memory allocation failed.");
+    task *newArray = new task[newAllctd];
     std::copy(vector_, vector_ + size_, newArray);
     delete[] vector_;
     vector_ = newArray;
@@ -24,7 +22,7 @@ stack::stack()
 {
     vector_ = new task[10]{};
     size_ = 0;
-    allctd_ = 0;
+    allctd_ = 10;
 }
 
 stack::stack(size_t size, const task (&space)[])
@@ -57,7 +55,7 @@ stack::~stack()
     delete[] vector_;
 }
 
-stack &stack::operator=(stack &&other)
+stack &stack::operator=(const stack &other)
 {
     if (this != &other)
     {
@@ -70,9 +68,25 @@ stack &stack::operator=(stack &&other)
     return *this;
 }
 
+stack &stack::operator=(stack &&other) noexcept
+{
+    if (this != &other)
+    {
+        delete[] vector_;
+        size_ = other.size_;
+        allctd_ = other.allctd_;
+        vector_ = other.vector_;
+        other.size_ = 0;
+        other.allctd_ = 0;
+        other.vector_ = nullptr;
+    }
+    return *this;
+}
+
 stack &stack::operator+=(const task &t)
 {
-    smoothResize();
+    if (size_ >= allctd_)
+        smoothResize(allctd_ * 2);
     vector_[size_++] = t;
     return *this;
 }
@@ -98,7 +112,6 @@ std::istream &operator>>(std::istream &in, stack &stack)
     for (size_t ind = 0; ind < size; ind++)
     {
         in >> item;
-        stack.smoothResize();
         stack += item;
     }
     return in;
@@ -108,9 +121,7 @@ task stack::pop()
 {
     if (size_ == 0)
         throw ofuncs::EmptyStackException("Current stack is empty.");
-    task item = vector_[--size_];
-    vector_[size_] = task();
-    return item;
+    return vector_[--size_];
 }
 
 int stack::fullness() const { return size_ == 0 ? 0 : (size_ == allctd_ ? 2 : 1); }
@@ -131,6 +142,7 @@ void stack::unioning()
         else
             buf[edge++] = item;
     }
+    smoothResize(edge);
     std::copy(buf, buf + edge, vector_);
     delete[] buf;
     size_ = edge;
@@ -139,8 +151,8 @@ void stack::unioning()
 void stack::fragmentation()
 {
     size_t bufallctd = allctd_;
-    task *buf = new task[bufallctd]{};
-    if (buf == nullptr)
+    task *buf = new task[bufallctd];
+    if (!buf)
         throw std::runtime_error("Memory allocation failed.");
     task item;
     size_t edge = 0;
@@ -148,23 +160,25 @@ void stack::fragmentation()
     {
         item = this->pop();
         task *sheets = item.fragmentation();
-        std::for_each(sheets, sheets + item.getNumOfSheets() * sizeof(task), [&buf, &edge, &bufallctd, &sheets](task sheet)
-                      {
+        size_t numOfSheets = item.getNumOfSheets();
+        for (size_t i = 0; i < numOfSheets; ++i)
+        {
             if (edge == bufallctd)
             {
-                bufallctd*=2;
-                task* newBuf = new task[bufallctd]{};
-                if (newBuf == nullptr)
+                bufallctd *= 2;
+                task* newBuf = new task[bufallctd];
+                if (!newBuf)
                 {
                     delete[] buf;
                     delete[] sheets;
                     throw std::runtime_error("Memory allocation failed.");
                 }
-                std::copy(buf, buf+edge, newBuf);
+                std::copy(buf, buf + edge, newBuf);
                 delete[] buf;
                 buf = newBuf;
             }
-            buf[edge++] = sheet; });
+            buf[edge++] = sheets[i];
+        }
         delete[] sheets;
     }
     smoothResize(2 * edge);
@@ -176,7 +190,7 @@ void stack::fragmentation()
 task stack::extractNextUngraded()
 {
     task *buf = new task[allctd_]{};
-    if (buf == nullptr)
+    if (!buf)
         throw std::runtime_error("Memory allocation failed.");
     task item;
     size_t edge = 0;
@@ -190,9 +204,11 @@ task stack::extractNextUngraded()
         else
         {
             std::for_each(buf, buf + edge, [this](task t)
-                          { *this += (t); });
+            { *this += t; });
+            delete[] buf;
             return item;
         }
     }
+    delete[] buf;
     throw ofuncs::TaskNotFoundException("There's no ungraded works.");
 }

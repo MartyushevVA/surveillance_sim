@@ -20,7 +20,8 @@ public:
     stack(const stack &other);
     stack(stack &&other);
     ~stack();
-    stack &operator=(stack &&other);
+    stack &operator=(const stack &other);
+    stack &operator=(stack &&other) noexcept;
     stack &operator+=(const task &t);
     task pop();
     int fullness() const;
