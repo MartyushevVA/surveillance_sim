@@ -77,11 +77,11 @@ bool task::operator==(const task &t) const
 
 bool task::operator<(const task &t) const
 {
-    if (name_ >= t.getName())
-        return false;
-    if (first_ >= t.getFirst())
-        return false;
-    return true;
+    if (name_ < t.getName())
+        return true;
+    if (name_ == t.getName() && first_ < t.getFirst())
+        return true;
+    return false;
 }
 
 std::ostream &operator<<(std::ostream &os, const task &task)

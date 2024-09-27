@@ -6,7 +6,7 @@
 class task
 {
 private:
-    std::string name_ = "none";
+    std::string name_ = "";
     int grade_ = 0;
     size_t first_ = 0;
     size_t last_ = 0;
