@@ -1,6 +1,6 @@
 #include "sclass.h"
 
-size_t ofuncs::find(const task space[], size_t size, const task& findable)
+size_t ofuncs::find(const task space[], size_t size, const task &findable)
 {
     if (space == nullptr)
         throw std::runtime_error("The task space pointer is null.");
@@ -34,7 +34,7 @@ void task::setName(std::string name) { name_ = name; }
 
 void task::setGrade(int grade)
 {
-    if (grade < 2 || grade > 5)
+    if ((grade < 2 || grade > 5) && grade != 0)
         throw std::range_error("Out of range");
     grade_ = grade;
 }
@@ -104,16 +104,16 @@ void task::evaluate(int grade)
     grade_ = grade;
 }
 
-task* task::fragmentation() const
+task *task::fragmentation() const
 {
-    task* sheets = new task[last_ - first_ + 1];
+    task *sheets = new task[last_ - first_ + 1];
     if (sheets == nullptr)
         throw std::runtime_error("Memory allocation failed.");
     size_t pointer = 0;
     for (size_t i = first_; i <= last_; i++)
     {
         sheets[pointer++] = task(name_, 0, i, i);
-        std::cout<<i<<std::endl;
+        std::cout << i << std::endl;
     }
     sheets[0].grade_ = grade_;
     return sheets;
