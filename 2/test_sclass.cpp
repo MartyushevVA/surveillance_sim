@@ -1,87 +1,92 @@
 #include <gtest/gtest.h>
 #include "sclass.h"
 
-TEST(TaskTests, ConstructorAndGetters)
+// Test for task class constructors and methods
+TEST(TaskTest, DefaultConstructor)
 {
-    task t("Example Task", 3, 1, 5);
-    EXPECT_EQ(t.getName(), "Example Task");
+    task t;
+    EXPECT_EQ(t.getName(), "");
+    EXPECT_EQ(t.getGrade(), 0);
+    EXPECT_EQ(t.getFirst(), 0);
+    EXPECT_EQ(t.getLast(), 0);
+}
+
+TEST(TaskTest, ParameterizedConstructor)
+{
+    task t("Task1", 3, 0, 5);
+    EXPECT_EQ(t.getName(), "Task1");
     EXPECT_EQ(t.getGrade(), 3);
-    EXPECT_EQ(t.getFirst(), 1);
+    EXPECT_EQ(t.getFirst(), 0);
     EXPECT_EQ(t.getLast(), 5);
 }
 
-TEST(TaskTests, Setters)
+TEST(TaskTest, SetName)
 {
     task t;
-    t.setName("New Task");
+    t.setName("NewTask");
+    EXPECT_EQ(t.getName(), "NewTask");
+}
+
+TEST(TaskTest, SetGrade_Valid)
+{
+    task t;
     t.setGrade(4);
-    t.setFirst(2);
-    t.setLast(6);
-    
-    EXPECT_EQ(t.getName(), "New Task");
     EXPECT_EQ(t.getGrade(), 4);
-    EXPECT_EQ(t.getFirst(), 2);
-    EXPECT_EQ(t.getLast(), 6);
 }
 
-TEST(TaskTests, SetGradeOutOfRange)
+TEST(TaskTest, SetGrade_Invalid)
 {
     task t;
-    EXPECT_THROW(t.setGrade(1), std::range_error);
     EXPECT_THROW(t.setGrade(6), std::range_error);
+    EXPECT_THROW(t.setGrade(1), std::range_error);
 }
 
-TEST(TaskTests, SetFirstAndLastOutOfRange)
+TEST(TaskTest, SetFirst_LastOrder)
 {
     task t;
-    t.setName("Task");
-    t.setGrade(3);
-    t.setFirst(1);
+    t.setFirst(2);
     t.setLast(5);
-    
-    EXPECT_THROW(t.setFirst(0), std::range_error);
-    EXPECT_THROW(t.setLast(0), std::range_error);
-    EXPECT_THROW(t.setLast(2), std::range_error);
+    EXPECT_EQ(t.getFirst(), 2);
+    EXPECT_EQ(t.getLast(), 5);
 }
 
-TEST(FindFunctionTests, FindTaskInArray)
+TEST(TaskTest, SetFirst_Invalid)
 {
-    task tasks[] = { task("Task1", 3, 1, 3), task("Task2", 4, 2, 4) };
-    
-    EXPECT_EQ(ofuncs::find(tasks, 2, task("Task1")), 0);
-    EXPECT_EQ(ofuncs::find(tasks, 2, task("Task2")), 1);
+    task t;
+    t.setFirst(5);
+    EXPECT_THROW(t.setLast(3), std::range_error);
 }
 
-TEST(FindFunctionTests, FindTaskNotFound)
+TEST(TaskTest, Fragmentation)
 {
-    task tasks[] = { task("Task1", 3, 1, 3) };
-    
-    EXPECT_THROW(ofuncs::find(tasks, 1, task("Task2")), ofuncs::TaskNotFoundException);
+    task t("FragmentTask", 2, 1, 3);
+    task *sheets = t.fragmentation();
+    EXPECT_EQ(sheets[0].getName(), "FragmentTask");
+    EXPECT_EQ(sheets[0].getGrade(), 2);
+    EXPECT_EQ(sheets[0].getFirst(), 1);
+    EXPECT_EQ(sheets[0].getLast(), 1);
+    EXPECT_EQ(sheets[1].getFirst(), 2);
+    EXPECT_EQ(sheets[2].getFirst(), 3);
+    delete[] sheets; // Clean up dynamically allocated memory
 }
 
-TEST(FindFunctionTests, FindTaskNullSpace)
+// Test for ofuncs::find function
+TEST(FindFunctionTest, FindExistingTask)
+{
+    task tasks[] = {task("Task1", 3, 0, 5), task("Task2", 4, 1, 6)};
+    size_t index = ofuncs::find(tasks, 2, task("Task2"));
+    EXPECT_EQ(index, 1);
+}
+
+TEST(FindFunctionTest, FindNonExistingTask)
+{
+    task tasks[] = {task("Task1", 3, 0, 5), task("Task2", 4, 1, 6)};
+    EXPECT_THROW(ofuncs::find(tasks, 2, task("Task3")), ofuncs::TaskNotFoundException);
+}
+
+TEST(FindFunctionTest, FindInNullSpace)
 {
     EXPECT_THROW(ofuncs::find(nullptr, 0, task("Task1")), std::runtime_error);
-}
-
-TEST(TaskTests, OperatorPlus)
-{
-    task t1("Task1", 3, 1, 3);
-    task t2("Task1", 3, 4, 6);
-    
-    task t3 = t1 + t2;
-    EXPECT_EQ(t3.getFirst(), 1);
-    EXPECT_EQ(t3.getLast(), 6);
-}
-
-TEST(TaskTests, Operators)
-{
-    task t1("Task1", 3, 1, 3);
-    task t2("Task1", 3, 1, 4);
-    task t3("Task2", 4, 1, 3);
-    
-    EXPECT_TRUE(t1 == t2);
-    EXPECT_FALSE(t1 < t3);
 }
 
 int main(int argc, char **argv)

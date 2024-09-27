@@ -20,6 +20,14 @@ task::task(std::string name, int grade, size_t first, size_t last)
     setLast(last);
 }
 
+task::task(const char name[], int grade, size_t first, size_t last)
+{
+    setName(name);
+    setGrade(grade);
+    setFirst(first);
+    setLast(last);
+}
+
 task::task(std::string name) { setName(name); }
 
 std::string task::getName() const { return name_; }
