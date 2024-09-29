@@ -1,50 +1,110 @@
 #include <gtest/gtest.h>
 #include "hclass.h"
 
-class StackTest : public ::testing::Test
-{
+class StackTest : public ::testing::Test{
 protected:
-    stack* myStack;
-    void SetUp() override
-    {
-        myStack = new stack();
-    }
-    void TearDown() override
-    {
-        delete myStack;
+    stack s;
+    task t1, t2, t3;
+
+    void SetUp() override{
+        t1 = task("TaskA");
+        t2 = task("TaskB", 3, 2, 6);
+        t3 = task("TaskB", 0, 7, 9);
+        s += t1;
+        s += t2;
     }
 };
-
-TEST_F(StackTest, SmoothResize_EmptyStack)
-{
-    EXPECT_NO_THROW(myStack->smoothResize(0));
-    EXPECT_EQ(myStack->fullness(), 0);
+TEST_F(StackTest, DefaultConstructor){
+    stack emptyStack;
+    EXPECT_EQ(emptyStack.getSize(), 0);
+    EXPECT_EQ(emptyStack.getAllctd(), 10);
 }
-
-TEST_F(StackTest, SmoothResize_AfterAddingItem)
-{
-    task t;
-    myStack->operator+=(t);
-    EXPECT_NO_THROW(myStack->smoothResize(0));
-    EXPECT_EQ(myStack->fullness(), 1);
+TEST_F(StackTest, CopyConstructor){
+    stack copyStack(s);
+    EXPECT_EQ(copyStack.getSize(), s.getSize());
+    EXPECT_EQ(copyStack.getAllctd(), s.getAllctd());
+    EXPECT_NE(copyStack.getVector(), s.getVector());
 }
-
-TEST_F(StackTest, SmoothResize_Downsize)
-{
-    task t1, t2, t3;
-    myStack->operator+=(t1);
-    myStack->operator+=(t2);
-    myStack->operator+=(t3);
-    myStack->pop();
-    EXPECT_NO_THROW(myStack->smoothResize(0));
+TEST_F(StackTest, MoveConstructor){
+    stack movedStack(std::move(s));
+    EXPECT_EQ(movedStack.getSize(), 2);
+    EXPECT_EQ(s.getSize(), 0);
 }
-
-TEST_F(StackTest, SmoothResize_MemoryAllocationFailure)
-{
-    EXPECT_THROW({throw std::bad_alloc();}, std::bad_alloc);
+TEST_F(StackTest, AssignmentOperator){
+    stack newStack;
+    newStack = s;
+    EXPECT_EQ(newStack.getSize(), s.getSize());
+    EXPECT_NE(newStack.getVector(), s.getVector());
 }
-
-TEST_F(StackTest, Pop_EmptyStack)
-{
-    EXPECT_THROW(myStack->pop(), ofuncs::EmptyStackException);
+TEST_F(StackTest, MoveAssignmentOperator){
+    stack newStack;
+    newStack = std::move(s);
+    EXPECT_EQ(newStack.getSize(), 2);
+    EXPECT_EQ(s.getSize(), 0);
+}
+TEST_F(StackTest, PushOperation){
+    s += t3;
+    EXPECT_EQ(s.getSize(), 3);
+}
+TEST_F(StackTest, PopOperation){
+    task poppedTask = s.pop();
+    EXPECT_EQ(poppedTask.getName(), "TaskB");
+    EXPECT_EQ(s.getSize(), 1);
+    poppedTask = s.pop();
+    EXPECT_EQ(poppedTask.getName(), "TaskA");
+    EXPECT_EQ(s.getSize(), 0);
+}
+TEST_F(StackTest, PopFromEmptyStack){
+    while(s.getSize())
+        s.pop();
+    EXPECT_THROW(s.pop(), ofuncs::EmptyStackException);
+}
+TEST_F(StackTest, UnioningTest){
+    s += t3;
+    s.unioning();
+    EXPECT_EQ(s.getSize(), 2);
+}
+TEST_F(StackTest, FragmentationTest){
+    s.fragmentation();
+    EXPECT_EQ(s.getSize(), 6);
+}
+TEST_F(StackTest, ExtractNextUngraded){
+    task t1("TaskA", 0, 3, 7);
+    task t2("TaskB", 5, 2, 7);
+    s += t1;
+    s += t2;
+    task extractedTask = s.extractNextUngraded();
+    EXPECT_EQ(extractedTask.getName(), "TaskA");
+    EXPECT_EQ(s.getSize(), 3);
+}
+TEST_F(StackTest, ExtractFromEmptyStack){
+    while(s.getSize())
+        s.pop();
+    EXPECT_THROW(s.extractNextUngraded(), ofuncs::EmptyStackException);
+}
+TEST_F(StackTest, ExtractFromAllGradedStack){
+    task ts[2] = {task("TaskA", 2, 3, 7), task("TaskB", 5, 2, 7)};
+    stack ss(2, ts);
+    EXPECT_THROW(ss.extractNextUngraded(), ofuncs::TaskNotFoundException);
+}
+TEST_F(StackTest, CheckFullness){
+    EXPECT_EQ(s.fullness(), 2);
+}
+TEST_F(StackTest, WrongEvaluating){
+    EXPECT_THROW(s.getVector()[0].evaluate(-1), ofuncs::UnexpectedGradeException);
+}
+TEST_F(StackTest, OutputStreamOperator) {
+    std::ostringstream oss;
+    oss << s;
+    std::string expectedOutput =
+        "TaskB: 3 2<->6\n"
+        "TaskA: 0 0<->0\n";
+    EXPECT_EQ(oss.str(), expectedOutput);
+}
+TEST_F(StackTest, InputStreamOperator) {
+    std::istringstream iss("2\nTaskA 2 3 4\nTaskB 3 4 5\n");
+    iss >> s;
+    EXPECT_EQ(s.getSize(), 4);
+    EXPECT_EQ(s.getVector()[2].getName(), "TaskA");
+    EXPECT_EQ(s.getVector()[3].getName(), "TaskB");
 }

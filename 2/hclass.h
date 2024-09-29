@@ -20,6 +20,9 @@ public:
     stack(const stack &other);
     stack(stack &&other);
     ~stack();
+    size_t getSize() const;
+    size_t getAllctd() const;
+    task* getVector() const;
     stack &operator=(const stack &other);
     stack &operator=(stack &&other) noexcept;
     stack &operator+=(const task &t);
