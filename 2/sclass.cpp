@@ -102,7 +102,7 @@ std::istream &operator>>(std::istream &in, task &task) {
     int grade;
     size_t first, last;
     in >> name >> grade >> first >> last;
-    if (in) {
+    if (in){
         task.setName(name);
         task.setGrade(grade);
         task.setFirst(first);

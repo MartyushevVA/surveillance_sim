@@ -15,7 +15,7 @@ public:
     task();
     task(std::string name, int grade, size_t first, size_t last);
     task(const char name[], int grade, size_t first, size_t last);
-    task(std::string name);
+    explicit task(std::string name);
     std::string getName() const;
     int getGrade() const;
     size_t getFirst() const;

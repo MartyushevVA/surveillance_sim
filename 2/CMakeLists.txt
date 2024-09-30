@@ -31,3 +31,7 @@ add_test(NAME MyTests COMMAND test_class)
 # build/test_class
 # lcov --directory build/CMakeFiles/simple(complex)_class.dir/ --capture --output-file coverage.info
 # genhtml coverage.info --output-directory out
+# firefox out/index.html
+
+# doxygen
+# firefox doxygen/html/index.html

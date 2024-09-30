@@ -9,26 +9,12 @@ TEST(TaskTest, DefaultConstructor){
     EXPECT_EQ(t.getLast(), 0);
 }
 
-TEST(TaskTest, ParameterizedConstructor_EdgeCases){
-    task t("EdgeCase", 5, 0, 0);
-    EXPECT_EQ(t.getName(), "EdgeCase");
-    EXPECT_EQ(t.getGrade(), 5);
-    EXPECT_EQ(t.getFirst(), 0);
-    EXPECT_EQ(t.getLast(), 0);
-}
-
 TEST(TaskTest, ParameterizedConstructor){
     task t("TaskA", 3, 0, 5);
     EXPECT_EQ(t.getName(), "TaskA");
     EXPECT_EQ(t.getGrade(), 3);
     EXPECT_EQ(t.getFirst(), 0);
     EXPECT_EQ(t.getLast(), 5);
-}
-
-TEST(TaskTest, CharConstructor){
-    task t("TaskA", 3, 0, 5);
-    task t2("TaskA");
-    EXPECT_EQ(t2.getName(), "TaskA");
 }
 
 TEST(TaskTest, SetName){

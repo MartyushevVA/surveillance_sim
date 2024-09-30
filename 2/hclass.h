@@ -18,7 +18,7 @@ public:
     stack();
     stack(size_t size, const task (&space)[]);
     stack(const stack &other);
-    stack(stack &&other);
+    stack(stack &&other) noexcept;
     ~stack();
     size_t getSize() const;
     size_t getAllctd() const;
@@ -26,6 +26,10 @@ public:
     stack &operator=(const stack &other);
     stack &operator=(stack &&other) noexcept;
     stack &operator+=(const task &t);
+    stack &operator++();
+    stack operator++(int);
+    stack &operator--();
+    stack operator--(int);
     task pop();
     int fullness() const;
     void unioning();

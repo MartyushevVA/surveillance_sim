@@ -38,7 +38,7 @@ stack::stack(const stack &other){
     std::copy(other.vector_, other.vector_ + other.size_, vector_);
 }
 
-stack::stack(stack &&other){
+stack::stack(stack &&other) noexcept{
     size_ = other.size_;
     allctd_ = other.allctd_;
     vector_ = other.vector_;
@@ -79,6 +79,28 @@ stack &stack::operator=(stack &&other) noexcept{
         other.vector_ = nullptr;
     }
     return *this;
+}
+
+stack &stack::operator++(){
+    smoothResize(allctd_+1);
+    return *this;
+}
+
+stack stack::operator++(int){
+    stack temp = *this;
+    smoothResize(allctd_+1);
+    return temp;
+}
+
+stack &stack::operator--(){
+    smoothResize(allctd_-1);
+    return *this;
+}
+
+stack stack::operator--(int){
+    stack temp = *this;
+    smoothResize(allctd_-1);
+    return temp;
 }
 
 stack &stack::operator+=(const task &t){
