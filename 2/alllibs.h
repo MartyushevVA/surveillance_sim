@@ -7,5 +7,6 @@
 #include <iostream>
 #include <limits>
 #include <functional>
+#include <compare>
 
 #endif

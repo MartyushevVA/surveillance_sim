@@ -30,6 +30,7 @@ public:
     stack operator++(int);
     stack &operator--();
     stack operator--(int);
+    const task &operator[](size_t position);
     task pop();
     int fullness() const;
     void unioning();

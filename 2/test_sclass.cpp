@@ -139,10 +139,22 @@ TEST(TaskTest, OperatorLess_False){
     EXPECT_FALSE(t1 < t2);
 }
 
-TEST(TaskTest, OperatorLess_EdgeCases){
+TEST(TaskTest, SpaceShipOperatorLessByName){
     task t1("TaskA", 3, 1, 5);
     task t2("TaskB", 3, 1, 5);
-    EXPECT_TRUE(t1 < t2);
+    EXPECT_EQ(t1<=>t2, std::strong_ordering::less);
+}
+
+TEST(TaskTest, SpaceShipOperatorGreaterByFirst){
+    task t1("TaskA", 3, 4, 5);
+    task t2("TaskA", 3, 1, 5);
+    EXPECT_EQ(t1<=>t2, std::strong_ordering::greater);
+}
+
+TEST(TaskTest, SpaceShipOperatorEqual){
+    task t1("TaskA", 3, 1, 5);
+    task t2("TaskA", 3, 1, 7);
+    EXPECT_EQ(t1<=>t2, std::strong_ordering::equal);
 }
 
 TEST(FindFunctionTest, FindExistingTask){

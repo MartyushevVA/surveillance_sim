@@ -14,7 +14,6 @@ private:
 public:
     task();
     task(std::string name, int grade, size_t first, size_t last);
-    task(const char name[], int grade, size_t first, size_t last);
     explicit task(std::string name);
     std::string getName() const;
     int getGrade() const;
@@ -27,6 +26,7 @@ public:
     task operator+(const task &t) const;
     bool operator==(const task &t) const;
     bool operator<(const task &t) const;
+    std::strong_ordering operator<=>(const task &t) const;
     void evaluate(int grade);
     task *fragmentation() const;
     int getNumOfSheets() const;

@@ -109,6 +109,10 @@ stack &stack::operator+=(const task &t){
     return *this;
 }
 
+const task& stack::operator[](size_t position){
+    return vector_[position];
+}
+
 std::ostream &operator<<(std::ostream &os, const stack &st){
     std::string output;
     stack copied = stack(st);

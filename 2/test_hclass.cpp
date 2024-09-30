@@ -63,6 +63,9 @@ TEST_F(StackTest, BackDecrementOperator){
     EXPECT_EQ(s.getAllctd(), 4);
     EXPECT_EQ((--s).getAllctd(), 3);
 }
+TEST_F(StackTest, Indexation){
+    EXPECT_EQ(s[0].getName(), "TaskA");
+}
 TEST_F(StackTest, PushOperation){
     s += t3;
     EXPECT_EQ(s.getSize(), 3);

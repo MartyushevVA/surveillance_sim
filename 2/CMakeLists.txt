@@ -27,11 +27,9 @@ add_test(NAME MyTests COMMAND test_class)
 
 # rm -rf build
 # cmake -S . -DCOMPLEX_CLASS=OFF(ON) -B build
-# cmake --build build
-# build/test_class
-# lcov --directory build/CMakeFiles/simple(complex)_class.dir/ --capture --output-file coverage.info
-# genhtml coverage.info --output-directory out
-# firefox out/index.html
+# cmake --build build; build/test_class
+# lcov --directory build/CMakeFiles/simple(complex)_class.dir/ --capture --output-file coverage.info; genhtml coverage.info --output-directory out; firefox out/index.html
 
-# doxygen
-# firefox doxygen/html/index.html
+# doxygen; firefox doxygen/html/index.html
+
+# --exclude-throw-branches gcovr

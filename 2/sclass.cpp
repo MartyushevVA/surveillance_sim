@@ -18,13 +18,6 @@ task::task(std::string name, int grade, size_t first, size_t last){
     setLast(last);
 }
 
-task::task(const char name[], int grade, size_t first, size_t last){
-    setName(name);
-    setGrade(grade);
-    setFirst(first);
-    setLast(last);
-}
-
 task::task(std::string name) { setName(name); }
 
 std::string task::getName() const { return name_; }
@@ -72,6 +65,12 @@ bool task::operator<(const task &t) const {
     if (name_ == t.getName() && first_ < t.getFirst())
         return true;
     return false;
+}
+
+std::strong_ordering task::operator<=>(const task &t) const {
+    if (auto cmp = name_ <=> t.getName(); cmp != 0)
+        return cmp;
+    return first_ <=> t.getFirst();
 }
 
 void task::evaluate(int grade) {
