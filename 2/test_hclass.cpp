@@ -14,37 +14,38 @@ protected:
         s += t2;
     }
 };
-TEST_F(StackTest, DefaultConstructor){
+TEST_F(StackTest, DefaultConstructor) {
     stack emptyStack;
     EXPECT_EQ(emptyStack.getSize(), 0);
     EXPECT_EQ(emptyStack.getAllctd(), 10);
 }
-TEST_F(StackTest, CopyConstructor){
+
+TEST_F(StackTest, CopyConstructor) {
     stack ss = s;
     EXPECT_EQ(ss.getSize(), s.getSize());
     EXPECT_EQ(ss.getAllctd(), s.getAllctd());
     EXPECT_NE(ss.getVector(), s.getVector());
 }
-/*TEST_F(StackTest, MoveConstructorTransfersOwnership) {
-    stack ss(s);
-    stack sss = ss;
-    ss = stack();
+
+TEST_F(StackTest, MoveConstructorTransfersOwnership) {
+    stack ss = std::move(s);
     EXPECT_EQ(s.getSize(), 0);
     EXPECT_GT(ss.getSize(), 0);
-}*/
-TEST_F(StackTest, AssignmentOperator){
+}
+
+TEST_F(StackTest, AssignmentOperator) {
     stack ss;
     ss = s;
     EXPECT_EQ(ss.getSize(), s.getSize());
     EXPECT_NE(ss.getVector(), s.getVector());
 }
-/*TEST_F(StackTest, MoveAssignmentTransfersOwnership) {
+
+TEST_F(StackTest, MoveAssignmentTransfersOwnership) {
     stack ss;
-    ss = s;
-    ss = stack();
+    ss = std::move(s);
     EXPECT_EQ(s.getAllctd(), 0);
     EXPECT_GT(ss.getAllctd(), 0);
-}*/
+}
 TEST_F(StackTest, IncrementOperator){
     EXPECT_EQ((s++).getAllctd(), 2);
     EXPECT_EQ(s.getAllctd(), 3);

@@ -18,11 +18,7 @@ void stack::smoothResize(size_t newAllctd = 0){
     allctd_ = newAllctd;
 }
 
-stack::stack(){
-    size_ = 0;
-    allctd_ = 10;
-    vector_ = new task[allctd_];
-}
+stack::stack() {}
 
 stack::stack(size_t size, const task (&space)[]){
     size_ = size;
@@ -109,7 +105,11 @@ stack &stack::operator+=(const task &t){
     return *this;
 }
 
-const task& stack::operator[](size_t position){
+const task& stack::operator[](size_t position) const{
+    return vector_[position];
+}
+
+task& stack::operator[](size_t position){
     return vector_[position];
 }
 

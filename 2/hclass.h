@@ -10,9 +10,9 @@ class stack
     friend std::istream &operator>>(std::istream &in, stack &stack);
 
 private:
-    size_t size_;
-    size_t allctd_;
-    task *vector_;
+    size_t size_ = 0;
+    size_t allctd_ = 10;
+    task *vector_ = new task[allctd_];
 
 public:
     stack();
@@ -30,7 +30,8 @@ public:
     stack operator++(int);
     stack &operator--();
     stack operator--(int);
-    const task &operator[](size_t position);
+    const task &operator[](size_t position) const;
+    task &operator[](size_t position);
     task pop();
     int fullness() const;
     void unioning();
