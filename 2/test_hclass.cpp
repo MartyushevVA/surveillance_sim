@@ -19,27 +19,23 @@ TEST_F(StackTest, DefaultConstructor) {
     EXPECT_EQ(emptyStack.getSize(), 0);
     EXPECT_EQ(emptyStack.getAllctd(), 10);
 }
-
 TEST_F(StackTest, CopyConstructor) {
     stack ss = s;
     EXPECT_EQ(ss.getSize(), s.getSize());
     EXPECT_EQ(ss.getAllctd(), s.getAllctd());
     EXPECT_NE(ss.getVector(), s.getVector());
 }
-
 TEST_F(StackTest, MoveConstructorTransfersOwnership) {
     stack ss = std::move(s);
     EXPECT_EQ(s.getSize(), 0);
     EXPECT_GT(ss.getSize(), 0);
 }
-
 TEST_F(StackTest, AssignmentOperator) {
     stack ss;
     ss = s;
     EXPECT_EQ(ss.getSize(), s.getSize());
     EXPECT_NE(ss.getVector(), s.getVector());
 }
-
 TEST_F(StackTest, MoveAssignmentTransfersOwnership) {
     stack ss;
     ss = std::move(s);
@@ -65,7 +61,13 @@ TEST_F(StackTest, BackDecrementOperator){
     EXPECT_EQ((--s).getAllctd(), 3);
 }
 TEST_F(StackTest, Indexation){
+    const stack ss = s;
+    EXPECT_EQ(ss[0].getName(), "TaskA");
+}
+TEST_F(StackTest, ModifyIndexation){
     EXPECT_EQ(s[0].getName(), "TaskA");
+    s[0].setName("TT");
+    EXPECT_EQ(s[0].getName(), "TT");
 }
 TEST_F(StackTest, PushOperation){
     s += t3;
@@ -122,8 +124,8 @@ TEST_F(StackTest, OutputStreamOperator) {
     std::ostringstream oss;
     oss << s;
     std::string expectedOutput =
-        "TaskB: 3 2<->6\n"
-        "TaskA: 0 0<->0\n";
+        "TaskA: 0 0<->0\n"
+        "TaskB: 3 2<->6\n";
     EXPECT_EQ(oss.str(), expectedOutput);
 }
 TEST_F(StackTest, InputStreamOperator) {

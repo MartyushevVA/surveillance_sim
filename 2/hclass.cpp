@@ -12,7 +12,7 @@ void stack::smoothResize(size_t newAllctd = 0){
     if (newAllctd < 0)
         throw std::range_error("Can't be less than zero.");
     task *newArray = new task[newAllctd]{};
-    std::copy(vector_, vector_ + size_, newArray);
+    std::copy(vector_, vector_ + std::min(size_, newAllctd), newArray);
     delete[] vector_;
     vector_ = newArray;
     allctd_ = newAllctd;
@@ -22,19 +22,18 @@ stack::stack() {}
 
 stack::stack(size_t size, const task (&space)[]){
     size_ = size;
-    allctd_ = size;
-    vector_ = new task[allctd_];
+    smoothResize(size);
     std::copy(space, space + size, vector_);
 }
 
 stack::stack(const stack &other){
     size_ = other.size_;
-    allctd_ = other.allctd_;
-    vector_ = new task[allctd_];
+    smoothResize(other.allctd_);
     std::copy(other.vector_, other.vector_ + other.size_, vector_);
 }
 
 stack::stack(stack &&other) noexcept{
+    delete[] vector_;
     size_ = other.size_;
     allctd_ = other.allctd_;
     vector_ = other.vector_;
@@ -117,11 +116,9 @@ std::ostream &operator<<(std::ostream &os, const stack &st){
     std::string output;
     stack copied = stack(st);
     task item;
-    for (size_t num = 0; num < st.size_; num++){
-        item = copied.pop();
-        output += item.getName() += std::string(": ") += std::to_string(item.getGrade()) += std::string(" ") += std::to_string(item.getFirst()) += std::string("<->") += std::to_string(item.getLast()) += "\n";
-    }
-    return os << output;
+    for (size_t num = 0; num < st.size_; num++)
+        os << st.getVector()[num] << std::endl;
+    return os;
 }
 
 std::istream &operator>>(std::istream &in, stack &stack){
