@@ -73,6 +73,10 @@ std::strong_ordering task::operator<=>(const task &t) const {
     return first_ <=> t.getFirst();
 }
 
+task task::operator!() const {
+    return task(name_, 5 - grade_, first_, last_);
+}
+
 void task::evaluate(int grade) {
     if (grade < 2 || grade > 5)
         throw ofuncs::UnexpectedGradeException("Unable to mark work like that.");

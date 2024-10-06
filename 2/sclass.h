@@ -26,6 +26,7 @@ public:
     task operator+(const task &t) const;
     bool operator==(const task &t) const;
     bool operator<(const task &t) const;
+    task operator!() const;
     std::strong_ordering operator<=>(const task &t) const;
     void evaluate(int grade);
     task *fragmentation() const;

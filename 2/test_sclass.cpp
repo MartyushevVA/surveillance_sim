@@ -139,6 +139,11 @@ TEST(TaskTest, OperatorLess_False){
     EXPECT_FALSE(t1 < t2);
 }
 
+TEST(TaskTest, OperatorInvert){
+    task t("Task", 0, 1, 3);
+    EXPECT_EQ((!t).getGrade(), 5);
+}
+
 TEST(TaskTest, SpaceShipOperatorLessByName){
     task t1("TaskA", 3, 1, 5);
     task t2("TaskB", 3, 1, 5);
