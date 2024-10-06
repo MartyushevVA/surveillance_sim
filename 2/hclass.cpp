@@ -1,6 +1,6 @@
 #include "hclass.h"
 
-void stack::smoothResize(size_t newAllctd = 0){
+void stack::smoothResize(size_t newAllctd){
     if (newAllctd == 0){
         if (size_ * 2 < allctd_)
             newAllctd = allctd_ / 2;

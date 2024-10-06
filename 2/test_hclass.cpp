@@ -28,7 +28,7 @@ TEST_F(StackTest, CopyConstructor) {
 TEST_F(StackTest, MoveConstructorTransfersOwnership) {
     stack ss = std::move(s);
     EXPECT_EQ(s.getSize(), 0);
-    EXPECT_GT(ss.getSize(), 0);
+    EXPECT_EQ(ss.getSize(), 2);
 }
 TEST_F(StackTest, AssignmentOperator) {
     stack ss;
@@ -40,7 +40,14 @@ TEST_F(StackTest, MoveAssignmentTransfersOwnership) {
     stack ss;
     ss = std::move(s);
     EXPECT_EQ(s.getAllctd(), 0);
-    EXPECT_GT(ss.getAllctd(), 0);
+    EXPECT_EQ(ss.getAllctd(), 2);
+}
+TEST_F(StackTest, SmoothResize) {
+    EXPECT_EQ(s.getAllctd(), 2);
+    s.smoothResize(10);
+    EXPECT_EQ(s.getAllctd(), 10);
+    s.smoothResize();
+    EXPECT_EQ(s.getAllctd(), 5);
 }
 TEST_F(StackTest, IncrementOperator){
     EXPECT_EQ((s++).getAllctd(), 2);

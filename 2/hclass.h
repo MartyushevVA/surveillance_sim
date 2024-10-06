@@ -37,7 +37,7 @@ public:
     void unioning();
     void fragmentation();
     task extractNextUngraded();
-    void smoothResize(size_t hardSize);
+    void smoothResize(size_t hardSize = 0);
 };
 
 std::ostream &operator<<(std::ostream &os, const stack &stack);
