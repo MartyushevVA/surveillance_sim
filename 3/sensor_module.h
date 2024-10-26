@@ -1,33 +1,28 @@
 #pragma once
 
 #include "module.h"
-#include <vector>
-#include "platform.h"
-#include "environment.h"
-#include "intruder.h"
 
-
-enum mod{
+enum SensorType {
     Optical,
     XRay
 };
 
-struct Surrounding {
-    std::vector<Platform&> platforms;
-    std::vector<Intruder&> intruders;
-    int x;
-    int y;
+struct SurroundingReport {
+    Pair position_;
+    std::vector<Placeholder> relatives;
 };
 
 class SensorModule : public Module {
 private:
-    mod type_;
+    SensorType type_;
+    int energyConsumption_;
+
 public:
-    SensorModule() = default;
-    explicit SensorModule(mod type);
-    ~SensorModule() = default;
-    
-    Surrounding getSurroundings();
+    SensorModule(SensorType type = SensorType::Optical, int energyConsumption = 0) : Module{}, type_(type), energyConsumption_(energyConsumption) {}
+    SensorModule(int x, int y, int slotsOccupied, bool isOn, int range, SensorType type = SensorType::Optical, int energyConsumption = 0)
+        : Module(x, y, slotsOccupied, isOn, range), type_(type), energyConsumption_(energyConsumption) {}
+
+    SurroundingReport getReport();
     void activate() override;
     void deactivate() override;
 };

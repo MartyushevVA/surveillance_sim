@@ -2,29 +2,31 @@
 
 #include <string>
 #include <vector>
+#include "placeholder.h"
 #include "module.h"
 
-class Platform {
+class Platform : public Placeholder {
 protected:
-    int x_;
-    int y_;
-    std::string description_;
-    int energyLevel_;
-    int slotCount_;
-    std::vector<Module&> modules_;
+    Pair position_ = {0, 0};
+    std::string description_ = "";
+    int energyLevel_ = 0;
+    int slotCount_ = 0;
+    std::vector<Module*> modules_ = {};
+
+    Platform() = default;
+    Platform(int x, int y, std::string description, int energyLevel, int slotCount, std::vector<Module*> modules = {})
+        : Placeholder({x, y}), description_(description), energyLevel_(energyLevel), slotCount_(slotCount), modules_(modules) {}
 
 public:
-    Platform() = default;
     virtual ~Platform() = default;
     
     void setPosition(int x, int y);
-    std::pair<int, int> getPosition() const;
+    Pair getPosition() const;
     void setEnergyLevel(int energyLevel);
     int getEnergyLevel() const;
     void setSlotCount(int slotCount);
     int getSlotCount() const;
 
-    void addModule(Module& module);
-    void removeModule(Module& module);
-    virtual void move(int dx, int dy) = 0;
+    void installModule(Module* module);
+    void removeModule(Module* module);
 };

@@ -1,27 +1,25 @@
 #pragma once
 
-#include <utility>
 #include "environment.h"
 
 class IntruderBehavior {
 public:
-    virtual std::pair<int, int> getNextPosition(const Environment& environment) = 0;
+    virtual Pair getNextPosition(const Environment& environment) = 0;
 };
 
-class Intruder {
+class Intruder : public Placeholder {
 private:
-    int x_;
-    int y_;
-    IntruderBehavior* behavior_;
+    IntruderBehavior* behavior = nullptr;
+
 public:
-    Intruder() = default;
-    Intruder(int x, int y, IntruderBehavior* behavior);
-    ~Intruder() = default;
+    Intruder(IntruderBehavior* behavior = nullptr) : Placeholder(), behavior(behavior) {}
+    Intruder(int x, int y, IntruderBehavior* behavior = nullptr) : Placeholder({x, y}), behavior(behavior) {}
+    ~Intruder();
 
     void setPosition(int x, int y);
-    std::pair<int, int> getPosition() const;
+    Pair getPosition() const;
     void setBehavior(IntruderBehavior behavior);
     IntruderBehavior getBehavior(const Environment& environment);
 
-    void changePosition();
+    void changePosition(const Environment& environment);
 };

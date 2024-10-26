@@ -4,9 +4,7 @@
 
 class StaticPlatform : public Platform {
 public:
-    using Platform::Platform;
-    StaticPlatform(int x, int y, const std::string& description, int energyLevel, int slotCount);
-    ~StaticPlatform() = default;
-    
-    void move(int dx, int dy) override;
+    StaticPlatform() = default;
+    StaticPlatform(int x, int y, const std::string description, int energyLevel, int slotCount, std::vector<Module*> modules = {})
+        : Platform(x, y, description, energyLevel, slotCount, modules) {}
 };
