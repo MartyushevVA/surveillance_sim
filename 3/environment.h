@@ -10,17 +10,21 @@ enum class CellType {
     Intruder
 };
 
+class Obstacle : public Placeholder {};
+
 class Environment {
 private:
     Pair size_ = {0, 0};
-    std::vector<Placeholder*> members_ = {};
+    std::vector<Placeholder*> tokens_ = {};
 
 public:
-    Environment() = default;
-    Environment(int width, int height, std::vector<Placeholder*> members = {});
-    
+    Environment(int width, int height, std::vector<Placeholder*> members);
+
     Pair getSize() const;
     void setSize(int width, int height);
+    std::vector<Placeholder*> getTokens() const;
+    void setTokens(std::vector<Placeholder*> tokens);
+    
     CellType getCellType(int x, int y) const;
     void setCellType(int x, int y, CellType type);
 };

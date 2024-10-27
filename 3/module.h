@@ -2,27 +2,31 @@
 
 #include <vector>
 #include "environment.h"
+#include "platform.h"
 
 class Module {
 protected:
-    Pair hostPosition_ = {0, 0};
     int slotsOccupied_ = 0;
+    int energyConsumption_ = 0;
     bool isOn_ = false;
     int range_ = 0;
+    Platform* host_ = nullptr;
+
     Module() = default;
-    Module(int x, int y, int slotsOccupied, bool isOn, int range) :
-        hostPosition_({x, y}), slotsOccupied_(slotsOccupied), isOn_(isOn), range_(range) {}
+    Module(int slotsOccupied, int energyConsumption, bool isOn, int range, Platform* host) :
+        slotsOccupied_(slotsOccupied), energyConsumption_(energyConsumption), isOn_(isOn), range_(range), host_(host) {}
 
 public:
-    virtual ~Module() = default;
+    virtual ~Module() = 0;
 
-    void setEnergyLevel(int energyLevel);
-    int getEnergyLevel() const;
-    void setSlotCount(int slotCount);
-    int getSlotCount() const;
-    void setState(bool state);
-    bool getState() const;
-
-    virtual void activate() = 0;
-    virtual void deactivate() = 0;
+    int getSlotsOccupied() const;
+    void setSlotsOccupied(int slotsOccupied);
+    int getEnergyConsumption() const;
+    void setEnergyConsumption(int energyConsumption);
+    bool getIsOn() const;
+    void setIsOn(bool isOn);
+    int getRange() const;
+    void setRange(int range);
+    Platform* getHost() const;
+    void setHost(Platform* host);
 };

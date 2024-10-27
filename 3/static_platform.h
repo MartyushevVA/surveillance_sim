@@ -4,7 +4,7 @@
 
 class StaticPlatform : public Platform {
 public:
-    StaticPlatform() = default;
-    StaticPlatform(int x, int y, const std::string description, int energyLevel, int slotCount, std::vector<Module*> modules = {})
-        : Platform(x, y, description, energyLevel, slotCount, modules) {}
+    StaticPlatform() : Platform{} {}
+    StaticPlatform(int x, int y, Environment* environment, std::string description, int energyLevel, int slotCount, std::vector<Module*> modules)
+        : Platform(x, y, environment, description, energyLevel, slotCount, modules) {}
 };

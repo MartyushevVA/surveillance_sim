@@ -9,20 +9,20 @@ enum SensorType {
 
 struct SurroundingReport {
     Pair position_;
-    std::vector<Placeholder> relatives;
+    std::vector<Placeholder*> relatives;
 };
 
 class SensorModule : public Module {
 private:
-    SensorType type_;
-    int energyConsumption_;
+    SensorType type_ = SensorType::Optical;
 
 public:
-    SensorModule(SensorType type = SensorType::Optical, int energyConsumption = 0) : Module{}, type_(type), energyConsumption_(energyConsumption) {}
-    SensorModule(int x, int y, int slotsOccupied, bool isOn, int range, SensorType type = SensorType::Optical, int energyConsumption = 0)
-        : Module(x, y, slotsOccupied, isOn, range), type_(type), energyConsumption_(energyConsumption) {}
+    SensorModule() : Module{} {}
+    SensorModule(int slotsOccupied, int energyConsumption, bool isOn, int range, Platform* host, SensorType type)
+        : Module(slotsOccupied, energyConsumption, isOn, range, host), type_(type) {}
+
+    SensorType getType() const;
+    void setType(SensorType type);
 
     SurroundingReport getReport();
-    void activate() override;
-    void deactivate() override;
 };

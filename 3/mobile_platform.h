@@ -15,12 +15,12 @@ enum class Direction {
 
 class MobilePlatform : public Platform {
 private:
-    int speed_;
+    int speed_ = 0;
 
 public:
-    MobilePlatform(int speed = 0) : Platform{}, speed_(speed) {}
-    MobilePlatform(int x, int y, const std::string description, int energyLevel, int slotCount, std::vector<Module*> modules = {}, int speed = 0)
-        : Platform(x, y, description, energyLevel, slotCount, modules), speed_(speed) {}
+    MobilePlatform() : Platform{} {}
+    MobilePlatform(int x, int y, Environment* environment, std::string description, int energyLevel, int slotCount, std::vector<Module*> modules, int speed)
+        : Platform(x, y, environment, description, energyLevel, slotCount, modules), speed_(speed) {}
     
     void setSpeed(int speed);
     int getSpeed() const;

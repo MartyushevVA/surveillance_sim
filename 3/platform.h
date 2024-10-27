@@ -7,18 +7,17 @@
 
 class Platform : public Placeholder {
 protected:
-    Pair position_ = {0, 0};
     std::string description_ = "";
     int energyLevel_ = 0;
     int slotCount_ = 0;
     std::vector<Module*> modules_ = {};
 
-    Platform() = default;
-    Platform(int x, int y, std::string description, int energyLevel, int slotCount, std::vector<Module*> modules = {})
-        : Placeholder({x, y}), description_(description), energyLevel_(energyLevel), slotCount_(slotCount), modules_(modules) {}
+    Platform() : Placeholder{} {}
+    Platform(int x, int y, Environment* environment, std::string description, int energyLevel, int slotCount, std::vector<Module*> modules)
+        : Placeholder({x, y}, environment), description_(description), energyLevel_(energyLevel), slotCount_(slotCount), modules_(modules) {}
 
 public:
-    virtual ~Platform() = default;
+    virtual ~Platform() = 0;
     
     void setPosition(int x, int y);
     Pair getPosition() const;

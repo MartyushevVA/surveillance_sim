@@ -1,5 +1,7 @@
 #pragma once
 
+#include "environment.h"
+
 struct Pair {
     int x, y;
 };
@@ -7,6 +9,7 @@ struct Pair {
 class Placeholder {
 protected:
     Pair position_ = {0, 0};
+    Environment* environment_ = nullptr;
     Placeholder() = default;
-    Placeholder(Pair position) : position_(position) {}
+    Placeholder(Pair position, Environment* environment) : position_(position), environment_(environment) {}
 };
