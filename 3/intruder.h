@@ -8,20 +8,20 @@ class Environment;
 class IntruderBehavior {
 public:
     virtual ~IntruderBehavior() = default;
-    virtual Pair getNextPosition(const Environment* environment, int x, int y) = 0;
+    virtual Pair getNextPosition(const Environment* environment, Pair currentPosition) = 0;
 };
 
 class RandomIntruderBehavior : public IntruderBehavior {
 public:
-    Pair getNextPosition(const Environment* environment, int x, int y) override;
+    Pair getNextPosition(const Environment* environment, Pair currentPosition) override;
 };
 
 class RunningOutIntruderBehavior : public IntruderBehavior {
 public:
-    Pair getNextPosition(const Environment* environment, int x, int y) override;
+    Pair getNextPosition(const Environment* environment, Pair currentPosition) override;
 };
 
-class Intruder : public Placeholder, public IntruderBehavior {
+class Intruder : public Placeholder {
 private:
     std::shared_ptr<IntruderBehavior> behavior;
 
@@ -30,7 +30,7 @@ public:
     Intruder(int x, int y, Environment* environment, std::shared_ptr<IntruderBehavior> behavior)
         : Placeholder({x, y}, environment), behavior(std::move(behavior)) {}
 
-    Pair getNextPosition(const Environment* environment) override;
+    Pair getNextPosition();
     void setBehavior(std::shared_ptr<IntruderBehavior> newBehavior);
     void changePosition();
 };

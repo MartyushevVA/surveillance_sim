@@ -2,7 +2,7 @@
 
 #include "environment.h"
 
-class AI {
+class AI : Environment {
 public:
-    void eliminateAllIntruders(Environment& environment);
+    void eliminateAllIntruders();
 };
