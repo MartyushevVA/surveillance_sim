@@ -1,35 +1,36 @@
 #pragma once
 
-#include "environment.h"
+#include "placeholder.h"
+#include <memory>
+
+class Environment;
 
 class IntruderBehavior {
 public:
-    virtual Pair getNextPosition(const Environment* environment, Intruder* intruder) = 0;
+    virtual ~IntruderBehavior() = default;
+    virtual Pair getNextPosition(const Environment* environment, int x, int y) = 0;
 };
 
 class RandomIntruderBehavior : public IntruderBehavior {
 public:
-    Pair getNextPosition(const Environment* environment, Intruder* intruder) override;
+    Pair getNextPosition(const Environment* environment, int x, int y) override;
 };
 
 class RunningOutIntruderBehavior : public IntruderBehavior {
 public:
-    Pair getNextPosition(const Environment* environment, Intruder* intruder) override;
+    Pair getNextPosition(const Environment* environment, int x, int y) override;
 };
 
-class Intruder : public Placeholder {
+class Intruder : public Placeholder, public IntruderBehavior {
 private:
-    IntruderBehavior* behavior = nullptr;
+    std::shared_ptr<IntruderBehavior> behavior;
 
 public:
     Intruder() : Placeholder{} {}
-    Intruder(int x, int y, Environment* environment, IntruderBehavior* behavior) : Placeholder({x, y}, environment), behavior(behavior) {}
-    ~Intruder();
+    Intruder(int x, int y, Environment* environment, std::shared_ptr<IntruderBehavior> behavior)
+        : Placeholder({x, y}, environment), behavior(std::move(behavior)) {}
 
-    void setPosition(int x, int y);
-    Pair getPosition() const;
-    void setBehavior(IntruderBehavior* behavior);
-    IntruderBehavior* getBehavior() const;
-
+    Pair getNextPosition(const Environment* environment) override;
+    void setBehavior(std::shared_ptr<IntruderBehavior> newBehavior);
     void changePosition();
 };

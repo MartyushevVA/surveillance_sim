@@ -2,18 +2,19 @@
 
 #include <chrono>
 #include "module.h"
-#include "intruder.h"
+
+class Intruder;
 
 class WeaponModule : public Module {
 private:
-    std::chrono::seconds chargingDuration_ = std::chrono::seconds(0);
-    bool isCharging_ = false;
-    bool isCharged_ = false;
+    std::chrono::seconds chargingDuration_;
+    bool isCharging_;
+    bool isCharged_;
 
 public:
     WeaponModule() : Module{} {}
-    WeaponModule(int slotsOccupied, int energyConsumption, bool isOn, int range, Platform* host, std::chrono::seconds chargingDuration, bool isCharging, bool isCharged)
-        : Module(slotsOccupied, energyConsumption, isOn, range, host), chargingDuration_(chargingDuration), isCharging_(isCharging), isCharged_(isCharged) {}
+    WeaponModule(int slotsOccupied, int energyConsumption, bool isOn, int range, std::chrono::seconds chargingDuration, bool isCharging, bool isCharged)
+        : Module(slotsOccupied, energyConsumption, isOn, range), chargingDuration_(chargingDuration), isCharging_(isCharging), isCharged_(isCharged) {}
     
     std::chrono::seconds getChargingDuration() const;
     void setChargingDuration(std::chrono::seconds chargingDuration);
@@ -22,5 +23,5 @@ public:
     bool getIsCharged() const;
     void setIsCharged(bool isCharged);
 
-    void eliminateIntruder(Intruder* intruder);
+    void eliminateIntruder(std::shared_ptr<Intruder> intruder);
 };

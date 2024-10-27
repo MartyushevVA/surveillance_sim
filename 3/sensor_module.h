@@ -1,5 +1,8 @@
 #pragma once
 
+#include <vector>
+#include <memory>
+#include "placeholder.h"
 #include "module.h"
 
 enum SensorType {
@@ -9,7 +12,7 @@ enum SensorType {
 
 struct SurroundingReport {
     Pair position_;
-    std::vector<Placeholder*> relatives;
+    std::vector<std::shared_ptr<Placeholder>> relatives;
 };
 
 class SensorModule : public Module {
@@ -18,8 +21,8 @@ private:
 
 public:
     SensorModule() : Module{} {}
-    SensorModule(int slotsOccupied, int energyConsumption, bool isOn, int range, Platform* host, SensorType type)
-        : Module(slotsOccupied, energyConsumption, isOn, range, host), type_(type) {}
+    SensorModule(int slotsOccupied, int energyConsumption, bool isOn, int range, SensorType type)
+        : Module(slotsOccupied, energyConsumption, isOn, range), type_(type) {}
 
     SensorType getType() const;
     void setType(SensorType type);

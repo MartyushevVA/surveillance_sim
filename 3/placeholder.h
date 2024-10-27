@@ -1,6 +1,6 @@
 #pragma once
 
-#include "environment.h"
+class Environment;
 
 struct Pair {
     int x, y;
@@ -12,4 +12,8 @@ protected:
     Environment* environment_ = nullptr;
     Placeholder() = default;
     Placeholder(Pair position, Environment* environment) : position_(position), environment_(environment) {}
+
+public:
+    void setPosition(int x, int y);
+    Pair getPosition() const;   
 };

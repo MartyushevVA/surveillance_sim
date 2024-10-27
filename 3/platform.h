@@ -2,30 +2,33 @@
 
 #include <string>
 #include <vector>
+#include <memory>
 #include "placeholder.h"
-#include "module.h"
+
+class Module;
+class Environment;
 
 class Platform : public Placeholder {
 protected:
     std::string description_ = "";
     int energyLevel_ = 0;
     int slotCount_ = 0;
-    std::vector<Module*> modules_ = {};
+    std::vector<std::shared_ptr<Module>> modules_;
 
     Platform() : Placeholder{} {}
-    Platform(int x, int y, Environment* environment, std::string description, int energyLevel, int slotCount, std::vector<Module*> modules)
-        : Placeholder({x, y}, environment), description_(description), energyLevel_(energyLevel), slotCount_(slotCount), modules_(modules) {}
+    Platform(int x, int y, Environment* environment, std::string description, int energyLevel, int slotCount)
+        : Placeholder({x, y}, environment), description_(std::move(description)), energyLevel_(energyLevel), slotCount_(slotCount) {}
 
 public:
-    virtual ~Platform() = 0;
+    virtual ~Platform() = default;
     
-    void setPosition(int x, int y);
-    Pair getPosition() const;
     void setEnergyLevel(int energyLevel);
     int getEnergyLevel() const;
     void setSlotCount(int slotCount);
     int getSlotCount() const;
 
-    void installModule(Module* module);
+    void installModule(std::unique_ptr<Module> module);
     void removeModule(Module* module);
+    const std::vector<std::shared_ptr<Module>>& getModules() const;
+    void setModules(std::vector<std::shared_ptr<Module>> modules);
 };
