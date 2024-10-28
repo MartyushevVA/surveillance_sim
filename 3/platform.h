@@ -17,7 +17,7 @@ protected:
 
     Platform() : Placeholder{} {}
     Platform(int x, int y, Environment* environment, std::string description, int energyLevel, int slotCount)
-        : Placeholder({x, y}, environment), description_(std::move(description)), energyLevel_(energyLevel), slotCount_(slotCount) {}
+        : Placeholder({x, y}, environment), description_(description), energyLevel_(energyLevel), slotCount_(slotCount) {}
 
 public:
     virtual ~Platform() = default;
@@ -27,8 +27,8 @@ public:
     void setSlotCount(int slotCount);
     int getSlotCount() const;
 
-    void installModule(std::unique_ptr<Module> module);
-    void removeModule(Module* module);
+    void installModule(std::shared_ptr<Module> module);
+    void removeModule(std::shared_ptr<Module> module);
     const std::vector<std::shared_ptr<Module>>& getModules() const;
     void setModules(std::vector<std::shared_ptr<Module>> modules);
 };

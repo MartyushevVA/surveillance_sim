@@ -9,7 +9,7 @@ protected:
     int energyConsumption_ = 0;
     bool isOn_ = false;
     int range_ = 0;
-    std::shared_ptr<Platform> host_;
+    Platform* host_;
     
     Module() = default;
     Module(int slotsOccupied, int energyConsumption, bool isOn, int range)
@@ -26,6 +26,6 @@ public:
     void setIsOn(bool isOn);
     int getRange() const;
     void setRange(int range);
-    std::shared_ptr<Platform> getHost() const;
-    void setHost(std::shared_ptr<Platform> host);
+    Platform* getHost() const;
+    void setHost(Platform* host);
 };

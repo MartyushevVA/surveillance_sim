@@ -11,7 +11,7 @@ private:
 
 public:
     ConnectionModule() : Module{} {}
-    ConnectionModule(int slotsOccupied, int energyConsumption, bool isOn, int range, Platform* host, int maxSessions)
+    ConnectionModule(int slotsOccupied, int energyConsumption, bool isOn, int range, int maxSessions)
         : Module(slotsOccupied, energyConsumption, isOn, range), maxSessions_(maxSessions) {}
 
     int getMaxSessions() const;
@@ -25,6 +25,6 @@ public:
     void askForMACsOfRelatives(); // expand actual list;
     // getter for sharing with other modules;
 
-    void establishConnection(std::shared_ptr<Module> module);
-    void closeConnection(std::shared_ptr<Module> module);
+    void establishConnection(Module* module);
+    void closeConnection(Module* module);
 };

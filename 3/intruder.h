@@ -23,14 +23,14 @@ public:
 
 class Intruder : public Placeholder {
 private:
-    std::shared_ptr<IntruderBehavior> behavior;
+    IntruderBehavior* behavior;
 
 public:
     Intruder() : Placeholder{} {}
-    Intruder(int x, int y, Environment* environment, std::shared_ptr<IntruderBehavior> behavior)
+    Intruder(int x, int y, Environment* environment, IntruderBehavior* behavior)
         : Placeholder({x, y}, environment), behavior(std::move(behavior)) {}
 
     Pair getNextPosition();
-    void setBehavior(std::shared_ptr<IntruderBehavior> newBehavior);
+    void setBehavior(IntruderBehavior* newBehavior);
     void changePosition();
 };

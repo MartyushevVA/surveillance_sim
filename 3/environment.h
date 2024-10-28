@@ -16,7 +16,7 @@ class Obstacle : public Placeholder {};
 class Environment {
 private:
     Pair size_ = {0, 0};
-    std::vector<std::unique_ptr<Placeholder>> tokens_;
+    std::vector<std::shared_ptr<Placeholder>> tokens_;
 
 public:
     Environment() = default;
@@ -24,8 +24,8 @@ public:
 
     Pair getSize() const;
     void setSize(int width, int height);
-    const std::vector<std::unique_ptr<Placeholder>>& getTokens() const;
-    void addToken(std::unique_ptr<Placeholder> token);
+    std::vector<std::shared_ptr<Placeholder>>& getTokens() const;
+    void addToken(std::shared_ptr<Placeholder> token);
     void removeToken(Placeholder* token);
     
     CellType getCellType(int x, int y) const;
