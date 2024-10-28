@@ -1,25 +1,13 @@
 #pragma once
 
 #include "platform.h"
+#include "moving_object.h"
 
-enum class Direction {
-    UP,
-    DOWN,
-    LEFT,
-    RIGHT,
-};
-
-class MobilePlatform : public Platform {
-private:
-    int speed_ = 0;
-
+class MobilePlatform : public Platform, public MovingObject{
 public:
-    MobilePlatform() : Platform{} {}
+    MobilePlatform() : Platform{}, MovingObject{} {}
     MobilePlatform(int x, int y, Environment* environment, std::string description, int energyLevel, int slotCount, int speed)
-        : Platform(x, y, environment, description, energyLevel, slotCount), speed_(speed) {}
-    
-    void setSpeed(int speed);
-    int getSpeed() const;
+        : Platform(x, y, environment, description, energyLevel, slotCount), MovingObject(speed) {}
 
-    void move(Direction direction);
+    void updatePosition() override;
 };

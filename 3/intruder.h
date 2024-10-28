@@ -1,36 +1,15 @@
 #pragma once
 
 #include "placeholder.h"
-#include <memory>
+#include "moving_object.h"
 
 class Environment;
 
-class IntruderBehavior {
+class Intruder : public Placeholder, public MovingObject {
 public:
-    virtual ~IntruderBehavior() = default;
-    virtual Pair getNextPosition(const Environment* environment, Pair currentPosition) = 0;
-};
+    Intruder() : Placeholder{}, MovingObject{} {}
+    Intruder(int x, int y, Environment* environment, int speed)
+        : Placeholder({x, y}, environment), MovingObject(speed) {}
 
-class RandomIntruderBehavior : public IntruderBehavior {
-public:
-    Pair getNextPosition(const Environment* environment, Pair currentPosition) override;
-};
-
-class RunningOutIntruderBehavior : public IntruderBehavior {
-public:
-    Pair getNextPosition(const Environment* environment, Pair currentPosition) override;
-};
-
-class Intruder : public Placeholder {
-private:
-    IntruderBehavior* behavior;
-
-public:
-    Intruder() : Placeholder{} {}
-    Intruder(int x, int y, Environment* environment, IntruderBehavior* behavior)
-        : Placeholder({x, y}, environment), behavior(std::move(behavior)) {}
-
-    Pair getNextPosition();
-    void setBehavior(IntruderBehavior* newBehavior);
-    void changePosition();
+    void updatePosition() override;
 };
