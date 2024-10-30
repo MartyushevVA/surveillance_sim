@@ -9,7 +9,7 @@ protected:
     int energyConsumption_ = 0;
     bool isOn_ = false;
     int range_ = 0;
-    Platform* host_;
+    Platform* host_ = nullptr;
     
     Module() = default;
     Module(int slotsOccupied, int energyConsumption, bool isOn, int range)

@@ -2,7 +2,7 @@
 
 #include "placeholder.h"
 #include "moving_object.h"
-#include "move.h"
+#include "interfaces_move.h"
 
 class Environment;
 
@@ -16,6 +16,8 @@ public:
     Intruder(int x, int y, Environment* environment, int speed)
         : Placeholder({x, y}, environment), MovingObject(speed) {}
 
+    void move(Pair nextPosition) override;
+    bool abilityToMove(Pair position) const override;
     Pair calculateRandomMove() const override;
     Pair calculateAvoidanceMove(Placeholder* threat) const override;
 };

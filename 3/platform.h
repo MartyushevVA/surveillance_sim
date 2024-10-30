@@ -6,7 +6,6 @@
 #include "placeholder.h"
 
 class Module;
-class Environment;
 
 class Platform : public Placeholder {
 protected:

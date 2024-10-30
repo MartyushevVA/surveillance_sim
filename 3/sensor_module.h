@@ -1,22 +1,17 @@
 #pragma once
 
-#include <vector>
-#include <memory>
-#include "placeholder.h"
 #include "module.h"
+#include "interfaces_fromModules.h"
 
 enum SensorType {
     Optical,
     XRay
 };
 
-struct SurroundingReport {
-    Pair position_;
-    std::vector<std::shared_ptr<Placeholder>> relatives;
-};
-
-class SensorModule : public Module {
-private:
+class SensorModule :
+    public Module,
+    public ISensor {
+protected:
     SensorType type_ = SensorType::Optical;
 
 public:
@@ -27,5 +22,5 @@ public:
     SensorType getType() const;
     void setType(SensorType type);
 
-    SurroundingReport getReport();
+    SurroundingReport getReport() const override;
 };

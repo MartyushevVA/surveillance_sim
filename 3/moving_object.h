@@ -1,7 +1,5 @@
 #pragma once
 
-#include "placeholder.h"
-
 class MovingObject {
 protected:
     int speed_ = 0;

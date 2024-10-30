@@ -1,15 +1,13 @@
 #pragma once
 
 #include "module.h"
+#include "interfaces_fromModules.h"
 #include <vector>
 
-struct routeNode {
-    std::shared_ptr<Module> destination;
-    std::shared_ptr<Module> gate;
-};
-
-class ConnectionModule : public Module {
-private:
+class ConnectionModule :
+    public Module,
+    public IConnection {
+protected:
     int maxSessions_ = 5;
     std::vector<std::shared_ptr<Module>> sessionList_ = {};
     std::vector<routeNode> routeList_ = {};
@@ -26,12 +24,13 @@ public:
     std::vector<routeNode> getRouteList() const;
     void setRouteList(std::vector<routeNode> routeList);
 
-    void scanForRouteNodes();
-    void askForRouteNodesOfRelatives(); // expand actual list;
-    // getter for sharing with other modules;
-
-    void establishConnection(Module* module);
-    void closeConnection(Module* module);
+    std::vector<std::shared_ptr<Placeholder>> scanForModules() override;
+    void implementRouteNodes(std::vector<routeNode> routeNodes) override;
+    void sendInfo(std::string info) override;
+    std::string receiveInfo() override;
+    void establishConnection(Module* module) override;
+    void closeConnection(Module* module) override;
+    bool isConnectedToAI() const override;
 };
 
 /*

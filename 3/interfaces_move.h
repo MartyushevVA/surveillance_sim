@@ -2,14 +2,11 @@
 
 #include "placeholder.h"
 
-class MobilePlatform;
-class Intruder;
-
 class IMove {
 public:
     virtual ~IMove() = default;
     virtual void move(Pair nextPosition) = 0;
-    virtual void abilityToMove(Pair position) = 0;
+    virtual bool abilityToMove(Pair position) const = 0;
 };
 
 class IRandomMovement : public IMove {

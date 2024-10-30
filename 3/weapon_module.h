@@ -2,11 +2,14 @@
 
 #include <chrono>
 #include "module.h"
+#include "interfaces_fromModules.h"
 
 class Intruder;
 
-class WeaponModule : public Module {
-private:
+class WeaponModule :
+    public Module,
+    public IWeapon {
+protected:
     std::chrono::seconds chargingDuration_;
     bool isCharging_;
     bool isCharged_;
@@ -23,5 +26,5 @@ public:
     bool getIsCharged() const;
     void setIsCharged(bool isCharged);
 
-    void eliminateIntruder(std::shared_ptr<Intruder> intruder);
+    void attack(Placeholder* intruder) override;
 };
