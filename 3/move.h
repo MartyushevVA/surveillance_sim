@@ -7,17 +7,25 @@ class Intruder;
 
 class IMove {
 public:
-    virtual Pair getNextPosition(const Environment* environment, Pair currentPosition) = 0;
+    virtual ~IMove() = default;
+    virtual void move(Pair nextPosition) = 0;
+    virtual void abilityToMove(Pair position) = 0;
 };
 
-class IntruderMovement : public IMove {
+class IRandomMovement : public IMove {
 public:
-    Pair getNextPosition(const Environment* environment, Pair currentPosition) override;
-    Pair escapeFromAttacker(const Environment* environment, Pair currentPosition, Pair attackerPosition);
+    virtual ~IRandomMovement() = default;
+    virtual Pair calculateRandomMove() const = 0;
 };
 
-class AttackerMovement : public IMove {
+class IPursuitMovement : public IMove {
 public:
-    Pair getNextPosition(const Environment* environment, Pair currentPosition) override;
-    Pair moveTowardsIntruder(const Environment* environment, Pair currentPosition, Pair intruderPosition);
+    virtual ~IPursuitMovement() = default;
+    virtual Pair calculatePursuitMove(Placeholder* target) const = 0;
+};
+
+class IAvoidanceMovement : public IMove {
+public:
+    virtual ~IAvoidanceMovement() = default;
+    virtual Pair calculateAvoidanceMove(Placeholder* threat) const = 0;
 };
