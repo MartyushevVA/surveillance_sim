@@ -7,15 +7,15 @@
 class Module;
 
 struct routeNode {
-    std::shared_ptr<Module> destination;
-    std::shared_ptr<Module> gate;
+    Module* destination;
+    Module* gate;
 };
 
 class IConnection {
 public:
     virtual ~IConnection() = default;
 
-    virtual std::vector<std::shared_ptr<Placeholder>> scanForModules() = 0; //simply scans space nearby;
+    virtual std::vector<Placeholder*> scanForModules() = 0; //simply scans space nearby;
     
     virtual void implementRouteNodes(std::vector<routeNode> routeNodes) = 0; //adjust new data to actual route list;
     
@@ -36,7 +36,7 @@ public:
 
 struct SurroundingReport {
     Pair position_;
-    std::vector<std::shared_ptr<Placeholder>> relatives;
+    std::vector<Placeholder*> relatives;
 };
 
 class ISensor {

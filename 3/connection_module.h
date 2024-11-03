@@ -9,22 +9,22 @@ class ConnectionModule :
     public IConnection {
 protected:
     int maxSessions_ = 5;
-    std::vector<std::shared_ptr<Module>> sessionList_ = {};
-    std::vector<routeNode> routeList_ = {};
+    std::vector<Module*> sessionList_ {};
+    std::vector<routeNode> routeList_ {};
 
 public:
-    ConnectionModule() : Module{} {}
+    ConnectionModule() = default;
     ConnectionModule(int slotsOccupied, int energyConsumption, bool isOn, int range, int maxSessions)
         : Module(slotsOccupied, energyConsumption, isOn, range), maxSessions_(maxSessions) {}
 
     int getMaxSessions() const;
     void setMaxSessions(int maxSessions);
-    std::vector<std::shared_ptr<Module>> getSessionList() const;
-    void setSessionList(std::vector<std::shared_ptr<Module>> sessionList);
+    std::vector<Module*> getSessionList() const;
+    void setSessionList(std::vector<Module*> sessionList);
     std::vector<routeNode> getRouteList() const;
     void setRouteList(std::vector<routeNode> routeList);
 
-    std::vector<std::shared_ptr<Placeholder>> scanForModules() override;
+    std::vector<Placeholder*> scanForModules() override;
     void implementRouteNodes(std::vector<routeNode> routeNodes) override;
     void sendInfo(std::string info) override;
     std::string receiveInfo() override;

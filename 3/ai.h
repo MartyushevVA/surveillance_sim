@@ -8,9 +8,9 @@ class Environment;
 
 class AI {
 private:
-    std::vector<std::shared_ptr<Platform>> ConnectedPlatforms_ = {};
-    std::shared_ptr<Environment> environment_ = nullptr;
+    std::vector<Platform*> ConnectedPlatforms_ {};
+    Environment* environment_ = nullptr;
 public:
-    AI(std::shared_ptr<Environment> environment);
+    AI(Environment* environment) : environment_(environment) {};
     void eliminateAllIntruders();
 };

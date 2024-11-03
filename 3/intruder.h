@@ -12,7 +12,7 @@ class Intruder :
     public IRandomMovement,
     public IAvoidanceMovement {
 public:
-    Intruder() : Placeholder{}, MovingObject{} {}
+    Intruder() = default;
     Intruder(int x, int y, Environment* environment, int speed)
         : Placeholder({x, y}, environment), MovingObject(speed) {}
 

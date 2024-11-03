@@ -15,7 +15,7 @@ protected:
     SensorType type_ = SensorType::Optical;
 
 public:
-    SensorModule() : Module{} {}
+    SensorModule() = default;
     SensorModule(int slotsOccupied, int energyConsumption, bool isOn, int range, SensorType type)
         : Module(slotsOccupied, energyConsumption, isOn, range), type_(type) {}
 
