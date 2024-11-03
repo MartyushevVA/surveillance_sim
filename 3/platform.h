@@ -21,6 +21,8 @@ protected:
 public:
     virtual ~Platform() = default;
     
+    void setDescription(std::string description);
+    std::string getDescription() const;
     void setEnergyLevel(int energyLevel);
     int getEnergyLevel() const;
     void setSlotCount(int slotCount);
@@ -28,6 +30,5 @@ public:
 
     void installModule(std::unique_ptr<Module> module);
     std::unique_ptr<Module> removeModule(Module* module);
-
     std::vector<std::unique_ptr<Module>> getModules() const;
 };

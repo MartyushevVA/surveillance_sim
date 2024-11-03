@@ -1,6 +1,6 @@
 #pragma once
 
-#include <vector>
+#include <set>
 #include <memory>
 #include "placeholder.h"
 
@@ -15,8 +15,14 @@ class Obstacle : public Placeholder {};
 
 class Environment {
 private:
+    struct PlaceholderPtrCompare {
+        bool operator()(const std::unique_ptr<Placeholder>& a, 
+                       const std::unique_ptr<Placeholder>& b) const {
+            return *a < *b;
+        }
+    };
     Pair size_ = {0, 0};
-    std::vector<std::unique_ptr<Placeholder>> tokens_ {};
+    std::set<std::unique_ptr<Placeholder>, PlaceholderPtrCompare> tokens_ {};
 
 public:
     Environment() = default;
@@ -24,9 +30,11 @@ public:
 
     Pair getSize() const;
     void setSize(int width, int height);
-    std::vector<Placeholder*> getTokens() const;
+    
     void addToken(std::unique_ptr<Placeholder> token);
     std::unique_ptr<Placeholder> removeToken(Placeholder* token);
+
+    std::set<std::unique_ptr<Placeholder>, PlaceholderPtrCompare> getTokens() const;
     
     CellType getCellType(int x, int y) const;
     void setCellType(int x, int y, CellType type);

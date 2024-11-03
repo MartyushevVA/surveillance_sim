@@ -40,5 +40,5 @@ to current module directly, at first knee :)
 routeList consists of pointers to every possible for connection modules
 even if it cant be connected straightforward and index of certain connection
 from connection table where it need to send package to reach desired destination.
-There is some kind of recursion.
+There is some kind of recursion. It now has gate pointer instead of index.
 */
