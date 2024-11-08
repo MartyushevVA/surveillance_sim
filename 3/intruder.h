@@ -19,5 +19,5 @@ public:
     void move(Pair nextPosition) override;
     bool abilityToMove(Pair position) const override;
     Pair calculateRandomMove() const override;
-    Pair calculateAvoidanceMove(Placeholder* threat) const override;
+    Pair calculateAvoidanceMove(Placeholder& threat) const override;
 };

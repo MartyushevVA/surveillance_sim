@@ -32,7 +32,7 @@ public:
     void setSize(int width, int height);
     
     void addToken(std::unique_ptr<Placeholder> token);
-    std::unique_ptr<Placeholder> removeToken(Placeholder* token);
+    std::unique_ptr<Placeholder> removeToken(const Placeholder& token);
 
     std::set<std::unique_ptr<Placeholder>, PlaceholderPtrCompare> getTokens() const;
     

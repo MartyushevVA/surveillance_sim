@@ -22,8 +22,8 @@ public:
     virtual void sendInfo(std::string info) = 0; //sending and receiving messages (in advance more complex than just string);
     virtual std::string receiveInfo() = 0;
 
-    virtual void establishConnection(Module* module) = 0; //establishing connection with other module;
-    virtual void closeConnection(Module* module) = 0; //closing connection with other module;
+    virtual void establishConnection(Module& module) = 0; //establishing connection with other module;
+    virtual void closeConnection(Module& module) = 0; //closing connection with other module;
 
     virtual bool isConnectedToAI() const = 0; //checking if connection with AI is established (recursive);
 };
@@ -31,7 +31,7 @@ public:
 class IWeapon {
 public:
     virtual ~IWeapon() = default;
-    virtual void attack(Placeholder* target) = 0;
+    virtual void attack(Placeholder& target) = 0;
 };
 
 struct SurroundingReport {

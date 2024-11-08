@@ -29,6 +29,6 @@ public:
     int getSlotCount() const;
 
     void installModule(std::unique_ptr<Module> module);
-    std::unique_ptr<Module> removeModule(Module* module);
+    std::unique_ptr<Module> removeModule(std::unique_ptr<Module> module);
     std::vector<std::unique_ptr<Module>> getModules() const;
 };

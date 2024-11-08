@@ -8,7 +8,7 @@ class Environment;
 
 class AI {
 private:
-    std::vector<Platform*> ConnectedPlatforms_ {};
+    std::vector<Platform*> connectedPlatforms_ {};
     Environment* environment_ = nullptr;
 public:
     AI(Environment* environment) : environment_(environment) {};

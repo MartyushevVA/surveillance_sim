@@ -26,5 +26,5 @@ public:
     bool getIsCharged() const;
     void setIsCharged(bool isCharged);
 
-    void attack(Placeholder* intruder) override;
+    void attack(Placeholder& intruder) override;
 };

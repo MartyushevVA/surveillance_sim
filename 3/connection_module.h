@@ -28,8 +28,8 @@ public:
     void implementRouteNodes(std::vector<routeNode> routeNodes) override;
     void sendInfo(std::string info) override;
     std::string receiveInfo() override;
-    void establishConnection(Module* module) override;
-    void closeConnection(Module* module) override;
+    void establishConnection(Module& module) override;
+    void closeConnection(Module& module) override;
     bool isConnectedToAI() const override;
 };
 
