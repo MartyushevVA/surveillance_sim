@@ -19,8 +19,8 @@ public:
     SensorModule(int slotsOccupied, int energyConsumption, bool isOn, int range, SensorType type)
         : Module(slotsOccupied, energyConsumption, isOn, range), type_(type) {}
 
-    SensorType getType() const;
-    void setType(SensorType type);
+    SensorType getType() const {return type_;}
+    void setType(SensorType type) {type_ = type;}
 
     SurroundingReport getReport() const override;
 };

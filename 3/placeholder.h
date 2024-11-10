@@ -1,12 +1,9 @@
 #pragma once
 
-class Environment;
+#include "environment.h"
 
 struct Pair {
     int x, y;
-    bool operator<(const Pair& other) const {
-        return x < other.x || (x == other.x && y < other.y);
-    }
 };
 
 class Placeholder {
@@ -19,10 +16,11 @@ protected:
 public:
     virtual ~Placeholder() = default;
 
-    void setPosition(int x, int y);
-    Pair getPosition() const;
-
-    bool operator<(const Placeholder& other) const {
-        return position_ < other.position_;
+    void setPosition(int x, int y) {
+        if (x >= 0 && y >= 0 && environment_ != nullptr && environment_->getSize().x > x && environment_->getSize().y > y) {
+            position_.x = x;
+            position_.y = y;
+        }
     }
+    Pair getPosition() const {return position_;}
 };

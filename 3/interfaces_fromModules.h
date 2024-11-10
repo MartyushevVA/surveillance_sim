@@ -31,7 +31,7 @@ public:
 class IWeapon {
 public:
     virtual ~IWeapon() = default;
-    virtual void attack(Placeholder& target) = 0;
+    virtual void attack(Pair target) = 0;
 };
 
 struct SurroundingReport {

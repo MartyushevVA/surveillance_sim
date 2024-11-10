@@ -12,10 +12,7 @@ class MobilePlatform :
 public:
     MobilePlatform() = default;
     MobilePlatform(int x, int y, Environment* environment, std::string description, int energyLevel, int slotCount, int speed)
-        : Platform(x, y, environment, description, energyLevel, slotCount), MovingObject(speed) {}
+        : Platform(x, y, environment, description, energyLevel, slotCount), MovingObject(x, y, environment, speed) {}
 
-    void move(Pair nextPosition) override;
-    bool abilityToMove(Pair position) const override;
-    Pair calculateRandomMove() const override;
-    Pair calculatePursuitMove(Placeholder& target) const override;
+    Pair calculatePursuitMove(Pair target) const override;
 };

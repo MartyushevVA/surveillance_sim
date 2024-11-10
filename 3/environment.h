@@ -15,26 +15,23 @@ class Obstacle : public Placeholder {};
 
 class Environment {
 private:
-    struct PlaceholderPtrCompare {
-        bool operator()(const std::unique_ptr<Placeholder>& a, 
-                       const std::unique_ptr<Placeholder>& b) const {
-            return *a < *b;
-        }
-    };
     Pair size_ = {0, 0};
-    std::set<std::unique_ptr<Placeholder>, PlaceholderPtrCompare> tokens_ {};
+    std::set<std::shared_ptr<Placeholder>> tokens_ {};
 
 public:
     Environment() = default;
     Environment(int width, int height) : size_({width, height}) {}
 
-    Pair getSize() const;
-    void setSize(int width, int height);
+    Pair getSize() const {return size_;}
+    void setSize(int width, int height) {
+        if (width > 0 && height > 0)
+            size_ = {width, height};
+    }
     
-    void addToken(std::unique_ptr<Placeholder> token);
-    std::unique_ptr<Placeholder> removeToken(const Placeholder& token);
+    void addToken(std::shared_ptr<Placeholder> token);
+    std::shared_ptr<Placeholder> removeToken(int x, int y);
 
-    std::set<std::unique_ptr<Placeholder>, PlaceholderPtrCompare> getTokens() const;
+    std::set<std::shared_ptr<Placeholder>> getTokens() const {return tokens_;}
     
     CellType getCellType(int x, int y) const;
     void setCellType(int x, int y, CellType type);

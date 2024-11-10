@@ -18,11 +18,11 @@ public:
 class IPursuitMovement : public IMove {
 public:
     virtual ~IPursuitMovement() = default;
-    virtual Pair calculatePursuitMove(Placeholder& target) const = 0;
+    virtual Pair calculatePursuitMove(Pair target) const = 0;
 };
 
 class IAvoidanceMovement : public IMove {
 public:
     virtual ~IAvoidanceMovement() = default;
-    virtual Pair calculateAvoidanceMove(Placeholder& threat) const = 0;
+    virtual Pair calculateAvoidanceMove(Pair threat) const = 0;
 };

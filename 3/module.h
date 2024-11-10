@@ -18,14 +18,23 @@ protected:
 public:
     virtual ~Module() = default;
 
-    int getSlotsOccupied() const;
-    void setSlotsOccupied(int slotsOccupied);
-    int getEnergyConsumption() const;
-    void setEnergyConsumption(int energyConsumption);
-    bool getIsOn() const;
-    void setIsOn(bool isOn);
-    int getRange() const;
-    void setRange(int range);
-    Platform* getHost() const;
-    void setHost(Platform* host);
+    int getSlotsOccupied() const {return slotsOccupied_;}
+    void setSlotsOccupied(int slotsOccupied) {
+        if (slotsOccupied > 0)
+            slotsOccupied_ = slotsOccupied;
+    }
+    int getEnergyConsumption() const {return energyConsumption_;}
+    void setEnergyConsumption(int energyConsumption) {
+        if (energyConsumption > 0)
+            energyConsumption_ = energyConsumption;
+    }
+    bool getIsOn() const {return isOn_;}
+    void setIsOn(bool isOn) {isOn_ = isOn;}
+    int getRange() const {return range_;}
+    void setRange(int range) {
+        if (range > 0)
+            range_ = range;
+    }
+    Platform* getHost() const {return host_;}
+    void setHost(Platform* host) {host_ = host;}
 };
