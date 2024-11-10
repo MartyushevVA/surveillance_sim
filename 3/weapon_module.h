@@ -10,6 +10,7 @@ class WeaponModule :
     public Module,
     public IWeapon {
 protected:
+    std::chrono::steady_clock::time_point chargingStarted_ = std::chrono::steady_clock::now();
     std::chrono::seconds chargingDuration_ = std::chrono::seconds(0);
     bool isCharging_ = false;
     bool isCharged_ = false;
@@ -30,4 +31,6 @@ public:
     void setIsCharged(bool isCharged) {isCharged_ = isCharged;}
 
     void attack(Pair intruder) override;
+    void refreshState();
+    void startCharging();
 };

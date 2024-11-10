@@ -16,11 +16,13 @@ protected:
 public:
     virtual ~Placeholder() = default;
 
+    Pair getPosition() const {return position_;}
     void setPosition(int x, int y) {
-        if (x >= 0 && y >= 0 && environment_ != nullptr && environment_->getSize().x > x && environment_->getSize().y > y) {
+        if (x >= 0 && y >= 0 && environment_ != nullptr 
+        && environment_->getSize().x > x && environment_->getSize().y > y) {
             position_.x = x;
             position_.y = y;
         }
     }
-    Pair getPosition() const {return position_;}
+    Environment* getEnvironment() const {return environment_;}
 };
