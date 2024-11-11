@@ -7,7 +7,7 @@
 
 class Module;
 
-class Platform{
+class Platform : public Placeholder {
 protected:
     std::string description_ {};
     int energyLevel_ = 0;
@@ -16,8 +16,8 @@ protected:
     std::vector<std::unique_ptr<Module>> modules_ {};
 
     Platform() = default;
-    Platform(std::string description, int energyLevel, int slotCount)
-        : description_(description), energyLevel_(energyLevel), slotCount_(slotCount) {}
+    Platform(Pair position, Environment* environment, std::string description, int energyLevel, int slotCount, int speed)
+        : Placeholder(position, environment, speed), description_(description), energyLevel_(energyLevel), slotCount_(slotCount) {}
 
 public:
     virtual ~Platform() = default;
@@ -39,6 +39,7 @@ public:
         if (maxEnergyLevel > 0)
             maxEnergyLevel_ = maxEnergyLevel;
     }
+
     std::vector<std::unique_ptr<Module>> getModules() const {return modules_;}
 
     void installModule(std::unique_ptr<Module> module);

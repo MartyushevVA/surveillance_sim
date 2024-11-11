@@ -2,11 +2,11 @@
 
 #include "platform.h"
 
-class StaticPlatform : 
-    public Placeholder,
-    public Platform {
+class StaticPlatform : public Platform {
 public:
     StaticPlatform() = default;
     StaticPlatform(Pair position, Environment* environment, std::string description, int energyLevel, int slotCount)
-        : Platform(description, energyLevel, slotCount), Placeholder(position, environment) {}
+        : Platform(position, environment, description, energyLevel, slotCount, 0) {}
+
+    void setSpeed(int speed) override {speed_ = 0;}
 };

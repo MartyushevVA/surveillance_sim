@@ -1,7 +1,7 @@
 #pragma once
-#include <memory>
 
-class Platform;
+#include <memory>
+#include "platform.h"
 
 class Module {
 protected:

@@ -7,8 +7,7 @@
 enum class CellType {
     Empty,
     Obstacle,
-    MobilePlatform,
-    StaticPlatform,
+    Platform,
     Intruder
 };
 

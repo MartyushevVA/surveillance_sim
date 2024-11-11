@@ -3,8 +3,8 @@
 #include <memory>
 #include <vector>
 
-class Platform;
-class Environment;
+#include "platform.h"
+#include "environment.h"
 
 class AI {
 private:

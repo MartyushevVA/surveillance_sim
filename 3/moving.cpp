@@ -1,14 +1,13 @@
-#include "moving_object.h"
+#include "placeholder.h"
 #include "mobile_platform.h"
 #include "intruder.h"
-#include "environment.h"
 #include <random>
 
-void MovingObject::move(Pair position) {
-    if (abilityToMove(position))
+void Placeholder::move(Pair position) {
+    if (abilityToMove(position) && position != position_)
         setPosition(position);
 }
-bool MovingObject::abilityToMove(Pair position) const {
+bool Placeholder::abilityToMove(Pair position) const {
     if (!environment_) return false;
     Pair size = environment_->getSize();
     if (position.x < 0 || position.x >= size.x || 
@@ -17,7 +16,7 @@ bool MovingObject::abilityToMove(Pair position) const {
     return environment_->getCellType(position.x, position.y) == CellType::Empty;
 }
 
-Pair MovingObject::calculateRandomMove() const {
+Pair Placeholder::calculateRandomMove() const {
     srand(time(nullptr));
     int spd = speed_; //it depends on angle
     int dx = ((rand() % 3) - 1) * spd;
