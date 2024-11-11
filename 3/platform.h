@@ -7,7 +7,7 @@
 
 class Module;
 
-class Platform : virtual public Placeholder {
+class Platform : public Placeholder {
 protected:
     std::string description_ {};
     int energyLevel_ = 0;

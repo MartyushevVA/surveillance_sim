@@ -12,7 +12,8 @@ class MobilePlatform :
 public:
     MobilePlatform() = default;
     MobilePlatform(int x, int y, Environment* environment, std::string description, int energyLevel, int slotCount, int speed)
-        : Platform(x, y, environment, description, energyLevel, slotCount), MovingObject(x, y, environment, speed) {}
+        : Platform(x, y, environment, description, energyLevel, slotCount), MovingObject(speed) {}
 
+    Pair getPosition() override {return position_;}
     Pair calculatePursuitMove(Pair target) const override;
 };

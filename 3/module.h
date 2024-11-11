@@ -10,7 +10,7 @@ protected:
     bool isOn_ = false;
     int range_ = 0;
     Platform* host_ = nullptr;
-    
+
     Module() = default;
     Module(int slotsOccupied, int energyConsumption, bool isOn, int range)
         : slotsOccupied_(slotsOccupied), energyConsumption_(energyConsumption), isOn_(isOn), range_(range) {}
@@ -37,7 +37,6 @@ public:
     }
     Platform* getHost() const {return host_;}
     void setHost(Platform* host) {host_ = host;}
-
 
     bool isInRange(Pair target) const;
     void attachTo(Platform* host) const;
