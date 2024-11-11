@@ -7,14 +7,12 @@
 class Environment;
 
 class Intruder : 
-    public Placeholder,
     public MovingObject,
     public IAvoidanceMovement {
 public:
     Intruder() = default;
-    Intruder(int x, int y, Environment* environment, int speed)
-        : Placeholder({x, y}, environment), MovingObject(speed) {}
+    Intruder(Pair position, Environment* environment, int speed)
+        : MovingObject(position, environment, speed) {}
 
     Pair calculateAvoidanceMove(Pair threat) const override;
-    Pair calculateRandomMove() const override;
 };

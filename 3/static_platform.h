@@ -2,9 +2,11 @@
 
 #include "platform.h"
 
-class StaticPlatform : public Platform {
+class StaticPlatform : 
+    public Placeholder,
+    public Platform {
 public:
     StaticPlatform() = default;
-    StaticPlatform(int x, int y, Environment* environment, std::string description, int energyLevel, int slotCount)
-        : Platform(x, y, environment, description, energyLevel, slotCount) {}
+    StaticPlatform(Pair position, Environment* environment, std::string description, int energyLevel, int slotCount)
+        : Platform(description, energyLevel, slotCount), Placeholder(position, environment) {}
 };

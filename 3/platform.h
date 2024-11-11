@@ -7,7 +7,7 @@
 
 class Module;
 
-class Platform : public Placeholder {
+class Platform{
 protected:
     std::string description_ {};
     int energyLevel_ = 0;
@@ -16,8 +16,8 @@ protected:
     std::vector<std::unique_ptr<Module>> modules_ {};
 
     Platform() = default;
-    Platform(int x, int y, Environment* environment, std::string description, int energyLevel, int slotCount)
-        : Placeholder({x, y}, environment), description_(description), energyLevel_(energyLevel), slotCount_(slotCount) {}
+    Platform(std::string description, int energyLevel, int slotCount)
+        : description_(description), energyLevel_(energyLevel), slotCount_(slotCount) {}
 
 public:
     virtual ~Platform() = default;

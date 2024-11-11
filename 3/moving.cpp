@@ -4,15 +4,20 @@
 #include "environment.h"
 #include <random>
 
-Pair MobilePlatform::calculateRandomMove() const {
-    srand(time(nullptr));
-    int spd = speed_; //it depends on angle
-    int dx = ((rand() % 3) - 1) * spd;
-    int dy = ((rand() % 3) - 1) * spd;
-    return {position_.x + dx, position_.y + dy};
+void MovingObject::move(Pair position) {
+    if (abilityToMove(position))
+        setPosition(position);
+}
+bool MovingObject::abilityToMove(Pair position) const {
+    if (!environment_) return false;
+    Pair size = environment_->getSize();
+    if (position.x < 0 || position.x >= size.x || 
+        position.y < 0 || position.y >= size.y)
+        return false;
+    return environment_->getCellType(position.x, position.y) == CellType::Empty;
 }
 
-Pair Intruder::calculateRandomMove() const {
+Pair MovingObject::calculateRandomMove() const {
     srand(time(nullptr));
     int spd = speed_; //it depends on angle
     int dx = ((rand() % 3) - 1) * spd;

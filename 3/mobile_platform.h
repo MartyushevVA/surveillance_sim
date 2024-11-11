@@ -10,10 +10,8 @@ class MobilePlatform :
     public IPursuitMovement {
 public:
     MobilePlatform() = default;
-    MobilePlatform(int x, int y, Environment* environment, std::string description, int energyLevel, int slotCount, int speed)
-        : Platform(x, y, environment, description, energyLevel, slotCount), MovingObject(speed) {}
+    MobilePlatform(Pair position, Environment* environment, std::string description, int energyLevel, int slotCount, int speed)
+        : Platform(description, energyLevel, slotCount), MovingObject(position, environment, speed) {}
 
-   
     Pair calculatePursuitMove(Pair target) const override;
-    Pair calculateRandomMove() const override;
 };

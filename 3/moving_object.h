@@ -3,11 +3,14 @@
 #include "interfaces_move.h"
 #include "placeholder.h"
 
-class MovingObject : public IRandomMovement {
+class MovingObject : 
+    public Placeholder,
+    public IRandomMovement {
 protected:
     int speed_ = 0;
     MovingObject() = default;
-    MovingObject(int speed) : speed_(speed) {}
+    MovingObject(Pair position, Environment* environment, int speed)
+        : Placeholder(position, environment), speed_(speed) {}
 public:
     virtual ~MovingObject() = default;
 
@@ -16,4 +19,9 @@ public:
             speed_ = speed;
     }
     int getSpeed() const {return speed_;}
+
+    void move(Pair position) override;
+    bool abilityToMove(Pair position) const override;
+
+    Pair calculateRandomMove() const override;
 };

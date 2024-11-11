@@ -7,6 +7,8 @@ class IMove {};
 class IRandomMovement : public IMove {
 public:
     virtual ~IRandomMovement() = default;
+    virtual void move(Pair position) = 0;
+    virtual bool abilityToMove(Pair position) const = 0;
     virtual Pair calculateRandomMove() const = 0;
 };
 
