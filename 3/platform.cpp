@@ -1,5 +1,6 @@
 #include "platform.h"
 #include "module.h"
+#include <stdexcept>
 
 void Platform::installModule(std::unique_ptr<Module> module) {
     if (modules_.size() + module->getSlotsOccupied() <= slotCount_) {

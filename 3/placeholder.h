@@ -1,6 +1,6 @@
 #pragma once
 
-#include "environment.h"
+class Environment;
 
 struct Pair {
     int x, y;

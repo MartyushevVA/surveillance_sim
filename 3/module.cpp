@@ -1,3 +1,4 @@
+#include <stdexcept>
 #include "sensor_module.h"
 #include "module.h"
 #include "platform.h"
