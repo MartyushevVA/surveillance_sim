@@ -17,12 +17,19 @@ public:
     virtual ~Placeholder() = default;
 
     Pair getPosition() const {return position_;}
-    void setPosition(int x, int y) {
-        if (x >= 0 && y >= 0 && environment_ != nullptr 
-        && environment_->getSize().x > x && environment_->getSize().y > y) {
-            position_.x = x;
-            position_.y = y;
+    void setPosition(Pair position) {
+        if (abilityToMove(position)) {
+            position_ = position;
         }
     }
+    bool abilityToMove(Pair position) const {
+        if (!environment_) return false;
+        Pair size = environment_->getSize();
+        if (position.x < 0 || position.x >= size.x || 
+            position.y < 0 || position.y >= size.y)
+            return false;
+        return environment_->getCellType(position.x, position.y) == CellType::Empty;
+    }
+    
     Environment* getEnvironment() const {return environment_;}
 };

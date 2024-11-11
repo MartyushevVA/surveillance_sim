@@ -16,9 +16,4 @@ public:
             speed_ = speed;
     }
     int getSpeed() const {return speed_;}
-
-    virtual Pair getPosition() = 0;
-    void move(Pair nextPosition) override;
-    bool abilityToMove(Pair position) const override;
-    Pair calculateRandomMove() const override;
 };

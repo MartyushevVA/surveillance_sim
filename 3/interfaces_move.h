@@ -2,12 +2,7 @@
 
 #include "placeholder.h"
 
-class IMove {
-public:
-    virtual ~IMove() = default;
-    virtual void move(Pair nextPosition) = 0;
-    virtual bool abilityToMove(Pair position) const = 0;
-};
+class IMove {};
 
 class IRandomMovement : public IMove {
 public:
