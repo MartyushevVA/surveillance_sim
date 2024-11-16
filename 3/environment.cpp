@@ -1,8 +1,9 @@
 #pragma once
 
 #include <stdexcept>
-#include "environment.h"
+#include <cmath>
 
+#include "environment.h"
 #include "intruder.h"
 #include "mobile_platform.h"
 #include "static_platform.h"
@@ -56,4 +57,18 @@ void Environment::setCellType(int x, int y, CellType type) {
             addToken(std::make_shared<Intruder>(Pair{x, y}, this, 0));
             break;
     }
+}
+
+bool Environment::hasLineOfSight(Pair from, Pair to) const {
+    double distance = sqrt((from.x - to.x) * (from.x - to.x) + (from.y - to.y) * (from.y - to.y));
+    double stepX = (to.x - from.x) / distance;
+    double stepY = (to.y - from.y) / distance;
+
+    for (double i = 0; i < distance; i += 1) {
+        int x = from.x + stepX * i;
+        int y = from.y + stepY * i;
+        if (getCellType(x, y) != CellType::Obstacle)
+            return false;
+    }
+    return true;
 }

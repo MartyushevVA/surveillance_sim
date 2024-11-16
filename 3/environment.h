@@ -35,7 +35,6 @@ public:
     
     CellType getCellType(int x, int y) const;
     void setCellType(int x, int y, CellType type);
-};
 
-//setcelltype теперь должен принимать какую именно платформу нужно создать, тк иначе у нее нет координат
-//и это логично тк базовый класс платформы не может иметь объекта.
+    bool hasLineOfSight(Pair from, Pair to) const;
+};

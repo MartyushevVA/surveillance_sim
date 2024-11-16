@@ -22,5 +22,5 @@ public:
     SensorType getType() const {return type_;}
     void setType(SensorType type) {type_ = type;}
 
-    SurroundingReport getReport() const override;
+    std::vector<std::shared_ptr<Placeholder>> getSurrounding() const override;
 };

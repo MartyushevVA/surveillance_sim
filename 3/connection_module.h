@@ -17,17 +17,18 @@ public:
     ConnectionModule(int slotsOccupied, int energyConsumption, bool isOn, int range, int maxSessions)
         : Module(slotsOccupied, energyConsumption, isOn, range), maxSessions_(maxSessions) {}
 
-    int getMaxSessions() const;
-    void setMaxSessions(int maxSessions);
-    std::vector<Module*> getSessionList() const;
-    void setSessionList(std::vector<Module*> sessionList);
-    std::vector<routeNode> getRouteList() const;
-    void setRouteList(std::vector<routeNode> routeList);
+    int getMaxSessions() const {return maxSessions_;}
+    void setMaxSessions(int maxSessions) {
+        if (maxSessions > 0)
+            maxSessions_ = maxSessions;
+    }
+    std::vector<Module*> getSessionList() const {return sessionList_;}
+    void setSessionList(std::vector<Module*> sessionList) {sessionList_ = sessionList;}
+    std::vector<routeNode> getRouteList() const {return routeList_;}
+    void setRouteList(std::vector<routeNode> routeList) {routeList_ = routeList;}
 
-    std::vector<Placeholder*> scanForModules() override;
+    std::vector<Module*> scanForModules() override;
     void implementRouteNodes(std::vector<routeNode> routeNodes) override;
-    void sendInfo(std::string info) override;
-    std::string receiveInfo() override;
     void establishConnection(Module& module) override;
     void closeConnection(Module& module) override;
     bool isConnectedToAI() const override;

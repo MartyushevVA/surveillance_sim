@@ -18,9 +18,8 @@ bool Placeholder::abilityToMove(Pair position) const {
 
 Pair Placeholder::calculateRandomMove() const {
     srand(time(nullptr));
-    int spd = speed_; //it depends on angle
-    int dx = ((rand() % 3) - 1) * spd;
-    int dy = ((rand() % 3) - 1) * spd;
+    int dx = ((rand() % (2*speed_ + 1)) - speed_);
+    int dy = rand() % 2 ? sqrt(speed_ * speed_ - dx * dx) : -sqrt(speed_ * speed_ - dx * dx);
     return {position_.x + dx, position_.y + dy};
 }
 

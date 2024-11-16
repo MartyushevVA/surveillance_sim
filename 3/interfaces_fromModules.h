@@ -15,7 +15,7 @@ class IConnection {
 public:
     virtual ~IConnection() = default;
 
-    virtual std::vector<Placeholder*> scanForModules() = 0; //simply scans space nearby;
+    virtual std::vector<Module*> scanForModules() = 0; //simply scans space nearby;
     
     virtual void implementRouteNodes(std::vector<routeNode> routeNodes) = 0; //adjust new data to actual route list;
     
@@ -34,13 +34,8 @@ public:
     virtual void attack(Pair target) = 0;
 };
 
-struct SurroundingReport {
-    Pair position_;
-    std::vector<Placeholder*> relatives;
-};
-
 class ISensor {
 public:
     virtual ~ISensor() = default;
-    virtual SurroundingReport getReport() const = 0;
+    virtual std::vector<std::shared_ptr<Placeholder>> getSurrounding() const = 0;
 };
