@@ -3,6 +3,7 @@
 #include "module.h"
 #include "interfaces_fromModules.h"
 #include <vector>
+#include <algorithm>
 
 class ConnectionModule :
     public Module,
@@ -22,16 +23,18 @@ public:
         if (maxSessions > 0)
             maxSessions_ = maxSessions;
     }
-    std::vector<Module*> getSessionList() const {return sessionList_;}
-    void setSessionList(std::vector<Module*> sessionList) {sessionList_ = sessionList;}
-    std::vector<routeNode> getRouteList() const {return routeList_;}
-    void setRouteList(std::vector<routeNode> routeList) {routeList_ = routeList;}
 
     std::vector<Module*> scanForModules() override;
-    void implementRouteNodes(std::vector<routeNode> routeNodes) override;
-    void establishConnection(Module& module) override;
-    void closeConnection(Module& module) override;
-    bool isConnectedToAI() const override;
+    
+    std::vector<Module*> getSessionList() const {return sessionList_;}
+    void setSessionList(std::vector<Module*> sessionList) {sessionList_ = sessionList;}
+
+    bool establishConnection(ConnectionModule* module, bool isResponse) override;
+
+    void updateSessionList() {
+        std::vector<Module*> newModules = scanForModules();
+        setSessionList(newModules);
+    }
 };
 
 /*

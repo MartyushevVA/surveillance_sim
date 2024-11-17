@@ -13,18 +13,16 @@ std::vector<Module*> ConnectionModule::scanForModules() {
     return modulesInRange;
 }
 
-void ConnectionModule::implementRouteNodes(std::vector<routeNode> routeNodes) {
-
-}
-
-void ConnectionModule::establishConnection(Module& module) {
-
-}
-
-void ConnectionModule::closeConnection(Module& module) {
-
-}
-
-bool ConnectionModule::isConnectedToAI() const {
-
+bool ConnectionModule::establishConnection(ConnectionModule* target, bool isResponse = false) {
+    std::vector<Module*> newModules = scanForModules();
+    if (std::find(newModules.begin(), newModules.end(), target) != newModules.end()
+    && sessionList_.size() < maxSessions_) {
+        if (!isResponse)
+            if (target->establishConnection(this, true))
+                sessionList_.push_back(target);
+        else
+            sessionList_.push_back(target);
+        return true;
+    }
+    return false;
 }
