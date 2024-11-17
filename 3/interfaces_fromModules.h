@@ -15,8 +15,7 @@ class IConnection {
 public:
     virtual ~IConnection() = default;
 
-    virtual std::vector<Module*> scanForModules() = 0; //simply scans space nearby;
-    
+    virtual std::vector<ConnectionModule*> scanForModules() = 0; //simply scans space nearby;
 
     virtual bool establishConnection(ConnectionModule* module, bool isResponse) = 0; //establishing connection with other module;
     virtual bool closeConnection(ConnectionModule* module) = 0; //closing connection with other module;

@@ -39,5 +39,4 @@ public:
     void setHost(Platform* host) {host_ = host;}
 
     bool isInRange(Pair target) const;
-    void attachTo(Platform* host) const;
 };

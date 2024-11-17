@@ -1,8 +1,8 @@
 #include "connection_module.h"
 #include "platform.h"
 
-std::vector<Module*> ConnectionModule::scanForModules() {
-    std::vector<Module*> modulesInRange;
+std::vector<ConnectionModule*> ConnectionModule::scanForModules() {
+    std::vector<ConnectionModule*> modulesInRange;
     for (const auto& token : host_->getEnvironment()->getTokens()) {
         int x = token->getPosition().x;
         int y = token->getPosition().y;
@@ -14,7 +14,7 @@ std::vector<Module*> ConnectionModule::scanForModules() {
 }
 
 bool ConnectionModule::establishConnection(ConnectionModule* target, bool isResponse = false) {
-    std::vector<Module*> newModules = scanForModules();
+    std::vector<ConnectionModule*> newModules = scanForModules();
     if (std::find(newModules.begin(), newModules.end(), target) != newModules.end()
     && sessionList_.size() < maxSessions_) {
         if (!isResponse)

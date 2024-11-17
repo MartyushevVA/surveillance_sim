@@ -24,7 +24,7 @@ public:
             maxSessions_ = maxSessions;
     }
 
-    std::vector<Module*> scanForModules() override;
+    std::vector<ConnectionModule*> scanForModules() override;
 
     bool establishConnection(ConnectionModule* module, bool isResponse) override;
     bool closeConnection(ConnectionModule* module) override;
