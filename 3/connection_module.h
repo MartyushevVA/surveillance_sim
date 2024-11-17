@@ -10,7 +10,7 @@ class ConnectionModule :
     public IConnection {
 protected:
     int maxSessions_ = 5;
-    std::vector<Module*> sessionList_ {};
+    std::vector<ConnectionModule*> sessionList_ {};
     std::vector<routeNode> routeList_ {};
 
 public:
@@ -25,18 +25,15 @@ public:
     }
 
     std::vector<Module*> scanForModules() override;
-    
-    std::vector<Module*> getSessionList() const {return sessionList_;}
-    void setSessionList(std::vector<Module*> sessionList) {sessionList_ = sessionList;}
 
     bool establishConnection(ConnectionModule* module, bool isResponse) override;
+    bool closeConnection(ConnectionModule* module) override;
 
-    void updateSessionList() {
-        std::vector<Module*> newModules = scanForModules();
-        setSessionList(newModules);
-    }
+    std::vector<routeNode> getRouteList() const override {return routeList_;}
+    std::vector<routeNode> requestRouteList() const override;
+    void applyRouteList(std::vector<routeNode> routeList) override;
+
 };
-
 /*
 sessionList consists of pointers to net modules which can be connected
 to current module directly, at first knee :)

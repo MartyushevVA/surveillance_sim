@@ -7,8 +7,8 @@
 class Module;
 
 struct routeNode {
-    Module* destination;
-    Module* gate;
+    ConnectionModule* destination;
+    ConnectionModule* gate;
 };
 
 class IConnection {
@@ -19,7 +19,13 @@ public:
     
 
     virtual bool establishConnection(ConnectionModule* module, bool isResponse) = 0; //establishing connection with other module;
+    virtual bool closeConnection(ConnectionModule* module) = 0; //closing connection with other module;
+    virtual std::vector<routeNode> getRouteList() const = 0; //getting route list from module;
+    virtual std::vector<routeNode> requestRouteList() const = 0; //requesting route list from module;
+    virtual void applyRouteList(std::vector<routeNode> routeList) = 0; //applying route list to module;
+
 };
+
 
 class IWeapon {
 public:
