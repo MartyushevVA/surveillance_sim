@@ -14,14 +14,16 @@
 
 class Game {
 private:
-    Environment environment_;
-    AI ai_;
+    Environment environment_ {};
+    AI ai_ {&environment_};
     std::vector<std::unique_ptr<Module>> storage_;
+    void update();
+    void render();
 
 public:
-    Game(Environment* environment) : ai_(environment) {}
+    Game() = default;
 
-    void loadFieldFromFile(const std::string& filename, Environment& environment);
+    void loadFieldFromFile(const std::string& filename);
     void addToStorage(std::unique_ptr<Module> module) {storage_.push_back(std::move(module));}
     void start();
     void stop();

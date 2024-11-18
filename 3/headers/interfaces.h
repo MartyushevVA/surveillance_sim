@@ -20,6 +20,7 @@ public:
 
     virtual bool establishConnection(ConnectionModule* module, bool isResponse) = 0;
     virtual bool closeConnection(ConnectionModule* module) = 0;
+
     virtual std::vector<routeNode> getRouteList() const = 0;
     virtual std::vector<routeNode> requestRouteList() const = 0;
     virtual void applyRouteList(std::vector<routeNode> routeList) = 0;
@@ -38,13 +39,16 @@ public:
     virtual std::vector<std::shared_ptr<Placeholder>> getSurrounding() const = 0;
 };
 
-class IMove {};
+class IMove {
+public:
+    virtual ~IMove() = default;
+    virtual void move(Pair position) = 0;
+    virtual bool abilityToMove(Pair position) const = 0;
+};
 
 class IRandomMovement : public IMove {
 public:
     virtual ~IRandomMovement() = default;
-    virtual void move(Pair position) = 0;
-    virtual bool abilityToMove(Pair position) const = 0;
     virtual Pair calculateRandomMove() const = 0;
 };
 

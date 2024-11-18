@@ -8,14 +8,12 @@ using json = nlohmann::json;
 
 void Game::loadFieldFromFile(const std::string& filename, Environment& environment) {
     std::ifstream inputFile(filename);
-    if (!inputFile.is_open()) {
+    if (!inputFile.is_open())
         throw std::runtime_error("Could not open file");
-    }
     json j;
     inputFile >> j;
-    int width = j["field"]["width"];
-    int height = j["field"]["height"];
-    environment.setSize(width, height);
+    Pair size = {j["field"]["width"], j["field"]["height"]};
+    environment.setSize(size.x, size.y); 
 
     for (const auto& obstacleData : j["obstacles"]) {
         Pair position = {obstacleData["position"]["x"], obstacleData["position"]["y"]};
@@ -33,18 +31,19 @@ void Game::loadFieldFromFile(const std::string& filename, Environment& environme
         std::string type = platformData["type"];
         Pair position = {platformData["position"]["x"], platformData["position"]["y"]};
         std::string description = platformData["description"];
-        int energyLevel = platformData["maxEnergyLevel"];
+        int maxEnergyLevel = platformData["maxEnergyLevel"];
         int slotCount = platformData["slotCount"];
         int speed = platformData["speed"];
         if (type == "MobilePlatform") {
-            auto platform = std::make_shared<MobilePlatform>(position, &environment, description, energyLevel, slotCount, speed);
+            auto platform = std::make_shared<MobilePlatform>(position, &environment, description, maxEnergyLevel, slotCount, speed);
             environment.addToken(platform);
         }
         else if (type == "StaticPlatform") {
-            auto platform = std::make_shared<StaticPlatform>(position, &environment, description, energyLevel, slotCount);
+            auto platform = std::make_shared<StaticPlatform>(position, &environment, description, maxEnergyLevel, slotCount);
             environment.addToken(platform);
             ai_.addConnectedPlatform(platform);
         }
+        else;
     }
 
     for (const auto& moduleData : j["modules"]) {

@@ -16,14 +16,14 @@ protected:
     std::vector<routeNode> routeList_ {};
 
 public:
-    ConnectionModule() = default;
     ConnectionModule(int slotsOccupied, int energyConsumption, bool isOn, int range, int maxSessions)
         : Module(slotsOccupied, energyConsumption, isOn, range), maxSessions_(maxSessions) {}
 
     int getMaxSessions() const {return maxSessions_;}
     void setMaxSessions(int maxSessions) {
-        if (maxSessions > 0)
-            maxSessions_ = maxSessions;
+        if (maxSessions <= 0)
+            throw std::invalid_argument("Max sessions must be positive");
+        maxSessions_ = maxSessions;
     }
 
     std::vector<ConnectionModule*> scanForModules() override;
@@ -60,7 +60,6 @@ protected:
     SensorType type_ = SensorType::Optical;
 
 public:
-    SensorModule() = default;
     SensorModule(int slotsOccupied, int energyConsumption, bool isOn, int range, SensorType type)
         : Module(slotsOccupied, energyConsumption, isOn, range), type_(type) {}
 
@@ -82,14 +81,14 @@ protected:
     bool isCharged_ = false;
 
 public:
-    WeaponModule() = default;
     WeaponModule(int slotsOccupied, int energyConsumption, bool isOn, int range, std::chrono::seconds chargingDuration, bool isCharging, bool isCharged)
         : Module(slotsOccupied, energyConsumption, isOn, range), chargingDuration_(chargingDuration), isCharging_(isCharging), isCharged_(isCharged) {}
     
     std::chrono::seconds getChargingDuration() const {return chargingDuration_;}
     void setChargingDuration(std::chrono::seconds chargingDuration) {
-        if (chargingDuration > std::chrono::seconds(0))
-            chargingDuration_ = chargingDuration;
+        if (chargingDuration <= std::chrono::seconds(0))
+            throw std::invalid_argument("Charging duration must be positive");
+        chargingDuration_ = chargingDuration;
     }
     bool getIsCharging() const {return isCharging_;}
     void setIsCharging(bool isCharging) {isCharging_ = isCharging;}

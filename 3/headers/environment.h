@@ -28,22 +28,22 @@ private:
 
 public:
     Environment() = default;
-    Environment(int width, int height) : size_({width, height}) {}
+    Environment(int width, int height) {setSize(width, height);}
 
     Pair getSize() const {return size_;}
     void setSize(int width, int height) {
-        if (width > 0 && height > 0)
-            size_ = {width, height};
+        if (width <= 0 || height <= 0)
+            throw std::invalid_argument("Width and height must be positive");
+        size_ = {width, height};
     }
     
     void addToken(std::shared_ptr<Placeholder> token);
-    std::shared_ptr<Placeholder> removeToken(int x, int y);
+    std::shared_ptr<Placeholder> extractToken(int x, int y);
 
     std::set<std::shared_ptr<Placeholder>> getTokens() const {return tokens_;}
     std::shared_ptr<Placeholder> getToken(int x, int y) const;
 
     CellType getCellType(int x, int y) const;
-    void setCellType(int x, int y, CellType type);
 
     bool hasLineOfSight(Pair from, Pair to) const;
 };

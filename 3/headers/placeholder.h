@@ -19,7 +19,6 @@ protected:
     Pair position_ = {0, 0};
     int speed_ = 0;
     Environment* environment_ = nullptr;
-    Placeholder() = default;
     Placeholder(Pair position, Environment* environment, int speed)
         : position_(position), environment_(environment), speed_(speed) {}
 
@@ -27,7 +26,11 @@ public:
     virtual ~Placeholder() = default;
 
     Pair getPosition() const {return position_;}
-    void setPosition(Pair position) {position_ = position;}
+    void setPosition(Pair position) {
+        if (position.x < 0 || position.y < 0)
+            throw std::invalid_argument("Position must be non-negative");
+        position_ = position;
+    }
     int getSpeed() const {return speed_;}
     virtual void setSpeed(int speed) = 0;
 

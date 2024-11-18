@@ -5,7 +5,7 @@ void WeaponModule::attack(Pair intruder) {
         return;
     }
     if (isCharged_) {
-        host_->getEnvironment()->setCellType(intruder.x, intruder.y, CellType::Empty);
+        host_->getEnvironment()->extractToken(intruder.x, intruder.y);
         isCharged_ = false;
     }
 }

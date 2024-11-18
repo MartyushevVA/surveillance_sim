@@ -4,7 +4,6 @@
 
 class StaticPlatform : public Platform {
 public:
-    StaticPlatform() = default;
     StaticPlatform(Pair position, Environment* environment, std::string description, int energyLevel, int slotCount)
         : Platform(position, environment, description, energyLevel, slotCount, 0) {}
 

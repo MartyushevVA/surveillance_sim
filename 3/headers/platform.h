@@ -17,7 +17,6 @@ protected:
     int slotCount_ = 0;
     std::vector<std::unique_ptr<Module>> modules_ {};
 
-    Platform() = default;
     Platform(Pair position, Environment* environment, std::string description, int energyLevel, int slotCount, int speed)
         : Placeholder(position, environment, speed), description_(description), energyLevel_(energyLevel), slotCount_(slotCount) {}
 
@@ -27,12 +26,24 @@ public:
     void setDescription(std::string description) {description_ = std::move(description);}
     std::string getDescription() const {return description_;}
     int getEnergyLevel() const {return energyLevel_;}
-    void setEnergyLevel(int energyLevel) {if (energyLevel > 0) energyLevel_ = energyLevel;}
+    void setEnergyLevel(int energyLevel) {
+        if (energyLevel <= 0)
+            throw std::invalid_argument("Energy level must be positive");
+        energyLevel_ = energyLevel;
+    }
     int getSlotCount() const {return slotCount_;}
-    void setSlotCount(int slotCount) {if (slotCount > 0) slotCount_ = slotCount;}
+    void setSlotCount(int slotCount) {
+        if (slotCount <= 0)
+            throw std::invalid_argument("Slot count must be positive");
+        slotCount_ = slotCount;
+    }
     int getMaxEnergyLevel() const {return maxEnergyLevel_;}
-    void setMaxEnergyLevel(int maxEnergyLevel) {if (maxEnergyLevel > 0) maxEnergyLevel_ = maxEnergyLevel;}
-
+    void setMaxEnergyLevel(int maxEnergyLevel) {
+        if (maxEnergyLevel <= 0)
+            throw std::invalid_argument("Max energy level must be positive");
+        maxEnergyLevel_ = maxEnergyLevel;
+    }
+    
     std::vector<std::unique_ptr<Module>> getModules() const {return modules_;}
 
     void installModule(std::unique_ptr<Module> module);
