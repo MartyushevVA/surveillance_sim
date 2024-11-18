@@ -33,4 +33,6 @@ public:
     void attack(Pair intruder) override;
     void refreshState();
     void startCharging();
+
+    void attachTo(Platform* host) const override;
 };

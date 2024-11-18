@@ -12,3 +12,8 @@ std::vector<std::shared_ptr<Placeholder>> SensorModule::getSurrounding() const {
     }
     return tokensInRange;
 }
+
+void SensorModule::attachTo(Platform* host) const {
+    if (host->getEnergyLevel() + energyConsumption_ <= host->getMaxEnergyLevel())
+        host->installModule(std::make_unique<SensorModule>(*this));
+}

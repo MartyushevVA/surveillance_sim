@@ -34,3 +34,7 @@ void WeaponModule::refreshState() {
         }
     }
 }
+
+void WeaponModule::attachTo(Platform* host) const {
+    host->installModule(std::make_unique<WeaponModule>(*this));
+}

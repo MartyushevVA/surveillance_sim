@@ -33,6 +33,7 @@ public:
     std::vector<routeNode> requestRouteList() const override;
     void applyRouteList(std::vector<routeNode> routeList) override;
 
+    void attachTo(Platform* host) const override;
 };
 /*
 sessionList consists of pointers to net modules which can be connected

@@ -69,3 +69,8 @@ void ConnectionModule::applyRouteList(std::vector<routeNode> routeList) {
     newRouteList.erase(last, newRouteList.end());
     routeList_ = newRouteList;
 }
+
+void ConnectionModule::attachTo(Platform* host) const {
+    if (host->getEnergyLevel() + energyConsumption_ <= host->getMaxEnergyLevel())
+        host->installModule(std::make_unique<ConnectionModule>(*this));
+}

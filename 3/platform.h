@@ -25,20 +25,11 @@ public:
     void setDescription(std::string description) {description_ = std::move(description);}
     std::string getDescription() const {return description_;}
     int getEnergyLevel() const {return energyLevel_;}
-    void setEnergyLevel(int energyLevel) {
-        if (energyLevel > 0)
-            energyLevel_ = energyLevel;
-    }
+    void setEnergyLevel(int energyLevel) {if (energyLevel > 0) energyLevel_ = energyLevel;}
     int getSlotCount() const {return slotCount_;}
-    void setSlotCount(int slotCount) {
-        if (slotCount > 0)
-            slotCount_ = slotCount;
-    }
+    void setSlotCount(int slotCount) {if (slotCount > 0) slotCount_ = slotCount;}
     int getMaxEnergyLevel() const {return maxEnergyLevel_;}
-    void setMaxEnergyLevel(int maxEnergyLevel) {
-        if (maxEnergyLevel > 0)
-            maxEnergyLevel_ = maxEnergyLevel;
-    }
+    void setMaxEnergyLevel(int maxEnergyLevel) {if (maxEnergyLevel > 0) maxEnergyLevel_ = maxEnergyLevel;}
 
     std::vector<std::unique_ptr<Module>> getModules() const {return modules_;}
 

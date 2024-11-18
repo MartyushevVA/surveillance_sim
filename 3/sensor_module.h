@@ -23,4 +23,5 @@ public:
     void setType(SensorType type) {type_ = type;}
 
     std::vector<std::shared_ptr<Placeholder>> getSurrounding() const override;
+    void attachTo(Platform* host) const override;
 };
