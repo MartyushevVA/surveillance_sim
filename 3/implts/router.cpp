@@ -1,5 +1,4 @@
-#include "connection_module.h"
-#include "platform.h"
+#include "module_types.h"
 
 std::vector<ConnectionModule*> ConnectionModule::scanForModules() {
     std::vector<ConnectionModule*> modulesInRange;

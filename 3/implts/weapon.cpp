@@ -1,8 +1,7 @@
-#include "weapon_module.h"
-#include "platform.h"
+#include "module_types.h"
 
 void WeaponModule::attack(Pair intruder) {
-    if (!host_ || !isOn_ || !isInRange(intruder)) { //нужно учитывать препятствия isAccessible
+    if (!host_ || !isOn_ || !host_->getEnvironment()->hasLineOfSight(host_->getPosition(), intruder)) {
         return;
     }
     if (isCharged_) {

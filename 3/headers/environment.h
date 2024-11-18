@@ -2,7 +2,12 @@
 
 #include <set>
 #include <memory>
+#include <stdexcept>
+#include <cmath>
+
 #include "placeholder.h"
+#include "intruder.h"
+#include "platform.h"
 
 enum class CellType {
     Empty,
@@ -11,7 +16,10 @@ enum class CellType {
     Intruder
 };
 
-class Obstacle : public Placeholder {};
+class Obstacle : public Placeholder {
+public:
+    void setSpeed(int speed) override {speed_ = 0;}
+};
 
 class Environment {
 private:

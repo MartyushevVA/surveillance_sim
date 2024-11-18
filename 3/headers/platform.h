@@ -3,6 +3,8 @@
 #include <string>
 #include <vector>
 #include <memory>
+
+#include "module.h"
 #include "placeholder.h"
 
 class Module;

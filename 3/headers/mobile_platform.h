@@ -1,7 +1,7 @@
 #pragma once
 
 #include "platform.h"
-#include "interfaces_move.h"
+#include "interfaces.h"
 
 class MobilePlatform :
     public Platform,

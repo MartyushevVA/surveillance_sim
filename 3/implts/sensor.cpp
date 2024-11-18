@@ -1,5 +1,4 @@
-#include "sensor_module.h"
-#include "placeholder.h"
+#include "module_types.h"
 
 std::vector<std::shared_ptr<Placeholder>> SensorModule::getSurrounding() const {
     std::vector<std::shared_ptr<Placeholder>> tokensInRange;

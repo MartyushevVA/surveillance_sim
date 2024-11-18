@@ -1,7 +1,8 @@
 #pragma once
 
-#include "interfaces_move.h"
+#include "interfaces.h"
 #include "environment.h"
+
 
 struct Pair {
     int x, y;

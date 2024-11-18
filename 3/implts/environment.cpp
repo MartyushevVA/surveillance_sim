@@ -1,10 +1,4 @@
-#include <stdexcept>
-#include <cmath>
-
 #include "environment.h"
-#include "intruder.h"
-#include "mobile_platform.h"
-#include "static_platform.h"
 
 void Environment::addToken(std::shared_ptr<Placeholder> token) {
     if (token->getPosition().x < size_.x && token->getPosition().y < size_.y) {

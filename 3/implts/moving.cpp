@@ -1,8 +1,6 @@
-#include "placeholder.h"
 #include "mobile_platform.h"
 #include "intruder.h"
-#include <random>
-#include <cmath>
+#include "placeholder.h"
 
 void Placeholder::move(Pair position) {
     if (abilityToMove(position) && position != position_)
