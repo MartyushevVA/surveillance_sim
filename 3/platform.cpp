@@ -12,6 +12,13 @@ void Platform::installModule(std::unique_ptr<Module> module) {
     }
 }
 
-/*std::unique_ptr<Module> Platform::removeModule(std::unique_ptr<Module> module) {
-    
-}*/
+std::unique_ptr<Module> Platform::extractModule(Module* module) {
+    for (auto it = modules_.begin(); it != modules_.end(); ++it) {
+        if (it->get() == module) {
+            std::unique_ptr<Module> removedModule = std::move(*it);
+            modules_.erase(it);
+            return removedModule;
+        }
+    }
+    return nullptr;
+}

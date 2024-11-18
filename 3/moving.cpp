@@ -30,7 +30,7 @@ Pair MobilePlatform::calculatePursuitMove(Pair target) const {
     double distance = sqrt(dx * dx + dy * dy);
     double bo_sinus = dy / distance;
     double bo_cosinus = dx / distance;
-    return {position_.x + bo_cosinus * speed_, position_.y + bo_sinus * speed_};
+    return {position_.x + (int)(bo_cosinus * speed_), position_.y + (int)(bo_sinus * speed_)};
 }
 
 Pair Intruder::calculateAvoidanceMove(Pair threat) const {

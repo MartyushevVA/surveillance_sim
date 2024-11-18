@@ -11,10 +11,7 @@ public:
     MobilePlatform(Pair position, Environment* environment, std::string description, int energyLevel, int slotCount, int speed)
         : Platform(position, environment, description, energyLevel, slotCount, speed) {}
 
-    void setSpeed(int speed) override {
-        if (speed > 0)
-            speed_ = speed;
-    }
+    void setSpeed(int speed) override {if (speed > 0) speed_ = speed;}
 
     Pair calculatePursuitMove(Pair target) const override;
 };

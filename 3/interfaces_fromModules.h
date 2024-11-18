@@ -3,6 +3,7 @@
 #include <memory>
 #include <vector>
 #include "placeholder.h"
+#include "connection_module.h"
 
 class Module;
 

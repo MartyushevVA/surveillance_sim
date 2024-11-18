@@ -34,7 +34,7 @@ public:
     std::vector<std::unique_ptr<Module>> getModules() const {return modules_;}
 
     void installModule(std::unique_ptr<Module> module);
-    std::unique_ptr<Module> removeModule(std::unique_ptr<Module> module);
+    std::unique_ptr<Module> extractModule(Module* module);
 
     template<typename T>
     T* findModuleOfType() {

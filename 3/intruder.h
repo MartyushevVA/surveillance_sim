@@ -13,10 +13,7 @@ public:
     Intruder(Pair position, Environment* environment, int speed)
         : Placeholder(position, environment, speed) {}
 
-    void setSpeed(int speed) override {
-        if (speed > 0)
-            speed_ = speed;
-    }
+    void setSpeed(int speed) override {if (speed > 0) speed_ = speed;}
 
     Pair calculateAvoidanceMove(Pair threat) const override;
 };
