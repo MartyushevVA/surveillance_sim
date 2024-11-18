@@ -40,10 +40,9 @@ public:
 
     template<typename T>
     T* findModuleOfType() {
-        for (const auto& module : getModules()) {
+        for (const auto& module : getModules())
             if (T* typed_module = dynamic_cast<T*>(module.get()))
                 return typed_module;
-        }
         return nullptr;
     }
 };

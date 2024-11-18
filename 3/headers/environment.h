@@ -40,7 +40,8 @@ public:
     std::shared_ptr<Placeholder> removeToken(int x, int y);
 
     std::set<std::shared_ptr<Placeholder>> getTokens() const {return tokens_;}
-    
+    std::shared_ptr<Placeholder> getToken(int x, int y) const;
+
     CellType getCellType(int x, int y) const;
     void setCellType(int x, int y, CellType type);
 

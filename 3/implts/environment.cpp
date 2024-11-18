@@ -21,6 +21,13 @@ std::set<std::shared_ptr<Placeholder>> Environment::getTokens() const {
     return tokens_;
 }
 
+std::shared_ptr<Placeholder> Environment::getToken(int x, int y) const {
+    for (const auto& token : tokens_)
+        if (token->getPosition().x == x && token->getPosition().y == y)
+            return token;
+    return nullptr;
+}
+
 CellType Environment::getCellType(int x, int y) const {
     for (const auto& token : tokens_) {
         if (token->getPosition().x == x && token->getPosition().y == y) {
