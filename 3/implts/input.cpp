@@ -1,19 +1,12 @@
-#include <iostream>
 #include <fstream>
 #include <nlohmann/json.hpp>
 
-#include "environment.h"
-#include "platform.h"
-#include "module_types.h"
 #include "game.h"
-#include "ai.h"
-#include "mobile_platform.h"
-#include "static_platform.h"
 
 
 using json = nlohmann::json;
 
-void loadFieldFromFile(const std::string& filename, Environment& environment) {
+void Game::loadFieldFromFile(const std::string& filename, Environment& environment) {
     std::ifstream inputFile(filename);
     if (!inputFile.is_open()) {
         throw std::runtime_error("Could not open file");
@@ -50,7 +43,7 @@ void loadFieldFromFile(const std::string& filename, Environment& environment) {
         else if (type == "StaticPlatform") {
             auto platform = std::make_shared<StaticPlatform>(position, &environment, description, energyLevel, slotCount);
             environment.addToken(platform);
-            ai::addConnectedPlatform(platform);
+            ai_.addConnectedPlatform(platform);
         }
     }
 
@@ -69,7 +62,7 @@ void loadFieldFromFile(const std::string& filename, Environment& environment) {
                 if (host)
                     module->attachTo(host);
             }
-            else game::addToStorage(std::move(module));
+            else addToStorage(std::move(module));
         } 
         else if (type == "SensorModule") {
             std::string sensorType = moduleData["sensorType"];
@@ -81,7 +74,7 @@ void loadFieldFromFile(const std::string& filename, Environment& environment) {
                 if (host)
                     module->attachTo(host);
             }
-            else game::addToStorage(std::move(module));
+            else addToStorage(std::move(module));
         }
         else if (type == "WeaponModule") {
             auto module = std::make_unique<WeaponModule>(slotsOccupied, energyConsumption, isOn, range);
@@ -91,7 +84,7 @@ void loadFieldFromFile(const std::string& filename, Environment& environment) {
                 if (host)
                     module->attachTo(host);
             }
-            else game::addToStorage(std::move(module));
+            else addToStorage(std::move(module));
         }
     }
 }
