@@ -23,7 +23,33 @@
         "description": "Platform 1",
         "maxEnergyLevel": 100,
         "slotCount": 2,
-        "speed": 5
+        "speed": 5,
+        "modules": [
+        {
+            "type": "ConnectionModule",
+            "slotsOccupied": 1,
+            "energyConsumption": 10,
+            "isOn": true,
+            "range": 5,
+            "maxSessions": 5
+        },
+        {
+            "type": "SensorModule",
+            "slotsOccupied": 1,
+            "energyConsumption": 5,
+            "isOn": true,
+            "range": 3,
+            "sensorType": "XRay"
+        },
+        {
+            "type": "WeaponModule",
+            "slotsOccupied": 1,
+            "energyConsumption": 10,
+            "isOn": true,
+            "range": 5,
+            "chargingDuration": "00:00:05"
+        }
+        ]
     },
     {
         "type": "MobilePlatform",
