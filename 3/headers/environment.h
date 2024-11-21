@@ -46,4 +46,5 @@ public:
     CellType getCellType(Pair position) const;
 
     bool hasLineOfSight(Pair from, Pair to) const;
+    double howFar(Pair from, Pair to, int range) const;
 };

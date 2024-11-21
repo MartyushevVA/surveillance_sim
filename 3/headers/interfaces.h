@@ -33,10 +33,15 @@ public:
     virtual void attack(Pair target) = 0;
 };
 
+struct Report {
+    Pair position;
+    std::vector<std::shared_ptr<Placeholder>> objects;
+};
+
 class ISensor {
 public:
     virtual ~ISensor() = default;
-    virtual std::vector<std::shared_ptr<Placeholder>> getSurrounding() const = 0;
+    virtual Report getSurrounding() const = 0;
 };
 
 class IMove {

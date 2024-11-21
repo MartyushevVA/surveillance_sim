@@ -66,7 +66,7 @@ public:
     SensorType getType() const {return type_;}
     void setType(SensorType type) {type_ = type;}
 
-    std::vector<std::shared_ptr<Placeholder>> getSurrounding() const override;
+    Report getSurrounding() const override;
     void attachTo(Platform* host) const override;
 };
 
@@ -95,9 +95,11 @@ public:
     bool getIsCharged() const {return isCharged_;}
     void setIsCharged(bool isCharged) {isCharged_ = isCharged;}
 
-    void attack(Pair intruder) override;
     void refreshState();
     void startCharging();
 
+    Pair findAttackableIntruder(Report report) const;
+
+    void attack(Pair intruder) override;
     void attachTo(Platform* host) const override;
 };

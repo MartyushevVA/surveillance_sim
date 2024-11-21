@@ -1,15 +1,5 @@
 #include "module_types.h"
 
-void WeaponModule::attack(Pair intruder) {
-    if (!host_ || !isOn_ || !host_->getEnvironment()->hasLineOfSight(host_->getPosition(), intruder)) {
-        return;
-    }
-    if (isCharged_) {
-        host_->getEnvironment()->extractToken(intruder.x, intruder.y);
-        isCharged_ = false;
-    }
-}
-
 void WeaponModule::startCharging() {
     if (!host_ || !isOn_ || isCharging_ || isCharged_)
         return;
@@ -31,6 +21,25 @@ void WeaponModule::refreshState() {
             isCharging_ = false;
             host_->setEnergyLevel(host_->getEnergyLevel() - energyConsumption_);
         }
+    }
+}
+
+Pair WeaponModule::findAttackableIntruder(Report report) const {
+    for (const auto& token : report.objects) {
+        if (Intruder* intruder = dynamic_cast<Intruder*>(token.get()))
+            if (host_->getEnvironment()->hasLineOfSight(host_->getPosition(), intruder->getPosition()) && (host_->getEnvironment()->howFar(host_->getPosition(), intruder->getPosition(), range_) <= 1))
+                return intruder->getPosition();
+    }
+    return {-1, 0};
+}
+
+void WeaponModule::attack(Pair intruder) {
+    if (!host_ || !isOn_ || !host_->getEnvironment()->hasLineOfSight(host_->getPosition(), intruder)) {
+        return;
+    }
+    if (isCharged_) {
+        host_->getEnvironment()->extractToken(intruder);
+        isCharged_ = false;
     }
 }
 

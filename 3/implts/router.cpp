@@ -3,9 +3,7 @@
 std::vector<ConnectionModule*> ConnectionModule::scanForModules() {
     std::vector<ConnectionModule*> modulesInRange;
     for (const auto& token : host_->getEnvironment()->getTokens()) {
-        int x = token->getPosition().x;
-        int y = token->getPosition().y;
-        if ((x - host_->getPosition().x) * (x - host_->getPosition().x) + (y - host_->getPosition().y) * (y - host_->getPosition().y) <= getRange() * getRange())
+        if (host_->getEnvironment()->howFar(host_->getPosition(), token->getPosition(), range_) <= 1)
             if (auto module = host_->findModuleOfType<ConnectionModule>())
                 modulesInRange.push_back(module);
     }

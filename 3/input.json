@@ -13,7 +13,8 @@
     "intruders": [
     {
         "position": {"x": 3, "y": 4},
-        "speed": 5
+        "speed": 5,
+        "sensorRange": 3
     }
     ],
     "platforms": [

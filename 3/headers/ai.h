@@ -19,7 +19,6 @@ public:
     void addConnectedPlatform(std::shared_ptr<Platform> platform) {connectedPlatforms_.push_back(platform);}
     std::vector<std::shared_ptr<Platform>> getConnectedPlatforms() const {return connectedPlatforms_;}
     void refreshConnectedPlatforms();
-    void eliminateAllIntruders();
 };
 
 
