@@ -69,7 +69,7 @@ void Game::loadFieldFromFile(const std::string& filename) {
         auto platform = loadPlatform(platformData, environment_);
         environment_.addToken(platform);
         if (dynamic_cast<StaticPlatform*>(platform.get()))
-        ai_.addConnectedPlatform(platform);
+            ai_.addConnectedPlatform(platform);
         if (platformData["modules"]) {
             for (const auto& moduleData : platformData["modules"]) {
                 auto module = loadModule(moduleData);
@@ -82,7 +82,7 @@ void Game::loadFieldFromFile(const std::string& filename) {
         auto module = loadModule(moduleData);
         if (moduleData["host_position"]) {
             Pair hostPosition = {moduleData["host_position"]["x"], moduleData["host_position"]["y"]};
-            auto host = dynamic_cast<Platform*>(environment_.getToken(hostPosition.x, hostPosition.y).get());
+            auto host = dynamic_cast<Platform*>(environment_.getToken(hostPosition).get());
             if (host)
                 module->attachTo(host);
         } 

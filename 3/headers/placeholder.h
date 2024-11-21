@@ -26,11 +26,7 @@ public:
     virtual ~Placeholder() = default;
 
     Pair getPosition() const {return position_;}
-    void setPosition(Pair position) {
-        if (position.x < 0 || position.y < 0)
-            throw std::invalid_argument("Position must be non-negative");
-        position_ = position;
-    }
+    void setPosition(Pair position) {position_ = position;}
     int getSpeed() const {return speed_;}
     virtual void setSpeed(int speed) = 0;
 

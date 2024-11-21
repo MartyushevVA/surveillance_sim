@@ -38,12 +38,12 @@ public:
     }
     
     void addToken(std::shared_ptr<Placeholder> token);
-    std::shared_ptr<Placeholder> extractToken(int x, int y);
+    std::shared_ptr<Placeholder> extractToken(Pair position);
 
     std::set<std::shared_ptr<Placeholder>> getTokens() const {return tokens_;}
-    std::shared_ptr<Placeholder> getToken(int x, int y) const;
+    std::shared_ptr<Placeholder> getToken(Pair position) const;
 
-    CellType getCellType(int x, int y) const;
+    CellType getCellType(Pair position) const;
 
     bool hasLineOfSight(Pair from, Pair to) const;
 };

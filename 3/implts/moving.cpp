@@ -3,7 +3,7 @@
 #include "placeholder.h"
 
 void Placeholder::move(Pair position) {
-    if (abilityToMove(position) && position != position_)
+    if (abilityToMove(position))
         setPosition(position);
 }
 bool Placeholder::abilityToMove(Pair position) const {
@@ -12,7 +12,7 @@ bool Placeholder::abilityToMove(Pair position) const {
     if (position.x < 0 || position.x >= size.x || 
         position.y < 0 || position.y >= size.y)
         return false;
-    return environment_->getCellType(position.x, position.y) == CellType::Empty;
+    return environment_->getCellType(position) == CellType::Empty || position == position_;
 }
 
 Pair Placeholder::calculateRandomMove() const {

@@ -3,14 +3,14 @@
 void Environment::addToken(std::shared_ptr<Placeholder> token) {
     if (token->getPosition().x >= size_.x || token->getPosition().y >= size_.y)
         throw std::invalid_argument("Token position is out of bounds");
-    if (getCellType(token->getPosition().x, token->getPosition().y) != CellType::Empty)
+    if (getCellType(token->getPosition()) != CellType::Empty)
         throw std::invalid_argument("Cell is already occupied");
     tokens_.insert(token);
 }
 
-std::shared_ptr<Placeholder> Environment::extractToken(int x, int y) {
+std::shared_ptr<Placeholder> Environment::extractToken(Pair position) {
     for (const auto& token : tokens_) {
-        if (token->getPosition().x == x && token->getPosition().y == y) {
+        if (token->getPosition().x == position.x && token->getPosition().y == position.y) {
             auto extractedToken = std::move(token);
             tokens_.erase(token);
             return extractedToken;
@@ -19,16 +19,16 @@ std::shared_ptr<Placeholder> Environment::extractToken(int x, int y) {
     return nullptr;
 }
 
-std::shared_ptr<Placeholder> Environment::getToken(int x, int y) const {
+std::shared_ptr<Placeholder> Environment::getToken(Pair position) const {
     for (const auto& token : tokens_)
-        if (token->getPosition().x == x && token->getPosition().y == y)
+        if (token->getPosition().x == position.x && token->getPosition().y == position.y)
             return token;
     return nullptr;
 }
 
-CellType Environment::getCellType(int x, int y) const {
+CellType Environment::getCellType(Pair position) const {
     for (const auto& token : tokens_) {
-        if (token->getPosition().x == x && token->getPosition().y == y) {
+        if (token->getPosition().x == position.x && token->getPosition().y == position.y) {
             if (dynamic_cast<Obstacle*>(token.get())) return CellType::Obstacle;
             if (dynamic_cast<Platform*>(token.get())) return CellType::Platform;
             if (dynamic_cast<Intruder*>(token.get())) return CellType::Intruder;
@@ -45,7 +45,7 @@ bool Environment::hasLineOfSight(Pair from, Pair to) const {
     for (double i = 0; i < distance; i += 1) {
         int x = from.x + stepX * i;
         int y = from.y + stepY * i;
-        if (getCellType(x, y) != CellType::Obstacle)
+        if (getCellType({x, y}) != CellType::Obstacle)
             return false;
     }
     return true;
