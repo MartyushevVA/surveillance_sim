@@ -1,9 +1,9 @@
 #include "mobile_platform.h"
 
-Pair MobilePlatform::findPursuitableIntruder(Report report) const {
+Pair MobilePlatform::findPursuitableSuspect(Report report) const {
     for (const auto& token : report.objects)
-        if (Intruder* intruder = dynamic_cast<Intruder*>(token.get()))
-            if (environment_->hasLineOfSight(position_, intruder->getPosition()) && environment_->howFar(position_, intruder->getPosition(), speed_) <= 1)
-                return intruder->getPosition();
+        if (Suspect* suspect = dynamic_cast<Suspect*>(token.get()))
+            if (environment_->hasLineOfSight(position_, suspect->getPosition()) && environment_->howFar(position_, suspect->getPosition(), speed_) <= 1)
+                return suspect->getPosition();
     return {-1, 0};
 }

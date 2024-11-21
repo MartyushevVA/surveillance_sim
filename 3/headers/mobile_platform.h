@@ -16,7 +16,7 @@ public:
         speed_ = speed;
     }
 
-    Pair findPursuitableIntruder(Report report) const;
+    Pair findPursuitableSuspect(Report report) const;
 
     Pair calculatePursuitMove(Pair target) const override;
 };

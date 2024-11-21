@@ -31,7 +31,7 @@ CellType Environment::getCellType(Pair position) const {
         if (token->getPosition().x == position.x && token->getPosition().y == position.y) {
             if (dynamic_cast<Obstacle*>(token.get())) return CellType::Obstacle;
             if (dynamic_cast<Platform*>(token.get())) return CellType::Platform;
-            if (dynamic_cast<Intruder*>(token.get())) return CellType::Intruder;
+            if (dynamic_cast<Suspect*>(token.get())) return CellType::Suspect;
         }
     }
     return CellType::Empty;

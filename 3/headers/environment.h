@@ -6,14 +6,14 @@
 #include <cmath>
 
 #include "placeholder.h"
-#include "intruder.h"
+#include "suspect.h"
 #include "platform.h"
 
 enum class CellType {
     Empty,
     Obstacle,
     Platform,
-    Intruder
+    Suspect
 };
 
 class Obstacle : public Placeholder {

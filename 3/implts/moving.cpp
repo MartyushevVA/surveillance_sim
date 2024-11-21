@@ -1,5 +1,5 @@
 #include "mobile_platform.h"
-#include "intruder.h"
+#include "suspect.h"
 #include "placeholder.h"
 
 void Placeholder::move(Pair position) {
@@ -31,7 +31,7 @@ Pair MobilePlatform::calculatePursuitMove(Pair target) const {
     return {position_.x + (int)(bo_cosinus * speed_), position_.y + (int)(bo_sinus * speed_)};
 }
 
-Pair Intruder::calculateAvoidanceMove(Pair threat) const {
+Pair Suspect::calculateAvoidanceMove(Pair threat) const {
     double dx = threat.x - position_.x;
     double dy = threat.y - position_.y;
     double distance = sqrt(dx * dx + dy * dy);

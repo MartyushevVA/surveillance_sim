@@ -4,9 +4,11 @@
 
 #include "interfaces.h"
 
+class MobilePlatform;
+
 class Environment;
 
-class Intruder : 
+class Suspect : 
     public Placeholder,
     public IAvoidanceMovement,
     public ISensor {
@@ -14,7 +16,7 @@ private:
     int sensorRange_ = 0;
 
 public:
-    Intruder(Pair position, Environment* environment, int speed, int sensorRange)
+    Suspect(Pair position, Environment* environment, int speed, int sensorRange)
         : Placeholder(position, environment, speed), sensorRange_(sensorRange) {}
 
     void setSpeed(int speed) override {

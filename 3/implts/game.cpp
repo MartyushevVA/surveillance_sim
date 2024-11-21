@@ -14,11 +14,11 @@ void Game::stop() {
 
 void Game::update() {
     for (const auto& token : environment_.getTokens()) {
-        if (Intruder* intruder = dynamic_cast<Intruder*>(token.get())) {
-            if (MobilePlatform* predator = intruder->nearestPredatorWithinRange())
-                token->move(intruder->calculateAvoidanceMove(predator->getPosition()));
+        if (Suspect* suspect = dynamic_cast<Suspect*>(token.get())) {
+            if (MobilePlatform* predator = suspect->nearestPredatorWithinRange())
+                token->move(suspect->calculateAvoidanceMove(predator->getPosition()));
             else
-                token->move(intruder->calculateRandomMove());
+                token->move(suspect->calculateRandomMove());
         }
     }
 
@@ -28,12 +28,13 @@ void Game::update() {
         if (SensorModule* sensor = platform->findModuleOfType<SensorModule>()) {
             Report report = sensor->getSurrounding();
             if (WeaponModule* weapon = platform->findModuleOfType<WeaponModule>())
-                if (Pair attackableIntruder = weapon->findAttackableIntruder(report); attackableIntruder != Pair{-1, 0})
-                    weapon->attack(attackableIntruder);
+                if (Pair attackableSuspect = weapon->findAttackableSuspect(report); attackableSuspect != Pair{-1, 0})
+                    weapon->attack(attackableSuspect);
             else if (MobilePlatform* officer = dynamic_cast<MobilePlatform*>(platform.get()))
-                if (Pair pursuitableIntruder = officer->findPursuitableIntruder(report); pursuitableIntruder != Pair{-1, 0})
-                    platform->move(officer->calculatePursuitMove(pursuitableIntruder));
+                if (Pair pursuitableSuspect = officer->findPursuitableSuspect(report); pursuitableSuspect != Pair{-1, 0})
+                    platform->move(officer->calculatePursuitMove(pursuitableSuspect));
                 else
                     platform->move(officer->calculateRandomMove());
+       }
     }
 }

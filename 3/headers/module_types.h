@@ -98,8 +98,8 @@ public:
     void refreshState();
     void startCharging();
 
-    Pair findAttackableIntruder(Report report) const;
+    Pair findAttackableSuspect(Report report) const;
 
-    void attack(Pair intruder) override;
+    void attack(Pair suspect) override;
     void attachTo(Platform* host) const override;
 };

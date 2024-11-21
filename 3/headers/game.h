@@ -7,7 +7,7 @@
 #include "ai.h"
 #include "mobile_platform.h"
 #include "static_platform.h"
-#include "intruder.h"
+#include "suspect.h"
 #include <vector>
 #include <memory>
 #include <string>

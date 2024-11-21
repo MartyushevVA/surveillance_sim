@@ -1,8 +1,8 @@
-#include "intruder.h"
+#include "suspect.h"
 
 #include "mobile_platform.h"
 
-Report Intruder::getSurrounding() const {
+Report Suspect::getSurrounding() const {
     std::vector<std::shared_ptr<Placeholder>> tokensInRange;
     for (const auto& token : environment_->getTokens())
         if ((environment_->howFar(position_, token->getPosition(), sensorRange_) <= 1) && environment_->hasLineOfSight(position_, token->getPosition()))
@@ -10,7 +10,7 @@ Report Intruder::getSurrounding() const {
     return {position_, tokensInRange};
 }
 
-MobilePlatform* Intruder::nearestPredatorWithinRange() const {
+MobilePlatform* Suspect::nearestPredatorWithinRange() const {
     Report report = getSurrounding();
     MobilePlatform* nearestPredator = nullptr;
     double minDistance = std::numeric_limits<double>::max();

@@ -59,12 +59,12 @@ void Game::loadFieldFromFile(const std::string& filename) {
         environment_.addToken(obstacle);
     }
 
-    for (const auto& intruderData : j["intruders"]) {
-        Pair position = {intruderData["position"]["x"], intruderData["position"]["y"]};
-        int sensorRange = intruderData["sensorRange"];
-        int speed = intruderData["speed"];
-        auto intruder = std::make_shared<Intruder>(position, &environment_, speed, sensorRange);
-        environment_.addToken(intruder);
+    for (const auto& suspectData : j["suspects"]) {
+        Pair position = {suspectData["position"]["x"], suspectData["position"]["y"]};
+        int sensorRange = suspectData["sensorRange"];
+        int speed = suspectData["speed"];
+        auto suspect = std::make_shared<Suspect>(position, &environment_, speed, sensorRange);
+        environment_.addToken(suspect);
     }
 
     for (const auto& platformData : j["platforms"]) {
