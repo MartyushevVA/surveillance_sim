@@ -34,9 +34,9 @@ Pair WeaponModule::findAttackableSuspect(Report report) const {
 }
 
 void WeaponModule::attack(Pair suspect) {
-    if (!host_ || !isOn_ || !host_->getEnvironment()->hasLineOfSight(host_->getPosition(), suspect)) {
+    refreshState();
+    if (!host_ || !isOn_ || !host_->getEnvironment()->hasLineOfSight(host_->getPosition(), suspect))
         return;
-    }
     if (isCharged_) {
         host_->getEnvironment()->extractToken(suspect);
         isCharged_ = false;

@@ -1,19 +1,29 @@
 #include "module_types.h"
 
-std::vector<ConnectionModule*> ConnectionModule::scanForModules() {
+std::vector<ConnectionModule*> ConnectionModule::scanForModules(Pair position = {-1, 0}) {
     std::vector<ConnectionModule*> modulesInRange;
-    for (const auto& token : host_->getEnvironment()->getTokens()) {
-        if (host_->getEnvironment()->howFar(host_->getPosition(), token->getPosition(), range_) <= 1)
+    if (position == Pair{-1, 0}) position = host_->getPosition();
+    for (const auto& token : host_->getEnvironment()->getTokens())
+        if (host_->getEnvironment()->howFar(position, token->getPosition(), range_) <= 1)
             if (auto module = host_->findModuleOfType<ConnectionModule>())
                 modulesInRange.push_back(module);
-    }
     return modulesInRange;
 }
 
+void ConnectionModule::recursiveDiscord(ConnectionModule* gate, std::vector<ConnectionModule*>& targetList) {
+    bool isEntered = false;
+    for (auto node : targetList)
+        if (auto it = std::find(routeList_.begin(), routeList_.end(), routeNode{gate, node}); it != routeList_.end()) {
+            isEntered = true;
+            routeList_.erase(it);
+        }
+    if (isEntered)
+        for (auto module : sessionList_)
+            module->recursiveDiscord(this, targetList);
+}
+
 bool ConnectionModule::establishConnection(ConnectionModule* target, bool isResponse = false) {
-    std::vector<ConnectionModule*> newModules = scanForModules();
-    if (std::find(newModules.begin(), newModules.end(), target) != newModules.end()
-    && sessionList_.size() < maxSessions_) {
+    if (sessionList_.size() < maxSessions_) {
         if (!isResponse)
             if (target->establishConnection(this, true))
                 sessionList_.push_back(target);
@@ -25,10 +35,16 @@ bool ConnectionModule::establishConnection(ConnectionModule* target, bool isResp
     return false;
 }
 
-bool ConnectionModule::closeConnection(ConnectionModule* target) {
+bool ConnectionModule::closeConnection(ConnectionModule* target, bool isResponse = false) {
     if (auto node = std::find(sessionList_.begin(), sessionList_.end(), target); node != sessionList_.end()) {
-        target->closeConnection(this);
+        if (!isResponse)
+            target->closeConnection(this, true);
         sessionList_.erase(node);
+        for (auto it = routeList_.begin(); it != routeList_.end();)
+            if (it->gate == target)
+                it = routeList_.erase(it);
+            else
+                ++it;
         return true;
     }
     return false;

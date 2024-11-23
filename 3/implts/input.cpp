@@ -35,12 +35,10 @@ std::shared_ptr<Platform> loadPlatform(const json& platformData, Environment& en
     int maxEnergyLevel = platformData["maxEnergyLevel"];
     int slotCount = platformData["slotCount"];
     int speed = platformData["speed"];
-    if (type == "MobilePlatform") {
+    if (type == "MobilePlatform")
         return std::make_shared<MobilePlatform>(position, &environment, description, maxEnergyLevel, slotCount, speed);
-    }
-    else if (type == "StaticPlatform") {
+    else if (type == "StaticPlatform")
         return std::make_shared<StaticPlatform>(position, &environment, description, maxEnergyLevel, slotCount);
-    }
     else;
 }
 
@@ -71,7 +69,7 @@ void Game::loadFieldFromFile(const std::string& filename) {
         auto platform = loadPlatform(platformData, environment_);
         environment_.addToken(platform);
         if (dynamic_cast<StaticPlatform*>(platform.get()))
-            ai_.addConnectedPlatform(platform);
+            ai_.addStaticPlatform(platform);
         if (platformData["modules"]) {
             for (const auto& moduleData : platformData["modules"]) {
                 auto module = loadModule(moduleData);

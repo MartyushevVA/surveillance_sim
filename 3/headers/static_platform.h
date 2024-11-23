@@ -8,4 +8,5 @@ public:
         : Platform(position, environment, description, energyLevel, slotCount, 0) {}
 
     void setSpeed(int speed) override {speed_ = 0;}
+    void positionRelatedUpdate(Pair newPosition) override {}
 };

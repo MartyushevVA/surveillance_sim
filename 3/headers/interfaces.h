@@ -16,10 +16,10 @@ class IConnection {
 public:
     virtual ~IConnection() = default;
 
-    virtual std::vector<ConnectionModule*> scanForModules() = 0;
+    virtual std::vector<ConnectionModule*> scanForModules(Pair position = {-1, 0}) = 0;
 
-    virtual bool establishConnection(ConnectionModule* module, bool isResponse) = 0;
-    virtual bool closeConnection(ConnectionModule* module) = 0;
+    virtual bool establishConnection(ConnectionModule* module, bool isResponse = false) = 0;
+    virtual bool closeConnection(ConnectionModule* module, bool isResponse = false) = 0;
 
     virtual std::vector<routeNode> getRouteList() const = 0;
     virtual std::vector<routeNode> requestRouteList() const = 0;

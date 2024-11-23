@@ -3,9 +3,12 @@
 #include "placeholder.h"
 
 void Placeholder::move(Pair position) {
-    if (abilityToMove(position))
+    if (abilityToMove(position)) {
+        positionRelatedUpdate(position);
         setPosition(position);
+    }
 }
+
 bool Placeholder::abilityToMove(Pair position) const {
     if (!environment_) return false;
     Pair size = environment_->getSize();

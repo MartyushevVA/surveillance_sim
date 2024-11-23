@@ -22,8 +22,6 @@ void Game::update() {
         }
     }
 
-    ai_.refreshConnectedPlatforms();
-
     for (const auto& platform : ai_.getConnectedPlatforms()) {
         if (SensorModule* sensor = platform->findModuleOfType<SensorModule>()) {
             Report report = sensor->getSurrounding();

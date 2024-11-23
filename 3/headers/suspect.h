@@ -25,6 +25,8 @@ public:
         speed_ = speed;
     }
 
+    void positionRelatedUpdate(Pair newPosition) override {}
+
     MobilePlatform* nearestPredatorWithinRange() const;
 
     Pair calculateAvoidanceMove(Pair threat) const override;

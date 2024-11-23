@@ -26,10 +26,14 @@ public:
         maxSessions_ = maxSessions;
     }
 
-    std::vector<ConnectionModule*> scanForModules() override;
+    std::vector<ConnectionModule*> getSessionList() const {return sessionList_;}
 
-    bool establishConnection(ConnectionModule* module, bool isResponse) override;
-    bool closeConnection(ConnectionModule* module) override;
+    std::vector<ConnectionModule*> scanForModules(Pair position = {-1, 0}) override;
+
+    void recursiveDiscord(ConnectionModule* gate, std::vector<ConnectionModule*>& targetList);
+
+    bool establishConnection(ConnectionModule* module, bool isResponse = false) override;
+    bool closeConnection(ConnectionModule* module, bool isResponse = false) override;
 
     std::vector<routeNode> getRouteList() const override {return routeList_;}
     std::vector<routeNode> requestRouteList() const override;

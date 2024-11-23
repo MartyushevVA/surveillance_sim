@@ -2,6 +2,7 @@
 
 #include "platform.h"
 #include "interfaces.h"
+#include "module_types.h"
 
 class MobilePlatform :
     public Platform,
@@ -15,6 +16,8 @@ public:
             throw std::invalid_argument("Speed must be positive");
         speed_ = speed;
     }
+
+    void positionRelatedUpdate(Pair newPosition) override;
 
     Pair findPursuitableSuspect(Report report) const;
 
