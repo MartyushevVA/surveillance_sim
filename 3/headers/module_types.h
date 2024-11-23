@@ -25,19 +25,19 @@ public:
             throw std::invalid_argument("Max sessions must be positive");
         maxSessions_ = maxSessions;
     }
-
     std::vector<ConnectionModule*> getSessionList() const {return sessionList_;}
-
+    std::vector<routeNode> getRouteList() const override {return routeList_;}
+    
     std::vector<ConnectionModule*> scanForModules(Pair position = {-1, 0}) override;
-
-    void recursiveDiscord(ConnectionModule* gate, std::vector<ConnectionModule*>& targetList);
 
     bool establishConnection(ConnectionModule* module, bool isResponse = false) override;
     bool closeConnection(ConnectionModule* module, bool isResponse = false) override;
-
-    std::vector<routeNode> getRouteList() const override {return routeList_;}
-    std::vector<routeNode> requestRouteList() const override;
+    
     void applyRouteList(std::vector<routeNode> routeList) override;
+    std::vector<routeNode> requestRouteList(ConnectionModule* source) const override;
+    
+    void recursiveRouteNodeImplementation(ConnectionModule* gate, std::vector<routeNode> routeList);
+    void recursiveDiscord(ConnectionModule* gate, std::vector<routeNode> targetList);
 
     void attachTo(Platform* host) const override;
 };

@@ -10,77 +10,69 @@ std::vector<ConnectionModule*> ConnectionModule::scanForModules(Pair position = 
     return modulesInRange;
 }
 
-void ConnectionModule::recursiveDiscord(ConnectionModule* gate, std::vector<ConnectionModule*>& targetList) {
-    bool isEntered = false;
-    for (auto node : targetList)
-        if (auto it = std::find(routeList_.begin(), routeList_.end(), routeNode{gate, node}); it != routeList_.end()) {
-            isEntered = true;
-            routeList_.erase(it);
-        }
-    if (isEntered)
-        for (auto module : sessionList_)
-            module->recursiveDiscord(this, targetList);
-}
-
 bool ConnectionModule::establishConnection(ConnectionModule* target, bool isResponse = false) {
-    if (sessionList_.size() < maxSessions_) {
+    if (sessionList_.size() < maxSessions_ && std::find_if(routeList_.begin(), routeList_.end(),
+    [target](const routeNode& a) {return a.destination == target;}) == routeList_.end()) {
         if (!isResponse)
             if (target->establishConnection(this, true))
                 sessionList_.push_back(target);
         else
             sessionList_.push_back(target);
         routeList_.push_back({target, target});
+        target->recursiveRouteNodeImplementation(this, routeList_);
+        applyRouteList(target->requestRouteList(this));
         return true;
     }
     return false;
 }
 
 bool ConnectionModule::closeConnection(ConnectionModule* target, bool isResponse = false) {
-    if (auto node = std::find(sessionList_.begin(), sessionList_.end(), target); node != sessionList_.end()) {
-        if (!isResponse)
-            target->closeConnection(this, true);
-        sessionList_.erase(node);
-        for (auto it = routeList_.begin(); it != routeList_.end();)
-            if (it->gate == target)
-                it = routeList_.erase(it);
-            else
-                ++it;
-        return true;
-    }
-    return false;
-}
-
-std::vector<routeNode> ConnectionModule::requestRouteList() const {
-    auto isDuplicate = [](const routeNode& a, const routeNode& b) {
-        return a.destination == b.destination;
-    };
-    auto customCompare = [isDuplicate](const routeNode& a, const routeNode& b) {
-        return a.destination < b.destination;
-    };
-    std::vector<routeNode> routeList;
-    for (auto node : sessionList_){
-        routeList.insert(routeList.end(), node->getRouteList().begin(), node->getRouteList().end());
-    }
-    std::sort(routeList.begin(), routeList.end(), customCompare);
-    auto last = std::unique(routeList.begin(), routeList.end(), isDuplicate);
-    routeList.erase(last, routeList.end());
-    return routeList;
+    if (!isResponse)
+        target->closeConnection(this, true);
+    sessionList_.erase(std::find(sessionList_.begin(), sessionList_.end(), target));
+    target->recursiveDiscord(this, routeList_);
+    return true;
 }
 
 void ConnectionModule::applyRouteList(std::vector<routeNode> routeList) {
-    auto isDuplicate = [](const routeNode& a, const routeNode& b) {
-        return a.destination == b.destination;
-    };
-    auto customCompare = [isDuplicate](const routeNode& a, const routeNode& b) {
-        return a.destination < b.destination;
-    };
-    std::vector<routeNode> newRouteList;
-    newRouteList.insert(newRouteList.end(), routeList.begin(), routeList.end());
-    newRouteList.insert(newRouteList.end(), routeList_.begin(), routeList_.end());
-    std::sort(newRouteList.begin(), newRouteList.end(), customCompare);
-    auto last = std::unique(newRouteList.begin(), newRouteList.end(), isDuplicate);
-    newRouteList.erase(last, newRouteList.end());
-    routeList_ = newRouteList;
+    for (auto& node : routeList)
+        if (std::find_if(routeList_.begin(), routeList_.end(),
+        [node](const routeNode& a) {return a.destination == node.destination;}) == routeList_.end())
+            routeList_.push_back(node);
+}
+
+std::vector<routeNode> ConnectionModule::requestRouteList(ConnectionModule* source) const {
+    std::vector<routeNode> routeList;
+    for (auto node : sessionList_)
+        if (node != source)
+            routeList.insert(routeList.end(), node->getRouteList().begin(), node->getRouteList().end());
+    return routeList;
+}
+
+void ConnectionModule::recursiveRouteNodeImplementation(ConnectionModule* gate, std::vector<routeNode> routeList) {
+    bool isEntered = false;
+    for (auto& node : routeList)
+        if (std::find_if(routeList_.begin(), routeList_.end(),
+        [node](const routeNode& a) {return a.destination == node.destination;}) == routeList_.end()) {
+            isEntered = true;
+            routeList_.push_back(routeNode{gate, node.destination});
+        }
+    if (isEntered)
+        for (auto module : sessionList_)
+            if (module != gate)
+                module->recursiveRouteNodeImplementation(this, routeList);
+}
+
+void ConnectionModule::recursiveDiscord(ConnectionModule* gate, std::vector<routeNode> targetList) {
+    bool isEntered = false;
+    for (auto node : targetList)
+        if (auto it = std::find(routeList_.begin(), routeList_.end(), routeNode{gate, node.destination}); it != routeList_.end()) {
+            isEntered = true;
+            routeList_.erase(it);
+        }
+    if (isEntered)
+        for (auto module : sessionList_)
+            module->recursiveDiscord(this, targetList);
 }
 
 void ConnectionModule::attachTo(Platform* host) const {
