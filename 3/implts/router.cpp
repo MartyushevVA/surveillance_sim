@@ -3,7 +3,7 @@
 #include "platform.h"
 #include "environment.h"
 
-std::vector<ConnectionModule*> ConnectionModule::scanForModules(Pair position = {-1, 0}) {
+std::vector<ConnectionModule*> ConnectionModule::scanForModules(Pair position) {
     std::vector<ConnectionModule*> modulesInRange;
     if (position == Pair{-1, 0}) position = host_->getPosition();
     for (const auto& token : host_->getEnvironment()->getTokens())
@@ -13,7 +13,7 @@ std::vector<ConnectionModule*> ConnectionModule::scanForModules(Pair position = 
     return modulesInRange;
 }
 
-bool ConnectionModule::establishConnection(ConnectionModule* target, bool isResponse = false) {
+bool ConnectionModule::establishConnection(ConnectionModule* target, bool isResponse) {
     if (sessionList_.size() < maxSessions_ && std::find_if(routeList_.begin(), routeList_.end(),
     [target](const routeNode& a) {return a.destination == target;}) == routeList_.end()) {
         if (!isResponse)
@@ -29,7 +29,7 @@ bool ConnectionModule::establishConnection(ConnectionModule* target, bool isResp
     return false;
 }
 
-bool ConnectionModule::closeConnection(ConnectionModule* target, bool isResponse = false) {
+bool ConnectionModule::closeConnection(ConnectionModule* target, bool isResponse) {
     if (!isResponse)
         target->closeConnection(this, true);
     sessionList_.erase(std::find(sessionList_.begin(), sessionList_.end(), target));

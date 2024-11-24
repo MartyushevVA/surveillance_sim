@@ -34,7 +34,7 @@ public:
     }
     
     void addToken(std::shared_ptr<Placeholder> token);
-    std::shared_ptr<Placeholder> extractToken(Pair position);
+    void removeToken(Pair position);
 
     std::set<std::shared_ptr<Placeholder>> getTokens() const {return tokens_;}
     std::shared_ptr<Placeholder> getToken(Pair position) const;

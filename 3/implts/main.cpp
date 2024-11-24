@@ -2,7 +2,7 @@
 
 int main() {
     Game game;
-    game.loadFieldFromFile("input.json");
+    game.loadFieldFromFile("config1.json");
     game.start();
     return 0;
 }

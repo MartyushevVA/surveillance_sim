@@ -42,7 +42,7 @@ void WeaponModule::attack(Pair suspect) {
     if (!host_ || !isOn_ || !host_->getEnvironment()->hasLineOfSight(host_->getPosition(), suspect))
         return;
     if (isCharged_) {
-        host_->getEnvironment()->extractToken(suspect);
+        host_->getEnvironment()->removeToken(suspect);
         isCharged_ = false;
     }
 }

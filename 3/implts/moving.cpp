@@ -1,3 +1,5 @@
+#include <random>
+
 #include "placeholder.h"
 #include "mobile_platform.h"
 #include "suspect.h"
@@ -21,9 +23,17 @@ bool Placeholder::abilityToMove(Pair position) const {
 }
 
 Pair Placeholder::calculateRandomMove() const {
-    srand(time(nullptr));
-    int dx = ((rand() % (2*speed_ + 1)) - speed_);
-    int dy = rand() % 2 ? sqrt(speed_ * speed_ - dx * dx) : -sqrt(speed_ * speed_ - dx * dx);
+    static std::random_device rd;
+    static std::mt19937 gen(rd());
+    std::uniform_int_distribution<> dis(-speed_, speed_);
+    int dx = dis(gen);
+    int remaining = speed_ * speed_ - dx * dx;
+    int dy = 0;
+    if (remaining > 0) {
+        int max_dy = static_cast<int>(sqrt(remaining));
+        std::uniform_int_distribution<> dis_y(-max_dy, max_dy);
+        dy = dis_y(gen);
+    }
     return {position_.x + dx, position_.y + dy};
 }
 

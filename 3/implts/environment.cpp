@@ -11,15 +11,12 @@ void Environment::addToken(std::shared_ptr<Placeholder> token) {
     tokens_.insert(token);
 }
 
-std::shared_ptr<Placeholder> Environment::extractToken(Pair position) {
-    for (const auto& token : tokens_) {
+void Environment::removeToken(Pair position) {
+    for (const auto& token : tokens_)
         if (token->getPosition().x == position.x && token->getPosition().y == position.y) {
-            auto extractedToken = std::move(token);
             tokens_.erase(token);
-            return extractedToken;
+            return;
         }
-    }
-    return nullptr;
 }
 
 std::shared_ptr<Placeholder> Environment::getToken(Pair position) const {

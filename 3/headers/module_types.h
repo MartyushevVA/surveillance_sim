@@ -77,14 +77,14 @@ class WeaponModule :
     public Module,
     public IWeapon {
 protected:
-    std::chrono::steady_clock::time_point chargingStarted_ = std::chrono::steady_clock::now();
-    std::chrono::seconds chargingDuration_ = std::chrono::seconds(0);
+    std::chrono::steady_clock::time_point chargingStarted_;
+    std::chrono::seconds chargingDuration_;
     bool isCharging_ = false;
     bool isCharged_ = false;
 
 public:
-    WeaponModule(int slotsOccupied, int energyConsumption, bool isOn, int range, std::chrono::seconds chargingDuration, bool isCharging, bool isCharged)
-        : Module(slotsOccupied, energyConsumption, isOn, range), chargingDuration_(chargingDuration), isCharging_(isCharging), isCharged_(isCharged) {}
+    WeaponModule(int slotsOccupied, int energyConsumption, bool isOn, int range, std::chrono::seconds chargingDuration)
+        : Module(slotsOccupied, energyConsumption, isOn, range), chargingDuration_(chargingDuration) {}
     
     std::chrono::seconds getChargingDuration() const {return chargingDuration_;}
     void setChargingDuration(std::chrono::seconds chargingDuration) {

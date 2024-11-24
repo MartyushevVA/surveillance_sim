@@ -13,8 +13,9 @@ class Module;
 class Game {
 private:
     sf::RenderWindow window_;
-    static const int WINDOW_WIDTH = 800;
-    static const int WINDOW_HEIGHT = 600;
+    static const int WINDOW_WIDTH = 1000;
+    static const int WINDOW_HEIGHT = 1000;
+    static const int RATIO = 10;
 
 
     Environment environment_ {};
