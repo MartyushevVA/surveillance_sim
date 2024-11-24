@@ -4,8 +4,8 @@
 
 class StaticPlatform : public Platform {
 public:
-    StaticPlatform(Pair position, Environment* environment, std::string description, int energyLevel, int slotCount)
-        : Platform(position, environment, description, energyLevel, slotCount, 0) {}
+    StaticPlatform(Pair position, Environment* environment, std::string description, int maxEnergyLevel, int slotCount)
+        : Platform(position, environment, description, maxEnergyLevel, slotCount, 0) {}
 
     void setSpeed(int speed) override {speed_ = 0;}
     void positionRelatedUpdate(Pair newPosition) override {}

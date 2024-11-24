@@ -87,11 +87,7 @@ public:
         : Module(slotsOccupied, energyConsumption, isOn, range), chargingDuration_(chargingDuration) {}
     
     std::chrono::seconds getChargingDuration() const {return chargingDuration_;}
-    void setChargingDuration(std::chrono::seconds chargingDuration) {
-        if (chargingDuration <= std::chrono::seconds(0))
-            throw std::invalid_argument("Charging duration must be positive");
-        chargingDuration_ = chargingDuration;
-    }
+    void setChargingDuration(std::chrono::seconds chargingDuration) {chargingDuration_ = chargingDuration;}
     bool getIsCharging() const {return isCharging_;}
     void setIsCharging(bool isCharging) {isCharging_ = isCharging;}
     bool getIsCharged() const {return isCharged_;}

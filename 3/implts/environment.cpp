@@ -45,7 +45,7 @@ bool Environment::hasLineOfSight(Pair from, Pair to) const {
     for (double i = 0; i < distance; i += 1) {
         int x = from.x + stepX * i;
         int y = from.y + stepY * i;
-        if (getCellType({x, y}) != CellType::Empty)
+        if (getCellType({x, y}) == CellType::Obstacle)
             return false;
     }
     return true;

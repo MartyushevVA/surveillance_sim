@@ -12,8 +12,8 @@ protected:
     int slotCount_ = 0;
     std::vector<std::shared_ptr<Module>> modules_ {};
 
-    Platform(Pair position, Environment* environment, std::string description, int energyLevel, int slotCount, int speed)
-        : Placeholder(position, environment, speed), description_(description), energyLevel_(energyLevel), slotCount_(slotCount) {}
+    Platform(Pair position, Environment* environment, std::string description, int maxEnergyLevel, int slotCount, int speed)
+        : Placeholder(position, environment, speed), description_(description), maxEnergyLevel_(maxEnergyLevel), slotCount_(slotCount) {}
 
 public:
     virtual ~Platform() = default;

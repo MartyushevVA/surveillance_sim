@@ -55,7 +55,7 @@
                     "slotsOccupied": 1,
                     "energyConsumption": 8,
                     "isOn": true,
-                    "range": 10,
+                    "range": 30,
                     "chargingDuration": "00:00:03"
                 },
                 {
@@ -63,7 +63,7 @@
                     "slotsOccupied": 1,
                     "energyConsumption": 6,
                     "isOn": true,
-                    "range": 8,
+                    "range": 30,
                     "sensorType": "XRay"
                 }
             ]

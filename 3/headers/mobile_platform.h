@@ -7,14 +7,10 @@ class MobilePlatform :
     public Platform,
     public IPursuitMovement {
 public:
-    MobilePlatform(Pair position, Environment* environment, std::string description, int energyLevel, int slotCount, int speed)
-        : Platform(position, environment, description, energyLevel, slotCount, speed) {}
+    MobilePlatform(Pair position, Environment* environment, std::string description, int maxEnergyLevel, int slotCount, int speed)
+        : Platform(position, environment, description, maxEnergyLevel, slotCount, speed) {}
 
-    void setSpeed(int speed) override {
-        if (speed <= 0)
-            throw std::invalid_argument("Speed must be positive");
-        speed_ = speed;
-    }
+    void setSpeed(int speed) override {speed_ = speed;}
 
     void positionRelatedUpdate(Pair newPosition) override;
 

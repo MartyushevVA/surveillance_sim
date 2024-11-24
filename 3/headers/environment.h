@@ -27,11 +27,7 @@ public:
     Environment(int width, int height) {setSize(width, height);}
 
     Pair getSize() const {return size_;}
-    void setSize(int width, int height) {
-        if (width <= 0 || height <= 0)
-            throw std::invalid_argument("Width and height must be positive");
-        size_ = {width, height};
-    }
+    void setSize(int width, int height) {size_ = {width, height};}
     
     void addToken(std::shared_ptr<Placeholder> token);
     void removeToken(Pair position);

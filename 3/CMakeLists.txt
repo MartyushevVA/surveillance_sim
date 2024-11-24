@@ -8,7 +8,7 @@ set(CMAKE_EXE_LINKER_FLAGS "${CMAKE_EXE_LINKER_FLAGS} -fprofile-arcs -ftest-cove
 
 enable_testing()
 
-find_package(SFML 2.6.2 COMPONENTS graphics window system REQUIRED)
+find_package(SFML 2.6.1 COMPONENTS graphics window system REQUIRED)
 find_package(nlohmann_json REQUIRED)
 
 add_library(game_lib

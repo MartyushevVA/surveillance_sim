@@ -1,4 +1,5 @@
 #include <fstream>
+#include <iostream>
 #include <nlohmann/json.hpp>
 
 #include "module_types.h"
@@ -109,6 +110,7 @@ void Game::loadFieldFromFile(const std::string& filename) {
         if (platformData.contains("modules")) {
             for (const auto& moduleData : platformData["modules"]) {
                 auto module = loadModule(moduleData);
+                std::cout << "Module loaded" << std::endl;
                 module->attachTo(platform.get());
             }
         }
