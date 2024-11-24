@@ -7,7 +7,7 @@
 void WeaponModule::startCharging() {
     if (!host_ || !isOn_ || isCharging_ || isCharged_)
         return;
-    if (host_->getMaxEnergyLevel() < host_->getEnergyLevel() + energyConsumption_)
+    if (host_->getEnergyLevel() + energyConsumption_ > host_->getMaxEnergyLevel())
         return;
     isCharging_ = true;
     chargingStarted_ = std::chrono::steady_clock::now();
@@ -44,6 +44,7 @@ void WeaponModule::attack(Pair suspect) {
     if (isCharged_) {
         host_->getEnvironment()->removeToken(suspect);
         isCharged_ = false;
+        startCharging();
     }
 }
 

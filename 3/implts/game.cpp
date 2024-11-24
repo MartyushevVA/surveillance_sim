@@ -71,7 +71,6 @@ void Game::update() {
             Report report = sensor->getSurrounding();
             if (WeaponModule* weapon = platform->findModuleOfType<WeaponModule>())
                 if (Pair attackableSuspect = weapon->findAttackableSuspect(report); attackableSuspect != Pair{-1, 0}) {
-                    std::cout << "Attackable suspect found" << std::endl;
                     weapon->attack(attackableSuspect);
                     std::cout << "Attacked suspect at " << attackableSuspect.x << ", " << attackableSuspect.y << std::endl;
                 }
