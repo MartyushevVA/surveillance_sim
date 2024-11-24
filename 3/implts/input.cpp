@@ -1,12 +1,23 @@
 #include <fstream>
 #include <nlohmann/json.hpp>
 
+#include "module_types.h"
 #include "game.h"
 
+#include "mobile_platform.h"
+#include "static_platform.h"
+#include "suspect.h"
+
+
+std::chrono::seconds parseChargingDuration(const std::string& durationStr) {
+    std::chrono::seconds duration(0);
+    std::sscanf(durationStr.c_str(), "%d:%d:%d", duration.count());
+    return duration;
+}
 
 using json = nlohmann::json;
 
-std::unique_ptr<Module> loadModule(const json& moduleData) {
+std::shared_ptr<Module> loadModule(const json& moduleData) {
     std::string type = moduleData["type"];
     int slotsOccupied = moduleData["slotsOccupied"];
     int energyConsumption = moduleData["energyConsumption"];
@@ -14,18 +25,19 @@ std::unique_ptr<Module> loadModule(const json& moduleData) {
     int range = moduleData["range"];
     if (type == "ConnectionModule") {
         int maxSessions = moduleData["maxSessions"];
-        return std::make_unique<ConnectionModule>(slotsOccupied, energyConsumption, isOn, range, maxSessions);
+        return std::make_shared<ConnectionModule>(slotsOccupied, energyConsumption, isOn, range, maxSessions);
     }
     else if (type == "SensorModule") {
         std::string sensorType = moduleData["sensorType"];
         SensorType typeEnum = (sensorType == "XRay") ? SensorType::XRay : SensorType::Optical;
-        return std::make_unique<SensorModule>(slotsOccupied, energyConsumption, isOn, range, typeEnum);
+        return std::make_shared<SensorModule>(slotsOccupied, energyConsumption, isOn, range, typeEnum);
     }
     else if (type == "WeaponModule") {
         std::string chargingDuration = moduleData["chargingDuration"];
-        return std::make_unique<WeaponModule>(slotsOccupied, energyConsumption, isOn, range, chargingDuration);
+        std::chrono::seconds duration = parseChargingDuration(chargingDuration);
+        return std::make_shared<WeaponModule>(slotsOccupied, energyConsumption, isOn, range, duration);
     }
-    else;
+    throw std::runtime_error("Unknown module type");
 }
 
 std::shared_ptr<Platform> loadPlatform(const json& platformData, Environment& environment) {
@@ -39,7 +51,7 @@ std::shared_ptr<Platform> loadPlatform(const json& platformData, Environment& en
         return std::make_shared<MobilePlatform>(position, &environment, description, maxEnergyLevel, slotCount, speed);
     else if (type == "StaticPlatform")
         return std::make_shared<StaticPlatform>(position, &environment, description, maxEnergyLevel, slotCount);
-    else;
+    else return nullptr;
 }
 
 void Game::loadFieldFromFile(const std::string& filename) {
@@ -69,7 +81,7 @@ void Game::loadFieldFromFile(const std::string& filename) {
         auto platform = loadPlatform(platformData, environment_);
         environment_.addToken(platform);
         if (dynamic_cast<StaticPlatform*>(platform.get()))
-            ai_.addStaticPlatform(platform);
+            ai_.addConnectedPlatform(platform);
         if (platformData["modules"]) {
             for (const auto& moduleData : platformData["modules"]) {
                 auto module = loadModule(moduleData);
@@ -86,6 +98,6 @@ void Game::loadFieldFromFile(const std::string& filename) {
             if (host)
                 module->attachTo(host);
         } 
-        else addToStorage(std::move(module));
+        else addToStorage(module);
     }
 }

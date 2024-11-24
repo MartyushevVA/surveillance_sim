@@ -4,11 +4,10 @@
 #include <queue>
 #include <set>
 #include <vector>
+#include <algorithm>
 
-#include "platform.h"
-#include "environment.h"
-#include "interfaces.h"
-#include "module_types.h"
+class Environment;
+class Platform;
 
 class AI {
 private:

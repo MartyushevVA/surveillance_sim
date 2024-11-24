@@ -10,7 +10,7 @@
         "speed": 0
     }
     ],
-    "intruders": [
+    "suspects": [
     {
         "position": {"x": 3, "y": 4},
         "speed": 5,

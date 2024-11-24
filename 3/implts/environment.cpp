@@ -1,5 +1,8 @@
 #include "environment.h"
 
+#include "platform.h"
+#include "suspect.h"
+
 void Environment::addToken(std::shared_ptr<Placeholder> token) {
     if (token->getPosition().x >= size_.x || token->getPosition().y >= size_.y)
         throw std::invalid_argument("Token position is out of bounds");
@@ -45,7 +48,7 @@ bool Environment::hasLineOfSight(Pair from, Pair to) const {
     for (double i = 0; i < distance; i += 1) {
         int x = from.x + stepX * i;
         int y = from.y + stepY * i;
-        if (getCellType({x, y}) != CellType::Obstacle)
+        if (getCellType({x, y}) != CellType::Empty)
             return false;
     }
     return true;

@@ -1,5 +1,8 @@
 #include "module_types.h"
 
+#include "platform.h"
+#include "environment.h"
+
 std::vector<ConnectionModule*> ConnectionModule::scanForModules(Pair position = {-1, 0}) {
     std::vector<ConnectionModule*> modulesInRange;
     if (position == Pair{-1, 0}) position = host_->getPosition();
@@ -77,5 +80,5 @@ void ConnectionModule::recursiveDiscord(ConnectionModule* gate, std::vector<rout
 
 void ConnectionModule::attachTo(Platform* host) const {
     if (host->getEnergyLevel() + energyConsumption_ <= host->getMaxEnergyLevel())
-        host->installModule(std::make_unique<ConnectionModule>(*this));
+        host->installModule(std::make_shared<ConnectionModule>(*this));
 }

@@ -2,7 +2,6 @@
 
 #include "platform.h"
 #include "interfaces.h"
-#include "module_types.h"
 
 class MobilePlatform :
     public Platform,
@@ -20,6 +19,9 @@ public:
     void positionRelatedUpdate(Pair newPosition) override;
 
     Pair findPursuitableSuspect(Report report) const;
+
+    void move(Pair position) override { Placeholder::move(position); }
+    bool abilityToMove(Pair position) const override { return Placeholder::abilityToMove(position); }
 
     Pair calculatePursuitMove(Pair target) const override;
 };

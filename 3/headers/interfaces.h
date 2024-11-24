@@ -3,14 +3,7 @@
 #include <memory>
 #include <vector>
 
-#include "placeholder.h"
-
-class ConnectionModule;
-
-struct routeNode {
-    ConnectionModule* destination;
-    ConnectionModule* gate;
-};
+#include "common_types.h" 
 
 class IConnection {
 public:
@@ -31,11 +24,6 @@ class IWeapon {
 public:
     virtual ~IWeapon() = default;
     virtual void attack(Pair target) = 0;
-};
-
-struct Report {
-    Pair position;
-    std::vector<std::shared_ptr<Placeholder>> objects;
 };
 
 class ISensor {

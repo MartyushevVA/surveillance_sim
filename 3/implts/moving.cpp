@@ -1,6 +1,8 @@
+#include "placeholder.h"
 #include "mobile_platform.h"
 #include "suspect.h"
-#include "placeholder.h"
+
+#include "environment.h"
 
 void Placeholder::move(Pair position) {
     if (abilityToMove(position)) {

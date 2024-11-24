@@ -1,5 +1,8 @@
 #include "module_types.h"
 
+#include "platform.h"
+#include "environment.h"
+
 Report SensorModule::getSurrounding() const {
     std::vector<std::shared_ptr<Placeholder>> tokensInRange;
     for (const auto& token : host_->getEnvironment()->getTokens()) {
@@ -12,5 +15,5 @@ Report SensorModule::getSurrounding() const {
 
 void SensorModule::attachTo(Platform* host) const {
     if (host->getEnergyLevel() + energyConsumption_ <= host->getMaxEnergyLevel())
-        host->installModule(std::make_unique<SensorModule>(*this));
+        host->installModule(std::make_shared<SensorModule>(*this));
 }

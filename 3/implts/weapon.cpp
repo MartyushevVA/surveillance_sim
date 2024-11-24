@@ -1,5 +1,9 @@
 #include "module_types.h"
 
+#include "platform.h"
+#include "suspect.h"
+#include "environment.h"
+
 void WeaponModule::startCharging() {
     if (!host_ || !isOn_ || isCharging_ || isCharged_)
         return;
@@ -44,5 +48,5 @@ void WeaponModule::attack(Pair suspect) {
 }
 
 void WeaponModule::attachTo(Platform* host) const {
-    host->installModule(std::make_unique<WeaponModule>(*this));
+    host->installModule(std::make_shared<WeaponModule>(*this));
 }

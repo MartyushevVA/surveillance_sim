@@ -1,18 +1,6 @@
 #pragma once
 
 #include "interfaces.h"
-#include "environment.h"
-
-
-struct Pair {
-    int x, y;
-    bool operator==(const Pair& other) const {
-        return x == other.x && y == other.y;
-    }
-    bool operator!=(const Pair& other) const {
-        return !(*this == other);
-    }
-};
 
 class Placeholder : public IRandomMovement {
 protected:

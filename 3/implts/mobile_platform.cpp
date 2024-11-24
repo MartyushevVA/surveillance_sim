@@ -1,5 +1,10 @@
 #include "mobile_platform.h"
 
+#include "suspect.h"
+#include "platform.h"
+#include "environment.h"
+#include "module_types.h"
+
 Pair MobilePlatform::findPursuitableSuspect(Report report) const {
     for (const auto& token : report.objects)
         if (Suspect* suspect = dynamic_cast<Suspect*>(token.get()))

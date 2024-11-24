@@ -1,30 +1,35 @@
 #pragma once
 
-#include "environment.h"
-#include "platform.h"
-#include "module_types.h"
-#include "module.h"
-#include "ai.h"
-#include "mobile_platform.h"
-#include "static_platform.h"
-#include "suspect.h"
-#include <vector>
 #include <memory>
-#include <string>
+#include <vector>
+
+#include <SFML/Graphics.hpp>
+
+#include "environment.h"
+#include "ai.h"
+
+class Module;
 
 class Game {
 private:
+    sf::RenderWindow window_;
+    static const int WINDOW_WIDTH = 800;
+    static const int WINDOW_HEIGHT = 600;
+
+
     Environment environment_ {};
     AI ai_ {&environment_};
-    std::vector<std::unique_ptr<Module>> storage_;
-    void update();
+    std::vector<std::shared_ptr<Module>> storage_;
+
+    void handleEvents();
     void render();
+    
+    void update();
 
 public:
     Game() = default;
 
     void loadFieldFromFile(const std::string& filename);
-    void addToStorage(std::unique_ptr<Module> module) {storage_.push_back(std::move(module));}
+    void addToStorage(std::shared_ptr<Module> module) {storage_.push_back(std::move(module));}
     void start();
-    void stop();
 };

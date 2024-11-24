@@ -6,7 +6,6 @@
 #include "module.h"
 #include "interfaces.h"
 
-
 class ConnectionModule :
     public Module,
     public IConnection {
@@ -73,7 +72,6 @@ public:
     Report getSurrounding() const override;
     void attachTo(Platform* host) const override;
 };
-
 
 class WeaponModule :
     public Module,

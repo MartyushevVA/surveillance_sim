@@ -2,11 +2,8 @@
 
 #include <random>
 
+#include "placeholder.h"
 #include "interfaces.h"
-
-class MobilePlatform;
-
-class Environment;
 
 class Suspect : 
     public Placeholder,
@@ -27,7 +24,10 @@ public:
 
     void positionRelatedUpdate(Pair newPosition) override {}
 
-    MobilePlatform* nearestPredatorWithinRange() const;
+    Platform* nearestPredatorWithinRange() const;
+
+    void move(Pair position) override { Placeholder::move(position); }
+    bool abilityToMove(Pair position) const override { return Placeholder::abilityToMove(position); }
 
     Pair calculateAvoidanceMove(Pair threat) const override;
     Report getSurrounding() const override;

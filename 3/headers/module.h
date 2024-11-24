@@ -3,7 +3,7 @@
 #include <memory>
 #include <stdexcept>
 
-#include "platform.h"
+#include "common_types.h"
 
 class Module {
 protected:

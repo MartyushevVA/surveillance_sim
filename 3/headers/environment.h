@@ -5,20 +5,16 @@
 #include <stdexcept>
 #include <cmath>
 
+#include "common_types.h"
 #include "placeholder.h"
-#include "suspect.h"
-#include "platform.h"
-
-enum class CellType {
-    Empty,
-    Obstacle,
-    Platform,
-    Suspect
-};
 
 class Obstacle : public Placeholder {
 public:
-    void setSpeed(int speed) override {speed_ = 0;}
+    Obstacle(Pair position, Environment* environment) 
+        : Placeholder(position, environment, 0) {}
+        
+    void setSpeed(int speed) override { speed_ = 0; }
+    void positionRelatedUpdate(Pair newPosition) override {}
 };
 
 class Environment {

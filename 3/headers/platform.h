@@ -1,13 +1,8 @@
 #pragma once
 
 #include <string>
-#include <vector>
-#include <memory>
 
-#include "module.h"
 #include "placeholder.h"
-
-class Module;
 
 class Platform : public Placeholder {
 protected:
@@ -15,7 +10,7 @@ protected:
     int energyLevel_ = 0;
     int maxEnergyLevel_ = 0;
     int slotCount_ = 0;
-    std::vector<std::unique_ptr<Module>> modules_ {};
+    std::vector<std::shared_ptr<Module>> modules_ {};
 
     Platform(Pair position, Environment* environment, std::string description, int energyLevel, int slotCount, int speed)
         : Placeholder(position, environment, speed), description_(description), energyLevel_(energyLevel), slotCount_(slotCount) {}
@@ -44,10 +39,10 @@ public:
         maxEnergyLevel_ = maxEnergyLevel;
     }
     
-    std::vector<std::unique_ptr<Module>> getModules() const {return modules_;}
+    std::vector<std::shared_ptr<Module>> getModules() const {return modules_;}
 
-    void installModule(std::unique_ptr<Module> module);
-    std::unique_ptr<Module> extractModule(Module* module);
+    void installModule(std::shared_ptr<Module> module);
+    std::shared_ptr<Module> extractModule(Module* module);
 
     template<typename T>
     T* findModuleOfType() {
