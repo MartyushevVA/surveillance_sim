@@ -25,16 +25,22 @@ bool Placeholder::abilityToMove(Pair position) const {
 Pair Placeholder::calculateRandomMove() const {
     static std::random_device rd;
     static std::mt19937 gen(rd());
-    std::uniform_int_distribution<> dis(-speed_, speed_);
-    int dx = dis(gen);
-    int remaining = speed_ * speed_ - dx * dx;
-    int dy = 0;
-    if (remaining > 0) {
-        int max_dy = static_cast<int>(sqrt(remaining));
-        std::uniform_int_distribution<> dis_y(-max_dy, max_dy);
-        dy = dis_y(gen);
+
+    for (int i = 0; i < 8; i++) {
+        std::uniform_int_distribution<> dis(-speed_, speed_);
+        int dx = dis(gen);
+        int remaining = speed_ * speed_ - dx * dx;
+        int dy = 0;
+        if (remaining > 0) {
+            int max_dy = static_cast<int>(sqrt(remaining));
+            std::uniform_int_distribution<> dis_y(-max_dy, max_dy);
+            dy = dis_y(gen);
+        }
+        Pair newPos = {position_.x + dx, position_.y + dy};
+        if (abilityToMove(newPos))
+            return newPos;
     }
-    return {position_.x + dx, position_.y + dy};
+    return position_;
 }
 
 Pair MobilePlatform::calculatePursuitMove(Pair target) const {
@@ -52,17 +58,26 @@ Pair Suspect::calculateAvoidanceMove(Pair threat) const {
     double distance = sqrt(dx * dx + dy * dy);
     double nx = dx / distance;
     double ny = dy / distance;
-    double perpx = -ny;
-    double perpy = nx;
 
     std::random_device rd;
     std::mt19937 gen(rd());
-    std::uniform_real_distribution<> angle_dist(1.5707963267948966, 4.71238898038469);
-    double angle = angle_dist(gen);
-
-    double move_x = cos(angle);
-    double move_y = sin(angle);
-    double rotated_x = move_x * (-nx) - move_y * (-ny);
-    double rotated_y = move_x * (-ny) + move_y * nx;
-    return {position_.x + (int)rotated_x * speed_, position_.y + (int)rotated_y * speed_};
+    std::uniform_real_distribution<> angle_dist(0, 6.283185307179586);
+    for (int i = 0; i < 8; i++) {
+        double angle = angle_dist(gen);
+        double move_x = cos(angle);
+        double move_y = sin(angle);
+        Pair newPos = {
+            position_.x + static_cast<int>(move_x * speed_), 
+            position_.y + static_cast<int>(move_y * speed_)
+        };
+        if (abilityToMove(newPos))
+            return newPos;
+    }
+    Pair directEscape = {
+        position_.x - static_cast<int>(nx * speed_),
+        position_.y - static_cast<int>(ny * speed_)
+    };
+    if (abilityToMove(directEscape))
+        return directEscape;
+    return position_;
 }

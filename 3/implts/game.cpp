@@ -67,18 +67,27 @@ void Game::update() {
         }
 
     for (const auto& platform : ai_.getConnectedPlatforms()) {
+        //std::cout << platform->getEnergyLevel() << std::endl;
         if (SensorModule* sensor = platform->findModuleOfType<SensorModule>()) {
             Report report = sensor->getSurrounding();
-            if (WeaponModule* weapon = platform->findModuleOfType<WeaponModule>())
-                if (Pair attackableSuspect = weapon->findAttackableSuspect(report); attackableSuspect != Pair{-1, 0}) {
-                    weapon->attack(attackableSuspect);
-                    std::cout << "Attacked suspect at " << attackableSuspect.x << ", " << attackableSuspect.y << std::endl;
+            if (WeaponModule* weapon = platform->findModuleOfType<WeaponModule>()) {
+                Pair attackableSuspect = weapon->findAttackableSuspect(report);
+                if (attackableSuspect != Pair{-1, 0}) {
+                    if (auto token = environment_.getToken(attackableSuspect)) {
+                        if (Suspect* suspect = dynamic_cast<Suspect*>(token.get())) {
+                            weapon->attack(attackableSuspect);
+                            //std::cout << "Attacked suspect at " << attackableSuspect.x << ", " << attackableSuspect.y << std::endl;
+                        }
+                    }
                 }
-            else if (MobilePlatform* officer = dynamic_cast<MobilePlatform*>(platform.get()))
-                if (Pair pursuitableSuspect = officer->findPursuitableSuspect(report); pursuitableSuspect != Pair{-1, 0})
+            }
+            else if (MobilePlatform* officer = dynamic_cast<MobilePlatform*>(platform.get())) {
+                Pair pursuitableSuspect = officer->findPursuitableSuspect(report);
+                if (pursuitableSuspect != Pair{-1, 0})
                     platform->move(officer->calculatePursuitMove(pursuitableSuspect));
                 else
                     platform->move(officer->calculateRandomMove());
+            }
        }
     }
 }

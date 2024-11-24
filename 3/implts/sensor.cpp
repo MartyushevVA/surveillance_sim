@@ -14,6 +14,8 @@ Report SensorModule::getSurrounding() const {
 }
 
 void SensorModule::attachTo(Platform* host) const {
-    if (host->getEnergyLevel() + energyConsumption_ <= host->getMaxEnergyLevel())
+    if (host->getEnergyLevel() + energyConsumption_ <= host->getMaxEnergyLevel()) {
         host->installModule(std::make_shared<SensorModule>(*this));
+        host->setEnergyLevel(host->getEnergyLevel() + energyConsumption_);
+    }
 }

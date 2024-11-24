@@ -15,11 +15,9 @@ Platform* Suspect::nearestPredatorWithinRange() const {
     Report report = getSurrounding();
     Platform* nearestPredator = nullptr;
     double minDistance = std::numeric_limits<double>::max();
-    for (const auto& token : report.objects) {
-        if (Platform* predator = dynamic_cast<Platform*>(token.get())) {
+    for (const auto& token : report.objects)
+        if (Platform* predator = dynamic_cast<Platform*>(token.get()))
             if (minDistance = std::min(minDistance, environment_->howFar(position_, token->getPosition(), sensorRange_)) == environment_->howFar(position_, token->getPosition(), sensorRange_))
                 nearestPredator = predator;
-        }
-    }
     return nearestPredator;
 }

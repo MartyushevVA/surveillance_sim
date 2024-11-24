@@ -18,12 +18,12 @@
         {
             "position": {"x": 30, "y": 30},
             "speed": 8,
-            "sensorRange": 4
+            "sensorRange": 10
         },
         {
             "position": {"x": 70, "y": 70},
             "speed": 12,
-            "sensorRange": 3
+            "sensorRange": 10
         }
     ],
     "platforms": [
@@ -55,7 +55,7 @@
                     "slotsOccupied": 1,
                     "energyConsumption": 8,
                     "isOn": true,
-                    "range": 30,
+                    "range": 10,
                     "chargingDuration": "00:00:03"
                 },
                 {

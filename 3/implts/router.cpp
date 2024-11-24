@@ -79,6 +79,8 @@ void ConnectionModule::recursiveDiscord(ConnectionModule* gate, std::vector<rout
 }
 
 void ConnectionModule::attachTo(Platform* host) const {
-    if (host->getEnergyLevel() + energyConsumption_ <= host->getMaxEnergyLevel())
+    if (host->getEnergyLevel() + energyConsumption_ <= host->getMaxEnergyLevel()) {
         host->installModule(std::make_shared<ConnectionModule>(*this));
+        host->setEnergyLevel(host->getEnergyLevel() + energyConsumption_);
+    }
 }

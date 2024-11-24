@@ -110,8 +110,6 @@ void Game::loadFieldFromFile(const std::string& filename) {
             for (const auto& moduleData : platformData["modules"]) {
                 auto module = loadModule(moduleData);
                 module->attachTo(platform.get());
-                if (WeaponModule* weapon = dynamic_cast<WeaponModule*>(module.get()))
-                    weapon->setIsCharged(true);
             }
         }
     }

@@ -1,4 +1,6 @@
 #include "module_types.h"
+#include <iostream>
+
 
 #include "platform.h"
 #include "suspect.h"
@@ -6,25 +8,28 @@
 
 void WeaponModule::startCharging() {
     if (!host_ || !isOn_ || isCharging_ || isCharged_)
-        return;
+        return;   
     if (host_->getEnergyLevel() + energyConsumption_ > host_->getMaxEnergyLevel())
         return;
+    host_->setEnergyLevel(host_->getEnergyLevel() + energyConsumption_);
     isCharging_ = true;
     chargingStarted_ = std::chrono::steady_clock::now();
-    host_->setEnergyLevel(host_->getEnergyLevel() + energyConsumption_);
 }
 
 void WeaponModule::refreshState() {
     if (isCharged_) return;
-    if (!isCharging_) startCharging();
-    else {
-        auto currentTime = std::chrono::steady_clock::now();
-        auto elapsedTime = std::chrono::duration_cast<std::chrono::seconds>(currentTime - chargingStarted_);
-        if (elapsedTime >= chargingDuration_) {
-            isCharged_ = true;
-            isCharging_ = false;
-            host_->setEnergyLevel(host_->getEnergyLevel() - energyConsumption_);
-        }
+
+    if (!isCharging_) {
+        startCharging();
+        return;
+    }
+    
+    auto currentTime = std::chrono::steady_clock::now();
+    auto elapsedTime = std::chrono::duration_cast<std::chrono::seconds>(currentTime - chargingStarted_);
+    if (elapsedTime >= chargingDuration_) {
+        host_->setEnergyLevel(host_->getEnergyLevel() - energyConsumption_);
+        isCharged_ = true;
+        isCharging_ = false;
     }
 }
 
