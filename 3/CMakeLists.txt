@@ -22,6 +22,7 @@ add_library(game_lib
     implts/platform.cpp
     implts/router.cpp
     implts/sensor.cpp
+    implts/static_platform.cpp
     implts/suspect.cpp
     implts/weapon.cpp
 )

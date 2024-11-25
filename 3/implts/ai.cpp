@@ -15,9 +15,10 @@ void AI::updateConnections() {
             wip.pop();
             visited.insert(current);
             if (auto connection = current->findModuleOfType<ConnectionModule>()) {
-                for (auto session : connection->getSessionList())
+                for (auto session : connection->getSessionList()) {
                     if (visited.find(session->getHost().get()) == visited.end())
                         wip.push(session->getHost().get());
+                }
             }
         }
     }

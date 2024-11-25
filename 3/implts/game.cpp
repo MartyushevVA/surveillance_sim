@@ -74,19 +74,20 @@ void Game::update() {
     
     
     
-    
     for (auto platform : ai_.getTemporarilyConnectedPlatforms()) {
         std::cout << platform->getPosition().x << ' ' << platform->getPosition().y << std::endl;
         std::cout << platform->getDescription() << std::endl;
 
-        if (SensorModule* sensor = platform->findModuleOfType<SensorModule>()) {
-            
 
+
+        if (SensorModule* sensor = platform->findModuleOfType<SensorModule>()) {
             Report report = sensor->getSurrounding();
+
 
 
             for (auto object : report.objects)
                 std::cout << object->getPosition().x << ' ' << object->getPosition().y << std::endl;
+
 
 
             if (WeaponModule* weapon = platform->findModuleOfType<WeaponModule>()) {
@@ -102,6 +103,9 @@ void Game::update() {
                     platform->move(officer->calculatePursuitMove(pursuitableSuspect));
                 else
                     platform->move(officer->calculateRandomMove());
+            }
+            else if (StaticPlatform* staticPlatform = dynamic_cast<StaticPlatform*>(platform)) {
+                staticPlatform->positionRelatedUpdate();
             }
         }
     }

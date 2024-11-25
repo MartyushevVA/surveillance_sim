@@ -6,12 +6,19 @@
 std::vector<ConnectionModule*> ConnectionModule::scanForModules(Pair position) {
     std::vector<ConnectionModule*> modulesInRange;
     if (position == Pair{-1, 0}) position = host_.lock()->getPosition();
-    for (const auto& token : host_.lock()->getEnvironment()->getTokens())
-        if (host_.lock()->getEnvironment()->howFar(position, token->getPosition(), range_) <= 1)
-            if (auto module = host_.lock()->findModuleOfType<ConnectionModule>())
-                modulesInRange.push_back(module);
+    auto hostPtr = host_.lock();
+    for (const auto& token : hostPtr->getEnvironment()->getTokens())
+        if (hostPtr->getEnvironment()->howFar(position, token->getPosition(), range_) <= 1
+        && hostPtr->getPosition() != token->getPosition()) {
+            //std::cout << "connectionModule6: " << token->getPosition().x << ' ' << token->getPosition().y << std::endl;
+            if (auto platform = dynamic_cast<Platform*>(token.get()))
+                if (auto module = platform->findModuleOfType<ConnectionModule>())
+                    modulesInRange.push_back(module);
+    }
     return modulesInRange;
 }
+
+
 
 bool ConnectionModule::establishConnection(ConnectionModule* target, bool isResponse) {
     if (sessionList_.size() < maxSessions_ && std::find_if(routeList_.begin(), routeList_.end(),
@@ -90,11 +97,13 @@ void ConnectionModule::refresh() {}
 void ConnectionModule::positionRelatedUpdate(Pair newPosition) {
     std::vector<ConnectionModule*> newNeighborsList = scanForModules(newPosition);
     for (auto module : newNeighborsList)
-        if (std::find(sessionList_.begin(), sessionList_.end(), module) == sessionList_.end()) //если это новый сосед
+        if (std::find(sessionList_.begin(), sessionList_.end(), module) == sessionList_.end()) { //если это новый сосед
             establishConnection(module, false);
+        }
     for (auto module : sessionList_)
-        if (std::find(newNeighborsList.begin(), newNeighborsList.end(), module) == newNeighborsList.end()) //если это больше не сосед
+        if (std::find(newNeighborsList.begin(), newNeighborsList.end(), module) == newNeighborsList.end()) {//если это больше не сосед
             closeConnection(module, false);
+        }
 }
 
 void ConnectionModule::setUp() {
