@@ -24,10 +24,9 @@ bool ConnectionModule::establishConnection(ConnectionModule* target, bool isResp
     if (sessionList_.size() < maxSessions_ && std::find_if(routeList_.begin(), routeList_.end(),
     [target](const routeNode& a) {return a.destination == target;}) == routeList_.end()) {
         if (!isResponse)
-            if (target->establishConnection(this, true))
-                sessionList_.push_back(target);
-        else
-            sessionList_.push_back(target);
+            if (!target->establishConnection(this, true))
+                return false;        
+        sessionList_.push_back(target);
         routeList_.push_back({target, target});
         target->recursiveRouteNodeImplementation(this, routeList_);
         applyRouteList(target->requestRouteList(this));
