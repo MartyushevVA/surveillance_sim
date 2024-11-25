@@ -56,7 +56,7 @@
                     "energyConsumption": 8,
                     "isOn": true,
                     "range": 10,
-                    "chargingDuration": "00:00:03"
+                    "chargingDuration": "00:00:01:500"
                 },
                 {
                     "type": "SensorModule",

@@ -11,6 +11,10 @@ void Environment::addToken(std::shared_ptr<Placeholder> token) {
     tokens_.insert(token);
 }
 
+void Environment::removeToken(std::shared_ptr<Placeholder> token) {
+    tokens_.erase(token);
+}
+
 void Environment::removeToken(Pair position) {
     tokens_.erase(getToken(position));
 }

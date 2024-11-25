@@ -5,10 +5,10 @@
 
 std::vector<ConnectionModule*> ConnectionModule::scanForModules(Pair position) {
     std::vector<ConnectionModule*> modulesInRange;
-    if (position == Pair{-1, 0}) position = host_->getPosition();
-    for (const auto& token : host_->getEnvironment()->getTokens())
-        if (host_->getEnvironment()->howFar(position, token->getPosition(), range_) <= 1)
-            if (auto module = host_->findModuleOfType<ConnectionModule>())
+    if (position == Pair{-1, 0}) position = host_.lock()->getPosition();
+    for (const auto& token : host_.lock()->getEnvironment()->getTokens())
+        if (host_.lock()->getEnvironment()->howFar(position, token->getPosition(), range_) <= 1)
+            if (auto module = host_.lock()->findModuleOfType<ConnectionModule>())
                 modulesInRange.push_back(module);
     return modulesInRange;
 }
@@ -78,9 +78,27 @@ void ConnectionModule::recursiveDiscord(ConnectionModule* gate, std::vector<rout
             module->recursiveDiscord(this, targetList);
 }
 
-void ConnectionModule::attachTo(Platform* host) const {
-    if (host->getEnergyLevel() + energyConsumption_ <= host->getMaxEnergyLevel()) {
-        host->installModule(std::make_shared<ConnectionModule>(*this));
-        host->setEnergyLevel(host->getEnergyLevel() + energyConsumption_);
-    }
+bool ConnectionModule::attachableTo(std::shared_ptr<Platform> host) const {
+    if (!host)
+        throw std::invalid_argument("Host is not set");
+    return (host->getEnergyLevel() + energyConsumption_ <= host->getMaxEnergyLevel())
+    && (host->getModules().size() + slotsOccupied_ <= host->getSlotCount());
+}
+
+void ConnectionModule::refresh() {}
+
+void ConnectionModule::positionRelatedUpdate(Pair newPosition) {
+    std::vector<ConnectionModule*> newNeighborsList = scanForModules(newPosition);
+    for (auto module : newNeighborsList)
+        if (std::find(sessionList_.begin(), sessionList_.end(), module) == sessionList_.end()) //если это новый сосед
+            establishConnection(module, false);
+    for (auto module : sessionList_)
+        if (std::find(newNeighborsList.begin(), newNeighborsList.end(), module) == newNeighborsList.end()) //если это больше не сосед
+            closeConnection(module, false);
+}
+
+void ConnectionModule::setUp() {
+    std::vector<ConnectionModule*> neighborsList = scanForModules(host_.lock()->getPosition());
+    for (auto module : neighborsList)
+        establishConnection(module, false);
 }

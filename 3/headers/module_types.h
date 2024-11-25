@@ -38,7 +38,13 @@ public:
     void recursiveRouteNodeImplementation(ConnectionModule* gate, std::vector<routeNode> routeList);
     void recursiveDiscord(ConnectionModule* gate, std::vector<routeNode> targetList);
 
-    void attachTo(Platform* host) const override;
+    bool attachableTo(std::shared_ptr<Platform> host) const override;
+
+    void refresh() override;
+
+    void positionRelatedUpdate(Pair newPosition) override;
+
+    void setUp() override;
 };
 /*
 sessionList consists of pointers to net modules which can be connected
@@ -70,7 +76,13 @@ public:
     void setType(SensorType type) {type_ = type;}
 
     Report getSurrounding() const override;
-    void attachTo(Platform* host) const override;
+    bool attachableTo(std::shared_ptr<Platform> host) const override;
+
+    void refresh() override;
+
+    void positionRelatedUpdate(Pair newPosition) override;
+
+    void setUp() override;
 };
 
 class WeaponModule :
@@ -78,26 +90,31 @@ class WeaponModule :
     public IWeapon {
 protected:
     std::chrono::steady_clock::time_point chargingStarted_;
-    std::chrono::seconds chargingDuration_;
+    std::chrono::milliseconds chargingDuration_;
     bool isCharging_ = false;
     bool isCharged_ = false;
 
 public:
-    WeaponModule(int slotsOccupied, int energyConsumption, bool isOn, int range, std::chrono::seconds chargingDuration)
+    WeaponModule(int slotsOccupied, int energyConsumption, bool isOn, int range, std::chrono::milliseconds chargingDuration)
         : Module(slotsOccupied, energyConsumption, isOn, range), chargingDuration_(chargingDuration) {}
     
-    std::chrono::seconds getChargingDuration() const {return chargingDuration_;}
-    void setChargingDuration(std::chrono::seconds chargingDuration) {chargingDuration_ = chargingDuration;}
+    std::chrono::milliseconds getChargingDuration() const {return chargingDuration_;}
+    void setChargingDuration(std::chrono::milliseconds chargingDuration) {chargingDuration_ = chargingDuration;}
     bool getIsCharging() const {return isCharging_;}
     void setIsCharging(bool isCharging) {isCharging_ = isCharging;}
     bool getIsCharged() const {return isCharged_;}
     void setIsCharged(bool isCharged) {isCharged_ = isCharged;}
 
-    void refreshState();
     void startCharging();
 
     Pair findAttackableSuspect(Report report) const;
 
     void attack(Pair suspect) override;
-    void attachTo(Platform* host) const override;
+    bool attachableTo(std::shared_ptr<Platform> host) const override;
+
+    void refresh() override;
+
+    void positionRelatedUpdate(Pair newPosition) override;
+
+    void setUp() override;
 };

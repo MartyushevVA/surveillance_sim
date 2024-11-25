@@ -1,10 +1,14 @@
 #pragma once
 
+#include <iostream>
+
 #include <string>
 
 #include "placeholder.h"
 
-class Platform : public Placeholder {
+class Platform : 
+public Placeholder,
+public std::enable_shared_from_this<Platform> {
 protected:
     std::string description_ {};
     int energyLevel_ = 0;
@@ -42,7 +46,8 @@ public:
     std::vector<std::shared_ptr<Module>> getModules() const {return modules_;}
 
     void installModule(std::shared_ptr<Module> module);
-    std::shared_ptr<Module> extractModule(Module* module);
+
+    void refreshModules();
 
     template<typename T>
     T* findModuleOfType() {

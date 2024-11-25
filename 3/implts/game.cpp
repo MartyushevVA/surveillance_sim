@@ -58,36 +58,51 @@ void Game::render() {
 }
 
 void Game::update() {
-    for (const auto& token : environment_.getTokens())
+    std::cout << "update" << std::endl;
+    for (const auto& token : environment_.getTokens()) {
         if (Suspect* suspect = dynamic_cast<Suspect*>(token.get())) {
             if (Platform* predator = suspect->nearestPredatorWithinRange())
                 token->move(suspect->calculateAvoidanceMove(predator->getPosition()));
             else
                 token->move(suspect->calculateRandomMove());
         }
+        if (Platform* platform = dynamic_cast<Platform*>(token.get())) {
+            platform->refreshModules();
+        }
+    }
+    ai_.updateConnections();
+    
+    
+    
+    
+    for (auto platform : ai_.getTemporarilyConnectedPlatforms()) {
+        std::cout << platform->getPosition().x << ' ' << platform->getPosition().y << std::endl;
+        std::cout << platform->getDescription() << std::endl;
 
-    for (const auto& platform : ai_.getConnectedPlatforms()) {
-        //std::cout << platform->getEnergyLevel() << std::endl;
         if (SensorModule* sensor = platform->findModuleOfType<SensorModule>()) {
+            
+
             Report report = sensor->getSurrounding();
+
+
+            for (auto object : report.objects)
+                std::cout << object->getPosition().x << ' ' << object->getPosition().y << std::endl;
+
+
             if (WeaponModule* weapon = platform->findModuleOfType<WeaponModule>()) {
                 Pair attackableSuspect = weapon->findAttackableSuspect(report);
-                if (attackableSuspect != Pair{-1, 0}) {
-                    if (auto token = environment_.getToken(attackableSuspect)) {
-                        if (Suspect* suspect = dynamic_cast<Suspect*>(token.get())) {
+                if (attackableSuspect != Pair{-1, 0})
+                    if (auto token = environment_.getToken(attackableSuspect))
+                        if (Suspect* suspect = dynamic_cast<Suspect*>(token.get()))
                             weapon->attack(attackableSuspect);
-                            //std::cout << "Attacked suspect at " << attackableSuspect.x << ", " << attackableSuspect.y << std::endl;
-                        }
-                    }
-                }
             }
-            else if (MobilePlatform* officer = dynamic_cast<MobilePlatform*>(platform.get())) {
+            else if (MobilePlatform* officer = dynamic_cast<MobilePlatform*>(platform)) {
                 Pair pursuitableSuspect = officer->findPursuitableSuspect(report);
                 if (pursuitableSuspect != Pair{-1, 0})
                     platform->move(officer->calculatePursuitMove(pursuitableSuspect));
                 else
                     platform->move(officer->calculateRandomMove());
             }
-       }
+        }
     }
 }

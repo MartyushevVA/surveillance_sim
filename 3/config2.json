@@ -1,0 +1,59 @@
+{
+    "field": {
+        "width": 150,
+        "height": 150
+    },
+    "platforms": [
+        {
+            "type": "MobilePlatform",
+            "position": {"x": 5, "y": 5},
+            "description": "Agile Mobile Platform",
+            "maxEnergyLevel": 120,
+            "slotCount": 3,
+            "speed": 15,
+            "modules": [
+                {
+                    "type": "ConnectionModule",
+                    "slotsOccupied": 1,
+                    "energyConsumption": 8,
+                    "isOn": true,
+                    "range": 10,
+                    "maxSessions": 4
+                },
+                {
+                    "type": "SensorModule",
+                    "slotsOccupied": 1,
+                    "energyConsumption": 6,
+                    "isOn": true,
+                    "range": 20,
+                    "sensorType": "Optical"
+                }
+            ]
+        },
+        {
+            "type": "StaticPlatform",
+            "position": {"x": 10, "y": 5},
+            "description": "Defense Static Platform",
+            "maxEnergyLevel": 200,
+            "slotCount": 4,
+            "modules": [
+                {
+                    "type": "ConnectionModule",
+                    "slotsOccupied": 1,
+                    "energyConsumption": 12,
+                    "isOn": true,
+                    "range": 15,
+                    "maxSessions": 4
+                },
+                {
+                    "type": "SensorModule",
+                    "slotsOccupied": 1,
+                    "energyConsumption": 5,
+                    "isOn": true,
+                    "range": 25,
+                    "sensorType": "XRay"
+                }
+            ]
+        }
+    ]
+}

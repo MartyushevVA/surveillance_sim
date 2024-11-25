@@ -11,7 +11,7 @@ protected:
     int energyConsumption_ = 0;
     bool isOn_ = false;
     int range_ = 0;
-    Platform* host_ = nullptr;
+    std::weak_ptr<Platform> host_ {};
 
     Module(int slotsOccupied, int energyConsumption, bool isOn, int range)
         : slotsOccupied_(slotsOccupied), energyConsumption_(energyConsumption), isOn_(isOn), range_(range) {}
@@ -27,9 +27,14 @@ public:
     void setIsOn(bool isOn) {isOn_ = isOn;}
     int getRange() const {return range_;}
     void setRange(int range) {range_ = range;}
-    Platform* getHost() const {return host_;}
-    void setHost(Platform* host) {host_ = host;}
-
+    std::shared_ptr<Platform> getHost() const {return host_.lock();}
+    void setHost(std::weak_ptr<Platform> host) {
+        host_ = host;
+        setUp();
+    }
     bool isInRange(Pair target) const;
-    virtual void attachTo(Platform* host) const = 0;
+    virtual bool attachableTo(std::shared_ptr<Platform> host) const = 0;
+    virtual void refresh() = 0;
+    virtual void positionRelatedUpdate(Pair newPosition) = 0;
+    virtual void setUp() = 0;
 };

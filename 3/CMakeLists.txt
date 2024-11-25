@@ -12,6 +12,7 @@ find_package(SFML 2.6.1 COMPONENTS graphics window system REQUIRED)
 find_package(nlohmann_json REQUIRED)
 
 add_library(game_lib
+    implts/ai.cpp
     implts/game.cpp
     implts/environment.cpp
     implts/input.cpp

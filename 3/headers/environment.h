@@ -30,6 +30,7 @@ public:
     void setSize(int width, int height) {size_ = {width, height};}
     
     void addToken(std::shared_ptr<Placeholder> token);
+    void removeToken(std::shared_ptr<Placeholder> token);
     void removeToken(Pair position);
 
     std::set<std::shared_ptr<Placeholder>> getTokens() const {return tokens_;}

@@ -3,19 +3,13 @@
 #include "module.h"
 
 void Platform::installModule(std::shared_ptr<Module> module) {
-    if (modules_.size() + module->getSlotsOccupied() > slotCount_)
-        throw std::runtime_error("Not enough slots available on the platform");
-    module->setHost(this);
+    if (!module->attachableTo(shared_from_this()))
+        throw std::runtime_error("Module is not attachable to the platform");
+    module->setHost(shared_from_this());
     modules_.push_back(std::move(module));
 }
 
-std::shared_ptr<Module> Platform::extractModule(Module* module) {
-    for (auto it = modules_.begin(); it != modules_.end(); ++it) {
-        if (it->get() == module) {
-            std::shared_ptr<Module> removedModule = std::move(*it);
-            modules_.erase(it);
-            return removedModule;
-        }
-    }
-    return nullptr;
+void Platform::refreshModules() {
+    for (auto& module : modules_)
+        module->refresh();
 }

@@ -1,4 +1,5 @@
 #include <fstream>
+#include <iostream>
 #include <nlohmann/json.hpp>
 
 #include "module_types.h"
@@ -9,10 +10,10 @@
 #include "suspect.h"
 
 
-std::chrono::seconds parseChargingDuration(const std::string& durationStr) {
-    int hours = 0, minutes = 0, seconds = 0;
-    std::sscanf(durationStr.c_str(), "%d:%d:%d", &hours, &minutes, &seconds);
-    return std::chrono::seconds(hours * 3600 + minutes * 60 + seconds);
+std::chrono::milliseconds parseChargingDuration(const std::string& durationStr) {
+    int hours = 0, minutes = 0, seconds = 0, milliseconds = 0;
+    std::sscanf(durationStr.c_str(), "%d:%d:%d:%d", &hours, &minutes, &seconds, &milliseconds);
+    return std::chrono::milliseconds(milliseconds + seconds * 1000 + minutes * 60000 + hours * 3600000);
 }
 
 using json = nlohmann::json;
@@ -24,7 +25,7 @@ std::shared_ptr<Module> loadModule(const json& moduleData) {
     for (const auto& field : requiredFields) {
         if (!moduleData.contains(field))
             throw std::runtime_error("Missing required module field: " + field);
-     }
+    }
 
     std::string type = moduleData["type"].get<std::string>();
     int slotsOccupied = moduleData["slotsOccupied"].get<int>();
@@ -42,7 +43,7 @@ std::shared_ptr<Module> loadModule(const json& moduleData) {
     }
     else if (type == "WeaponModule") {
         std::string chargingDuration = moduleData["chargingDuration"].get<std::string>();
-        std::chrono::seconds duration = parseChargingDuration(chargingDuration);
+        std::chrono::milliseconds duration = parseChargingDuration(chargingDuration);
         return std::make_shared<WeaponModule>(slotsOccupied, energyConsumption, isOn, range, duration);
     }
     throw std::runtime_error("Unknown module type");
@@ -65,20 +66,34 @@ std::shared_ptr<Platform> loadPlatform(const json& platformData, Environment& en
     std::string description = platformData["description"].get<std::string>();
     int maxEnergyLevel = platformData["maxEnergyLevel"].get<int>();
     int slotCount = platformData["slotCount"].get<int>();
-    
+    std::vector<std::shared_ptr<Module>> modules;
+    if (platformData.contains("modules")) {
+        for (auto moduleData : platformData["modules"]) {
+            auto module = loadModule(moduleData);
+            modules.push_back(module);
+        }
+    }
     if (type == "MobilePlatform") {
         if (platformData.contains("speed")) {
             int speed = platformData["speed"].get<int>();
-            return std::make_shared<MobilePlatform>(position, &environment, description, maxEnergyLevel, slotCount, speed);
+            auto platform = std::make_shared<MobilePlatform>(position, &environment, description, maxEnergyLevel, slotCount, speed);
+            for (auto module : modules)
+                platform->installModule(module);
+            return platform;
         }
         else throw std::runtime_error("Missing required platform fields");
     }
-    else if (type == "StaticPlatform")
-        return std::make_shared<StaticPlatform>(position, &environment, description, maxEnergyLevel, slotCount);
+    else if (type == "StaticPlatform") {
+        auto platform = std::make_shared<StaticPlatform>(position, &environment, description, maxEnergyLevel, slotCount);
+        for (auto module : modules)
+            platform->installModule(module);
+        return platform;
+    }
     else return nullptr;
 }
 
 void Game::loadFieldFromFile(const std::string& filename) {
+    
     std::ifstream inputFile(filename);
     if (!inputFile.is_open())
         throw std::runtime_error("Could not open file");
@@ -100,30 +115,11 @@ void Game::loadFieldFromFile(const std::string& filename) {
         auto suspect = std::make_shared<Suspect>(position, &environment_, speed, sensorRange);
         environment_.addToken(suspect);
     }
-
+    
     for (const auto& platformData : j["platforms"]) {
         auto platform = loadPlatform(platformData, environment_);
         environment_.addToken(platform);
-        if (dynamic_cast<StaticPlatform*>(platform.get()))
-            ai_.addConnectedPlatform(platform);
-        if (platformData.contains("modules")) {
-            for (const auto& moduleData : platformData["modules"]) {
-                auto module = loadModule(moduleData);
-                module->attachTo(platform.get());
-            }
-        }
-    }
-
-    if (j.contains("modules") && j["modules"].is_array()) {
-        for (const auto& moduleData : j["modules"]) {
-            auto module = loadModule(moduleData);
-            if (moduleData.contains("host_position")) {
-                Pair hostPosition = {moduleData["host_position"]["x"].get<int>(), moduleData["host_position"]["y"].get<int>()};
-                auto host = dynamic_cast<Platform*>(environment_.getToken(hostPosition).get());
-                if (host)
-                    module->attachTo(host);
-            }
-            else addToStorage(module);
-        }
+        if (auto staticPlatform = dynamic_cast<StaticPlatform*>(platform.get()))
+            ai_.addStaticPlatform(staticPlatform);
     }
 }
