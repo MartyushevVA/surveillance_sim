@@ -54,3 +54,7 @@ bool Environment::hasLineOfSight(Pair from, Pair to) const {
 double Environment::howFar(Pair from, Pair to, int range) const {
     return sqrt((from.x - to.x) * (from.x - to.x) + (from.y - to.y) * (from.y - to.y)) / range;
 }
+
+int Environment::getDistance(Pair from, Pair to) const {
+    return sqrt((from.x - to.x) * (from.x - to.x) + (from.y - to.y) * (from.y - to.y));
+}

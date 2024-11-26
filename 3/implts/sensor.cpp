@@ -14,11 +14,10 @@ Report SensorModule::getSurrounding() const {
     auto position = host_.lock()->getPosition();
     if (!environment)
         throw std::invalid_argument("Environment is not set");
-    for (const auto& token : environment->getTokens()) {
+    for (const auto& token : environment->getTokens())
         if ((environment->howFar(position, token->getPosition(), range_) <= 1) && token != host_.lock())
             if (type_ == SensorType::XRay || environment->hasLineOfSight(position, token->getPosition()))
-            tokensInRange.push_back(token);
-    }
+                tokensInRange.push_back(token);
     return {position, tokensInRange};
 }
 

@@ -74,7 +74,7 @@ void Game::update() {
     
     
     
-    for (auto platform : ai_.getTemporarilyConnectedPlatforms()) {
+    for (auto platform : ai_.getAllConnectedPlatforms()) {
         std::cout << platform->getPosition().x << ' ' << platform->getPosition().y << std::endl;
         std::cout << platform->getDescription() << std::endl;
 
