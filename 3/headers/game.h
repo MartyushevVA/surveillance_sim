@@ -20,17 +20,15 @@ private:
 
     Environment environment_ {};
     AI ai_ {&environment_};
-    std::vector<std::shared_ptr<Module>> storage_;
 
     void handleEvents();
     void render();
     
-    void update();
+    void updateSuspects();
 
 public:
     Game() = default;
 
     void loadFieldFromFile(const std::string& filename);
-    void addToStorage(std::shared_ptr<Module> module) {storage_.push_back(std::move(module));}
     void start();
 };

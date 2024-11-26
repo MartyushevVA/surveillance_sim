@@ -107,9 +107,7 @@ public:
 
     void startCharging();
 
-    Pair findAttackableSuspect(Report report) const;
-
-    void attack(Pair suspect) override;
+    bool attack(Pair suspect) override;
     bool attachableTo(std::shared_ptr<Platform> host) const override;
 
     void refresh() override;

@@ -23,7 +23,7 @@ public:
 class IWeapon {
 public:
     virtual ~IWeapon() = default;
-    virtual void attack(Pair target) = 0;
+    virtual bool attack(Pair target) = 0;
 };
 
 class ISensor {

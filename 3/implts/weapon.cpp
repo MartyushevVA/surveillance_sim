@@ -17,26 +17,18 @@ void WeaponModule::startCharging() {
     chargingStarted_ = std::chrono::steady_clock::now();
 }
 
-Pair WeaponModule::findAttackableSuspect(Report report) const {
-    for (const auto& token : report.objects) {
-        if (Suspect* suspect = dynamic_cast<Suspect*>(token.get()))
-            if (host_.lock()->getEnvironment()->hasLineOfSight(host_.lock()->getPosition(), suspect->getPosition()) && (host_.lock()->getEnvironment()->howFar(host_.lock()->getPosition(), suspect->getPosition(), range_) <= 1)) {
-                //std::cout << "Suspect is a black male running at " << suspect->getPosition().x << "," << suspect->getPosition().y << std::endl;
-                return suspect->getPosition();
-            }
-    }
-    return {-1, 0};
-}
-
-void WeaponModule::attack(Pair suspect) {
-    if (!host_.lock() || !isOn_ || !host_.lock()->getEnvironment()->hasLineOfSight(host_.lock()->getPosition(), suspect))
-        return;
+bool WeaponModule::attack(Pair suspect) {
+    if (!host_.lock() || !isOn_ || !host_.lock()->getEnvironment()->hasLineOfSight(host_.lock()->getPosition(), suspect) ||
+    host_.lock()->getEnvironment()->howFar(host_.lock()->getPosition(), suspect, range_) > 1)
+        return false;
     if (isCharged_) {
         std::cout << "Shots fired at "<< suspect.x <<","<< suspect.y << std::endl;
         host_.lock()->getEnvironment()->removeToken(suspect);
         isCharged_ = false;
         startCharging();
+        return true;
     }
+    return false;
 }
 
 bool WeaponModule::attachableTo(std::shared_ptr<Platform> host) const {

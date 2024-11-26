@@ -44,12 +44,21 @@ Pair Placeholder::calculateRandomMove() const {
 }
 
 Pair MobilePlatform::calculatePursuitMove(Pair target) const {
-    int dx = target.x - position_.x;
-    int dy = target.y - position_.y;
+    double dx = target.x - position_.x;
+    double dy = target.y - position_.y;
     double distance = sqrt(dx * dx + dy * dy);
-    double bo_sinus = dy / distance;
-    double bo_cosinus = dx / distance;
-    return {position_.x + (int)(bo_cosinus * speed_), position_.y + (int)(bo_sinus * speed_)};
+    int speed = distance > speed_ ? speed_ : static_cast<int>(distance) - 1;
+    double nx = dx / distance;
+    double ny = dy / distance;
+
+    std::random_device rd;
+    std::mt19937 gen(rd());
+    std::uniform_real_distribution<> angle_dist(-0.1, 0.1);
+    double angle_adjustment = angle_dist(gen);
+    double adjusted_dx = nx * speed * cos(angle_adjustment);
+    double adjusted_dy = ny * speed * sin(angle_adjustment);
+
+    return {position_.x + static_cast<int>(adjusted_dx), position_.y + static_cast<int>(adjusted_dy)};
 }
 
 Pair Suspect::calculateAvoidanceMove(Pair threat) const {

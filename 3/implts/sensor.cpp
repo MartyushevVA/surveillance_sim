@@ -4,6 +4,7 @@
 
 #include "platform.h"
 #include "environment.h"
+#include "suspect.h"
 
 Report SensorModule::getSurrounding() const {
     std::vector<std::shared_ptr<Placeholder>> tokensInRange;

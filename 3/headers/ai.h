@@ -15,16 +15,17 @@ private:
     Environment* environment_;
     std::vector<Platform*> staticPlatforms_ {};
     std::vector<Platform*> allConnectedPlatforms_ {};
-    std::vector<Suspect*> suspects_ {};
+    std::vector<Suspect*> spottedSuspects_ {};
+
+    void updateNetworkForest();
+    void addSuspect(Suspect* suspect) {spottedSuspects_.push_back(suspect);}
+    void updateSpottedSuspects();
 
 public:
     AI(Environment* environment) : environment_(environment) {};
 
-    std::vector<Platform*> getAllConnectedPlatforms() const {return allConnectedPlatforms_;}
     void addStaticPlatform(Platform* platform) {staticPlatforms_.push_back(platform);}
-    void updateConnections();
-    void addSuspect(Suspect* suspect) {suspects_.push_back(suspect);}
-    void updateSuspects();
+    void eliminateAllSuspects();
 };
 
 
