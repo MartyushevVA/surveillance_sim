@@ -66,6 +66,7 @@ std::shared_ptr<Platform> loadPlatform(const json& platformData, Environment& en
     std::string description = platformData["description"].get<std::string>();
     int maxEnergyLevel = platformData["maxEnergyLevel"].get<int>();
     int slotCount = platformData["slotCount"].get<int>();
+    
     std::vector<std::shared_ptr<Module>> modules;
     if (platformData.contains("modules")) {
         for (auto moduleData : platformData["modules"]) {

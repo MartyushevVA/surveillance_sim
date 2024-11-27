@@ -34,7 +34,6 @@ public:
     }
     bool isInRange(Pair target) const;
     virtual bool attachableTo(std::shared_ptr<Platform> host) const = 0;
-    virtual void refresh() = 0;
-    virtual void positionRelatedUpdate(Pair newPosition) = 0;
+    virtual void update() = 0;
     virtual void setUp() = 0;
 };

@@ -37,13 +37,6 @@ CellType Environment::getCellType(Pair position) const {
     return CellType::Empty;
 }
 
-std::shared_ptr<Placeholder> Environment::getSuspect(std::vector<std::shared_ptr<Placeholder>> placeholders) const {
-    for (auto placeholder : placeholders)
-        if (Suspect* suspect = dynamic_cast<Suspect*>(placeholder.get()))
-            return placeholder;
-    return nullptr;
-}
-
 bool Environment::hasLineOfSight(Pair from, Pair to) const {
     double distance = sqrt((from.x - to.x) * (from.x - to.x) + (from.y - to.y) * (from.y - to.y));
     double stepX = (to.x - from.x) / distance;

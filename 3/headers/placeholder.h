@@ -18,8 +18,8 @@ public:
     int getSpeed() const {return speed_;}
     virtual void setSpeed(int speed) = 0;
 
-    virtual void positionRelatedUpdate(Pair newPosition) = 0;
-
+    virtual void update() = 0;
+    
     void move(Pair position) override;
     bool abilityToMove(Pair position) const override;
     Pair calculateRandomMove() const override;

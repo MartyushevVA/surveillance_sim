@@ -14,7 +14,7 @@ public:
         : Placeholder(position, environment, 0) {}
         
     void setSpeed(int speed) override { speed_ = 0; }
-    void positionRelatedUpdate(Pair newPosition) override {}
+    void update() override {}
 };
 
 class Environment {
@@ -35,8 +35,6 @@ public:
 
     std::set<std::shared_ptr<Placeholder>> getTokens() const {return tokens_;}
     std::shared_ptr<Placeholder> getToken(Pair position) const;
-
-    std::shared_ptr<Placeholder> getSuspect(std::vector<std::shared_ptr<Placeholder>> placeholders) const;
 
     CellType getCellType(Pair position) const;
 

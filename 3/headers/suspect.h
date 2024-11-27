@@ -20,7 +20,7 @@ public:
         speed_ = speed;
     }
 
-    void positionRelatedUpdate(Pair newPosition) override {}
+    void update() override {}
 
     Platform* nearestPredatorWithinRange() const;
 

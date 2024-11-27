@@ -28,9 +28,16 @@ bool SensorModule::attachableTo(std::shared_ptr<Platform> host) const {
     return (host->getEnergyLevel() + energyConsumption_ <= host->getMaxEnergyLevel())
     && (host->getModules().size() + slotsOccupied_ <= host->getSlotCount());
 }
+std::shared_ptr<Placeholder> SensorModule::getVisibleSuspect(Report report) const {
+    for (auto placeholder : report.objects)
+        if (Suspect* suspect = dynamic_cast<Suspect*>(placeholder.get()))
+            if (host_.lock()->getEnvironment()->hasLineOfSight(report.position, suspect->getPosition()))
+                return placeholder;
+    return nullptr;
+}
+void SensorModule::update() {}
 
-void SensorModule::refresh() {}
-
-void SensorModule::positionRelatedUpdate(Pair newPosition) {}
-
-void SensorModule::setUp() {}
+void SensorModule::setUp() {
+    if (host_.lock())
+        host_.lock()->setEnergyLevel(host_.lock()->getEnergyLevel() + energyConsumption_);
+}

@@ -26,20 +26,20 @@ public:
     std::string getDescription() const {return description_;}
     int getEnergyLevel() const {return energyLevel_;}
     void setEnergyLevel(int energyLevel) {
-        if (energyLevel <= 0)
-            throw std::invalid_argument("Energy level must be positive");
+        if (energyLevel < 0)
+            throw std::invalid_argument("Energy level cannot be negative");
         energyLevel_ = energyLevel;
     }
     int getSlotCount() const {return slotCount_;}
     void setSlotCount(int slotCount) {
-        if (slotCount <= 0)
-            throw std::invalid_argument("Slot count must be positive");
+        if (slotCount < 0)
+            throw std::invalid_argument("Slot count cannot be negative");
         slotCount_ = slotCount;
     }
     int getMaxEnergyLevel() const {return maxEnergyLevel_;}
     void setMaxEnergyLevel(int maxEnergyLevel) {
-        if (maxEnergyLevel <= 0)
-            throw std::invalid_argument("Max energy level must be positive");
+        if (maxEnergyLevel < 0)
+            throw std::invalid_argument("Max energy level cannot be negative");
         maxEnergyLevel_ = maxEnergyLevel;
     }
     
@@ -47,7 +47,7 @@ public:
 
     void installModule(std::shared_ptr<Module> module);
 
-    void refreshModules();
+    void update() override;
 
     template<typename T>
     T* findModuleOfType() {

@@ -16,13 +16,11 @@ add_library(game_lib
     implts/game.cpp
     implts/environment.cpp
     implts/input.cpp
-    implts/mobile_platform.cpp
     implts/module.cpp
     implts/moving.cpp
     implts/platform.cpp
     implts/router.cpp
     implts/sensor.cpp
-    implts/static_platform.cpp
     implts/suspect.cpp
     implts/weapon.cpp
 )

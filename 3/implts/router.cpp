@@ -18,8 +18,6 @@ std::vector<ConnectionModule*> ConnectionModule::scanForModules(Pair position) {
     return modulesInRange;
 }
 
-
-
 bool ConnectionModule::establishConnection(ConnectionModule* target, bool isResponse) {
     if (sessionList_.size() < maxSessions_ && std::find_if(routeList_.begin(), routeList_.end(),
     [target](const routeNode& a) {return a.destination == target;}) == routeList_.end()) {
@@ -91,21 +89,21 @@ bool ConnectionModule::attachableTo(std::shared_ptr<Platform> host) const {
     && (host->getModules().size() + slotsOccupied_ <= host->getSlotCount());
 }
 
-void ConnectionModule::refresh() {}
-
-void ConnectionModule::positionRelatedUpdate(Pair newPosition) {
-    std::vector<ConnectionModule*> newNeighborsList = scanForModules(newPosition);
+void ConnectionModule::update() {
+    std::vector<ConnectionModule*> newNeighborsList = scanForModules();
     for (auto module : newNeighborsList)
-        if (std::find(sessionList_.begin(), sessionList_.end(), module) == sessionList_.end()) { //если это новый сосед
+        if (std::find(sessionList_.begin(), sessionList_.end(), module) == sessionList_.end()) {
             establishConnection(module, false);
         }
     for (auto module : sessionList_)
-        if (std::find(newNeighborsList.begin(), newNeighborsList.end(), module) == newNeighborsList.end()) {//если это больше не сосед
+        if (std::find(newNeighborsList.begin(), newNeighborsList.end(), module) == newNeighborsList.end()) {
             closeConnection(module, false);
         }
 }
 
 void ConnectionModule::setUp() {
+    if (host_.lock())
+        host_.lock()->setEnergyLevel(host_.lock()->getEnergyLevel() + energyConsumption_);
     std::vector<ConnectionModule*> neighborsList = scanForModules(host_.lock()->getPosition());
     for (auto module : neighborsList)
         establishConnection(module, false);

@@ -40,10 +40,7 @@ public:
 
     bool attachableTo(std::shared_ptr<Platform> host) const override;
 
-    void refresh() override;
-
-    void positionRelatedUpdate(Pair newPosition) override;
-
+    void update() override;
     void setUp() override;
 };
 /*
@@ -76,12 +73,11 @@ public:
     void setType(SensorType type) {type_ = type;}
 
     Report getSurrounding() const override;
+    std::shared_ptr<Placeholder> getVisibleSuspect(Report report) const;
+
     bool attachableTo(std::shared_ptr<Platform> host) const override;
 
-    void refresh() override;
-
-    void positionRelatedUpdate(Pair newPosition) override;
-
+    void update() override;
     void setUp() override;
 };
 
@@ -108,11 +104,9 @@ public:
     void startCharging();
 
     bool attack(Pair suspect) override;
+
     bool attachableTo(std::shared_ptr<Platform> host) const override;
 
-    void refresh() override;
-
-    void positionRelatedUpdate(Pair newPosition) override;
-
+    void update() override;
     void setUp() override;
 };

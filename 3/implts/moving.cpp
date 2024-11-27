@@ -8,8 +8,8 @@
 
 void Placeholder::move(Pair position) {
     if (abilityToMove(position)) {
-        positionRelatedUpdate(position);
         setPosition(position);
+        update();
     }
 }
 

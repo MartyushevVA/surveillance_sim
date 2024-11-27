@@ -3,6 +3,14 @@
         "width": 150,
         "height": 150
     },
+    "suspects": [
+        {
+            "type": "Suspect",
+            "position": {"x": 10, "y": 10},
+            "sensorRange": 5,
+            "speed": 10
+        }
+    ],
     "platforms": [
         {
             "type": "MobilePlatform",
@@ -17,7 +25,7 @@
                     "slotsOccupied": 1,
                     "energyConsumption": 8,
                     "isOn": true,
-                    "range": 10,
+                    "range": 1000,
                     "maxSessions": 4
                 },
                 {
@@ -27,6 +35,14 @@
                     "isOn": true,
                     "range": 20,
                     "sensorType": "Optical"
+                },
+                {
+                    "type": "WeaponModule",
+                    "slotsOccupied": 1,
+                    "energyConsumption": 10,
+                    "isOn": true,
+                    "range": 20,
+                    "chargingDuration": "00:00:00:001"
                 }
             ]
         },
@@ -42,7 +58,7 @@
                     "slotsOccupied": 1,
                     "energyConsumption": 12,
                     "isOn": true,
-                    "range": 15,
+                    "range": 1500,
                     "maxSessions": 4
                 },
                 {

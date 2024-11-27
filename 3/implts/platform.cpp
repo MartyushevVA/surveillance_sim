@@ -9,7 +9,7 @@ void Platform::installModule(std::shared_ptr<Module> module) {
     modules_.push_back(std::move(module));
 }
 
-void Platform::refreshModules() {
+void Platform::update() {
     for (auto& module : modules_)
-        module->refresh();
+        module->update();
 }
