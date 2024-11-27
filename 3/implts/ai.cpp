@@ -52,15 +52,24 @@ void AI::eliminateAllSuspects() {
             Report report = sensor->getSurrounding();
             if (WeaponModule* weapon = platform->findModuleOfType<WeaponModule>()) {
                 auto attackableSuspect = platform->getEnvironment()->getSuspect(report.objects);
-                if (attackableSuspect)
+                if (attackableSuspect) {
                     if (weapon->attack(attackableSuspect->getPosition()))
                         continue;
+                }
             }
             if (MobilePlatform* officer = dynamic_cast<MobilePlatform*>(platform)) {
-                if (auto attackableSuspect = platform->getEnvironment()->getSuspect(report.objects))
+                if (auto attackableSuspect = platform->getEnvironment()->getSuspect(report.objects)) {
                     officer->move(officer->calculatePursuitMove(attackableSuspect->getPosition()));
-                else
-                    officer->move(officer->calculatePursuitMove(spottedSuspects_.front()->getPosition()));
+                }
+                else {
+                    if (!spottedSuspects_.empty()) {
+                        auto spottedSuspect = spottedSuspects_[0];
+                        if (spottedSuspect)
+                            officer->move(officer->calculatePursuitMove(spottedSuspect->getPosition()));
+                    }
+                    else
+                        officer->move(officer->calculateRandomMove());
+                }
             }
         }
     }

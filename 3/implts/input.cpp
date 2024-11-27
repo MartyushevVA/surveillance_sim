@@ -93,7 +93,6 @@ std::shared_ptr<Platform> loadPlatform(const json& platformData, Environment& en
 }
 
 void Game::loadFieldFromFile(const std::string& filename) {
-    
     std::ifstream inputFile(filename);
     if (!inputFile.is_open())
         throw std::runtime_error("Could not open file");
