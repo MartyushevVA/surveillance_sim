@@ -32,7 +32,6 @@ public:
     bool establishConnection(ConnectionModule* module, bool isResponse = false) override;
     bool closeConnection(ConnectionModule* module, bool isResponse = false) override;
     
-    void applyRouteList(std::vector<routeNode> routeList) override;
     std::vector<routeNode> requestRouteList(ConnectionModule* source) const override;
     
     void recursiveRouteNodeImplementation(ConnectionModule* gate, std::vector<routeNode> routeList);

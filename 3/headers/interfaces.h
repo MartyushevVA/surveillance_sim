@@ -16,8 +16,6 @@ public:
 
     virtual std::vector<routeNode> getRouteList() const = 0;
     virtual std::vector<routeNode> requestRouteList(ConnectionModule* source) const = 0;
-    virtual void applyRouteList(std::vector<routeNode> routeList) = 0;
-
 };
 
 class IWeapon {

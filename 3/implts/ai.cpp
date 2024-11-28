@@ -23,7 +23,8 @@ void AI::updateNetworkForest() {
                         wip.push(session->getHost().get());
         }
     }
-    allConnectedPlatforms_.insert(allConnectedPlatforms_.end(), visited.begin(), visited.end());
+    for (auto platform : visited)
+        allConnectedPlatforms_.push_back(platform);
 }
 
 void AI::updateSpottedSuspects() {
