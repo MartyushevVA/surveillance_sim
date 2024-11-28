@@ -9,12 +9,9 @@
 #include "environment.h"
 
 void Placeholder::move(Pair position) {
-    std::cout << "Trying to move from " << position_.x << ", " << position_.y << " to " << position.x << ", " << position.y << std::endl;
-    if (environment_->abilityToMove(position_, position)) {
-        std::cout << "Movingdddd from " << position_.x << ", " << position_.y << " to " << position.x << ", " << position.y << std::endl;
+    if (environment_->abilityToMove(position_, position))
         environment_->moveToken(position_, position);
-        update();
-    }
+    update();
 }
 
 Pair Placeholder::calculateRandomMove() const {
@@ -59,7 +56,6 @@ Pair MobilePlatform::calculatePursuitMove(Pair target) const {
     double adjusted_dx = adjusted_nx * speed;
     double adjusted_dy = adjusted_ny * speed;
 
-    std::cout << "Moving from " << position_.x << ", " << position_.y << " to " << position_.x + static_cast<int>(adjusted_dx) << ", " << position_.y + static_cast<int>(adjusted_dy) << std::endl;
     return {position_.x + static_cast<int>(adjusted_dx), position_.y + static_cast<int>(adjusted_dy)};
 }
 

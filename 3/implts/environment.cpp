@@ -25,16 +25,11 @@ bool Environment::abilityToMove(Pair from, Pair to) const {
     if (to.x >= size_.x || to.y >= size_.y || to.x < 0 || to.y < 0)
         return false;
     auto token = getToken(from);
-    std::cout << "Token at " << from.x << ", " << from.y << " is " << (token ? "not null" : "null") << std::endl;
     if (!token) return false;
-    if (from != to && !isEmpty(to)) {
-        std::cout << "Cell at " << to.x << ", " << to.y << " is occupied" << std::endl;
+    if (from != to && !isEmpty(to))
         return false;
-    }
-    if (!hasLineOfSight(from, to)) {
-        std::cout << "No line of sight from " << from.x << ", " << from.y << " to " << to.x << ", " << to.y << std::endl;
+    if (!hasLineOfSight(from, to))
         return false;
-    }
     return true;
 }
 

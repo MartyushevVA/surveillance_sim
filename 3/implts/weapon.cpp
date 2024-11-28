@@ -42,14 +42,12 @@ bool WeaponModule::attachableTo(std::shared_ptr<Platform> host) const {
 void WeaponModule::update() {
     if (isCharged_) return;
     if (!isCharging_) {
-        std::cout << "Charging started at " << host_.lock()->getEnergyLevel() << std::endl;
         startCharging();
         return;
     }
     auto currentTime = std::chrono::steady_clock::now();
     auto elapsedTime = std::chrono::duration_cast<std::chrono::milliseconds>(currentTime - chargingStarted_);
     if (elapsedTime >= chargingDuration_) {
-        std::cout << "energy level: " << host_.lock()->getEnergyLevel() << std::endl;
         host_.lock()->setEnergyLevel(host_.lock()->getEnergyLevel() - energyConsumption_);
         isCharged_ = true;
         isCharging_ = false;

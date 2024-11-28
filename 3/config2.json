@@ -15,17 +15,17 @@
         {
             "type": "MobilePlatform",
             "position": {"x": 5, "y": 5},
-            "description": "Agile Mobile Platform",
+            "description": "Agile Mobile Platform11",
             "maxEnergyLevel": 120,
             "slotCount": 3,
-            "speed": 4,
+            "speed": 2,
             "modules": [
                 {
                     "type": "ConnectionModule",
                     "slotsOccupied": 1,
                     "energyConsumption": 8,
                     "isOn": true,
-                    "range": 1000,
+                    "range": 10,
                     "maxSessions": 4
                 },
                 {
@@ -42,7 +42,41 @@
                     "energyConsumption": 10,
                     "isOn": true,
                     "range": 20,
-                    "chargingDuration": "00:00:30:000"
+                    "chargingDuration": "00:00:20:000"
+                }
+            ]
+        },
+        {
+            "type": "MobilePlatform",
+            "position": {"x": 5, "y": 15},
+            "description": "Agile Mobile Platform22",
+            "maxEnergyLevel": 120,
+            "slotCount": 3,
+            "speed": 2,
+            "modules": [
+                {
+                    "type": "ConnectionModule",
+                    "slotsOccupied": 1,
+                    "energyConsumption": 8,
+                    "isOn": true,
+                    "range": 10,
+                    "maxSessions": 4
+                },
+                {
+                    "type": "SensorModule",
+                    "slotsOccupied": 1,
+                    "energyConsumption": 6,
+                    "isOn": true,
+                    "range": 20,
+                    "sensorType": "Optical"
+                },
+                {
+                    "type": "WeaponModule",
+                    "slotsOccupied": 1,
+                    "energyConsumption": 10,
+                    "isOn": true,
+                    "range": 20,
+                    "chargingDuration": "00:00:20:000"
                 }
             ]
         },
@@ -58,7 +92,7 @@
                     "slotsOccupied": 1,
                     "energyConsumption": 12,
                     "isOn": true,
-                    "range": 1500,
+                    "range": 10,
                     "maxSessions": 4
                 },
                 {

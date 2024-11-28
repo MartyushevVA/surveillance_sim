@@ -56,18 +56,12 @@ void AI::eliminateAllSuspects() {
                 }
             }
             if (MobilePlatform* officer = dynamic_cast<MobilePlatform*>(platform)) {
-                if (auto attackableSuspect = sensor->getVisibleSuspect(report)) {
+                if (auto attackableSuspect = sensor->getVisibleSuspect(report))
                     officer->move(officer->calculatePursuitMove(attackableSuspect->getPosition()));
-                }
-                else {
-                    if (!spottedSuspects_.empty()) {
-                        auto spottedSuspect = spottedSuspects_[0];
-                        if (spottedSuspect)
-                            officer->move(officer->calculatePursuitMove(spottedSuspect->getPosition()));
-                    }
-                    else
-                        officer->move(officer->calculateRandomMove());
-                }
+                else if (!spottedSuspects_.empty())
+                    officer->move(officer->calculatePursuitMove(spottedSuspects_[0]->getPosition()));
+                else
+                    officer->move(officer->calculateRandomMove());
             }
         }
     }

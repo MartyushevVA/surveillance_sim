@@ -29,11 +29,18 @@ bool ConnectionModule::establishConnection(ConnectionModule* target, bool isResp
     [target](const routeNode& a) {return a.destination == target;}) == routeList_.end()) {
         if (!isResponse)
             if (!target->establishConnection(this, true))
-                return false;        
+                return false;
         sessionList_.push_back(target);
         routeList_.push_back({target, target});
-        target->recursiveRouteNodeImplementation(this, routeList_);
         applyRouteList(target->requestRouteList(this));
+        target->recursiveRouteNodeImplementation(this, routeList_);
+        
+        /*for (auto node : routeList_)
+            std::cout << "Host: (" << host_.lock()->getPosition().x << " " << host_.lock()->getPosition().y
+            << ") | Target: (" << target->getHost()->getPosition().x << " " << target->getHost()->getPosition().y
+            << ") | Gate: (" << node.gate->getHost()->getPosition().x << " " << node.gate->getHost()->getPosition().y
+            << ") | Destination: (" << node.destination->getHost()->getPosition().x << " " << node.destination->getHost()->getPosition().y << ")" << std::endl;
+        */
         return true;
     }
     return false;
@@ -50,30 +57,38 @@ bool ConnectionModule::closeConnection(ConnectionModule* target, bool isResponse
 void ConnectionModule::applyRouteList(std::vector<routeNode> routeList) {
     for (auto& node : routeList)
         if (std::find_if(routeList_.begin(), routeList_.end(),
-        [node](const routeNode& a) {return a.destination == node.destination;}) == routeList_.end())
+        [&node](const routeNode& a) {return a.destination == node.destination;}) == routeList_.end())
             routeList_.push_back(node);
 }
 
 std::vector<routeNode> ConnectionModule::requestRouteList(ConnectionModule* source) const {
-    std::vector<routeNode> routeList;
-    for (auto node : sessionList_)
-        if (node != source)
-            routeList.insert(routeList.end(), node->getRouteList().begin(), node->getRouteList().end());
+    std::vector<routeNode> routeList {};
+    for (auto node : sessionList_) {if (node != source) {
+            std::vector<routeNode> tempList = node->getRouteList();
+            for (auto& tempNode : tempList)
+                if (tempNode.destination != this)
+                    routeList.push_back(tempNode);
+        }
+    }
     return routeList;
 }
 
 void ConnectionModule::recursiveRouteNodeImplementation(ConnectionModule* gate, std::vector<routeNode> routeList) {
+    std::cout << host_.lock()->getDescription() << " is implementing route list" << std::endl;
+    std::cout << gate->getHost()->getDescription() << " is the gate" << std::endl;
     bool isEntered = false;
     for (auto& node : routeList)
-        if (std::find_if(routeList_.begin(), routeList_.end(),
-        [node](const routeNode& a) {return a.destination == node.destination;}) == routeList_.end()) {
+        if ((std::find_if(routeList_.begin(), routeList_.end(),
+        [&node](const routeNode& a) {return a.destination == node.destination;}) == routeList_.end()) && node.destination != this) {
             isEntered = true;
             routeList_.push_back(routeNode{gate, node.destination});
+            std::cout << node.destination->getHost()->getDescription() << " is being added to route list" << std::endl;
         }
-    if (isEntered)
+    if (isEntered) {
         for (auto module : sessionList_)
             if (module != gate)
                 module->recursiveRouteNodeImplementation(this, routeList);
+    }
 }
 
 void ConnectionModule::recursiveDiscord(ConnectionModule* gate, std::vector<routeNode> targetList) {
@@ -97,6 +112,11 @@ bool ConnectionModule::attachableTo(std::shared_ptr<Platform> host) const {
 
 void ConnectionModule::update() {
     std::vector<ConnectionModule*> newNeighborsList = scanForModules();
+    /*for (auto node : routeList_)
+            std::cout << "Host: (" << host_.lock()->getDescription() << ") | Gate: (" << node.gate->getHost()->getDescription()
+            << ") | Destination: (" << node.destination->getHost()->getDescription() << ")" << std::endl;
+    std::cout << std::endl;
+    */
     for (auto module : newNeighborsList)
         if (std::find(sessionList_.begin(), sessionList_.end(), module) == sessionList_.end()) {
             establishConnection(module, false);

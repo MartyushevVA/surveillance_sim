@@ -75,14 +75,13 @@ std::shared_ptr<Platform> loadPlatform(const json& platformData, Environment& en
         }
     }
     if (type == "MobilePlatform") {
-        if (platformData.contains("speed")) {
-            int speed = platformData["speed"].get<int>();
-            auto platform = std::make_shared<MobilePlatform>(position, &environment, description, maxEnergyLevel, slotCount, speed);
-            for (auto module : modules)
-                platform->installModule(module);
-            return platform;
-        }
-        else throw std::runtime_error("Missing required platform fields");
+        if (!platformData.contains("speed"))
+            throw std::runtime_error("Speed is required for mobile platforms");
+        int speed = platformData["speed"].get<int>();
+        auto platform = std::make_shared<MobilePlatform>(position, &environment, description, maxEnergyLevel, slotCount, speed);
+        for (auto module : modules)
+            platform->installModule(module);
+        return platform;
     }
     else if (type == "StaticPlatform") {
         auto platform = std::make_shared<StaticPlatform>(position, &environment, description, maxEnergyLevel, slotCount);
@@ -107,7 +106,6 @@ void Game::loadFieldFromFile(const std::string& filename) {
         auto obstacle = std::make_shared<Obstacle>(position, &environment_);
         environment_.addToken(obstacle);
     }
-
     for (const auto& suspectData : j["suspects"]) {
         Pair position = {suspectData["position"]["x"].get<int>(), suspectData["position"]["y"].get<int>()};
         int sensorRange = suspectData["sensorRange"].get<int>();
@@ -115,7 +113,6 @@ void Game::loadFieldFromFile(const std::string& filename) {
         auto suspect = std::make_shared<Suspect>(position, &environment_, speed, sensorRange);
         environment_.addToken(suspect);
     }
-    
     for (const auto& platformData : j["platforms"]) {
         auto platform = loadPlatform(platformData, environment_);
         environment_.addToken(platform);

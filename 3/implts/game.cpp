@@ -7,19 +7,15 @@
 #include "suspect.h"
 #include "module_types.h"
 
-#include <thread>
-
 void Game::start() {
     window_.create(sf::VideoMode(WINDOW_WIDTH, WINDOW_HEIGHT), "Surveillance Game");
     window_.setFramerateLimit(60);
 
     while (window_.isOpen()) {
-        //std::this_thread::sleep_for(std::chrono::seconds {1});
         handleEvents();
         updateSuspects();
         ai_.eliminateAllSuspects();
         render();
-        
     }
 }
 
