@@ -21,7 +21,6 @@ public:
     virtual void update() = 0;
     
     void move(Pair position) override;
-    bool abilityToMove(Pair position) const override;
     Pair calculateRandomMove() const override;
 
     Environment* getEnvironment() const {return environment_;}

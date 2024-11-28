@@ -16,7 +16,6 @@ add_library(game_lib
     implts/game.cpp
     implts/environment.cpp
     implts/input.cpp
-    implts/module.cpp
     implts/moving.cpp
     implts/platform.cpp
     implts/router.cpp

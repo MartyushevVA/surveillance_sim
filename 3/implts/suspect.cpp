@@ -3,21 +3,20 @@
 #include "platform.h"
 #include "environment.h"
 
-Report Suspect::getSurrounding() const {
-    std::vector<std::shared_ptr<Placeholder>> tokensInRange;
-    for (const auto& token : environment_->getTokens())
-        if ((environment_->howFar(position_, token->getPosition(), sensorRange_) <= 1) && environment_->hasLineOfSight(position_, token->getPosition()))
-            tokensInRange.push_back(token);
-    return {position_, tokensInRange};
-}
-
 Platform* Suspect::nearestPredatorWithinRange() const {
-    Report report = getSurrounding();
     Platform* nearestPredator = nullptr;
     double minDistance = std::numeric_limits<double>::max();
-    for (const auto& token : report.objects)
-        if (Platform* predator = dynamic_cast<Platform*>(token.get()))
-            if (minDistance = std::min(minDistance, environment_->howFar(position_, token->getPosition(), sensorRange_)) == environment_->howFar(position_, token->getPosition(), sensorRange_))
-                nearestPredator = predator;
+    for (int dx = -sensorRange_; dx <= sensorRange_; dx++)
+        for (int dy = -sqrt(sensorRange_ * sensorRange_ - dx * dx); dy <= sqrt(sensorRange_ * sensorRange_ - dx * dx); dy++) {
+            Pair checkPos{position_.x + dx, position_.y + dy};
+            if (checkPos.x < 0 || checkPos.y < 0 || 
+                checkPos.x >= environment_->getSize().x || 
+                checkPos.y >= environment_->getSize().y)
+                continue;
+            if (Platform* predator = dynamic_cast<Platform*>(environment_->getToken(checkPos).get()))
+                if (environment_->hasLineOfSight(position_, checkPos))
+                    if (minDistance = std::min(minDistance, environment_->howFar(position_, checkPos, sensorRange_)))
+                        nearestPredator = predator;
+        }
     return nearestPredator;
 }

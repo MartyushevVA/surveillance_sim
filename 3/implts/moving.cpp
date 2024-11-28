@@ -1,5 +1,7 @@
 #include <random>
 
+#include <iostream>
+
 #include "placeholder.h"
 #include "mobile_platform.h"
 #include "suspect.h"
@@ -7,19 +9,12 @@
 #include "environment.h"
 
 void Placeholder::move(Pair position) {
-    if (abilityToMove(position)) {
-        setPosition(position);
+    std::cout << "Trying to move from " << position_.x << ", " << position_.y << " to " << position.x << ", " << position.y << std::endl;
+    if (environment_->abilityToMove(position_, position)) {
+        std::cout << "Movingdddd from " << position_.x << ", " << position_.y << " to " << position.x << ", " << position.y << std::endl;
+        environment_->moveToken(position_, position);
         update();
     }
-}
-
-bool Placeholder::abilityToMove(Pair position) const {
-    if (!environment_) return false;
-    Pair size = environment_->getSize();
-    if (position.x < 0 || position.x >= size.x || 
-        position.y < 0 || position.y >= size.y)
-        return false;
-    return environment_->getCellType(position) == CellType::Empty || position == position_;
 }
 
 Pair Placeholder::calculateRandomMove() const {
@@ -37,7 +32,7 @@ Pair Placeholder::calculateRandomMove() const {
             dy = dis_y(gen);
         }
         Pair newPos = {position_.x + dx, position_.y + dy};
-        if (abilityToMove(newPos))
+        if (environment_->abilityToMove(position_, newPos))
             return newPos;
     }
     return position_;
@@ -55,9 +50,16 @@ Pair MobilePlatform::calculatePursuitMove(Pair target) const {
     std::mt19937 gen(rd());
     std::uniform_real_distribution<> angle_dist(-0.1, 0.1);
     double angle_adjustment = angle_dist(gen);
-    double adjusted_dx = nx * speed * cos(angle_adjustment);
-    double adjusted_dy = ny * speed * sin(angle_adjustment);
 
+    double cos_angle = cos(angle_adjustment);
+    double sin_angle = sin(angle_adjustment);
+    double adjusted_nx = nx * cos_angle - ny * sin_angle;
+    double adjusted_ny = nx * sin_angle + ny * cos_angle;
+
+    double adjusted_dx = adjusted_nx * speed;
+    double adjusted_dy = adjusted_ny * speed;
+
+    std::cout << "Moving from " << position_.x << ", " << position_.y << " to " << position_.x + static_cast<int>(adjusted_dx) << ", " << position_.y + static_cast<int>(adjusted_dy) << std::endl;
     return {position_.x + static_cast<int>(adjusted_dx), position_.y + static_cast<int>(adjusted_dy)};
 }
 
@@ -79,14 +81,14 @@ Pair Suspect::calculateAvoidanceMove(Pair threat) const {
             position_.x + static_cast<int>(move_x * speed_), 
             position_.y + static_cast<int>(move_y * speed_)
         };
-        if (abilityToMove(newPos))
+        if (environment_->abilityToMove(position_, newPos))
             return newPos;
     }
     Pair directEscape = {
         position_.x - static_cast<int>(nx * speed_),
         position_.y - static_cast<int>(ny * speed_)
     };
-    if (abilityToMove(directEscape))
+    if (environment_->abilityToMove(position_, directEscape))
         return directEscape;
     return position_;
 }

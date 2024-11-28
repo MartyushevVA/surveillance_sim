@@ -23,7 +23,7 @@ bool WeaponModule::attack(Pair suspect) {
         return false;
     update();
     if (isCharged_) {
-        std::cout << "Shots fired at "<< suspect.x <<","<< suspect.y << std::endl;
+        std::cout << "Shots fired at "<< suspect.x <<" | "<< suspect.y << std::endl;
         host_.lock()->getEnvironment()->removeToken(suspect);
         isCharged_ = false;
         startCharging();

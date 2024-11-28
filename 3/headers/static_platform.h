@@ -10,5 +10,4 @@ public:
     void setSpeed(int speed) override {speed_ = 0;}
 
     void move(Pair position) override { Placeholder::move(position); }
-    bool abilityToMove(Pair position) const override { return Placeholder::abilityToMove(position); }
 };

@@ -36,7 +36,6 @@ class IMove {
 public:
     virtual ~IMove() = default;
     virtual void move(Pair position) = 0;
-    virtual bool abilityToMove(Pair position) const = 0;
 };
 
 class IRandomMovement : public IMove {

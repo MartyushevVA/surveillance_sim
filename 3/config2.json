@@ -1,14 +1,14 @@
 {
     "field": {
-        "width": 150,
-        "height": 150
+        "width": 100,
+        "height": 100
     },
     "suspects": [
         {
             "type": "Suspect",
             "position": {"x": 10, "y": 10},
             "sensorRange": 5,
-            "speed": 10
+            "speed": 2
         }
     ],
     "platforms": [
@@ -18,7 +18,7 @@
             "description": "Agile Mobile Platform",
             "maxEnergyLevel": 120,
             "slotCount": 3,
-            "speed": 15,
+            "speed": 4,
             "modules": [
                 {
                     "type": "ConnectionModule",
@@ -42,7 +42,7 @@
                     "energyConsumption": 10,
                     "isOn": true,
                     "range": 20,
-                    "chargingDuration": "00:00:00:001"
+                    "chargingDuration": "00:00:30:000"
                 }
             ]
         },

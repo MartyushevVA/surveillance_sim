@@ -5,8 +5,7 @@
 
 class Suspect : 
     public Placeholder,
-    public IAvoidanceMovement,
-    public ISensor {
+    public IAvoidanceMovement {
 private:
     int sensorRange_ = 0;
 
@@ -25,8 +24,6 @@ public:
     Platform* nearestPredatorWithinRange() const;
 
     void move(Pair position) override { Placeholder::move(position); }
-    bool abilityToMove(Pair position) const override { return Placeholder::abilityToMove(position); }
 
     Pair calculateAvoidanceMove(Pair threat) const override;
-    Report getSurrounding() const override;
 };

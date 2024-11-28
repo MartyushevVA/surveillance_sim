@@ -7,8 +7,8 @@
 #include "placeholder.h"
 
 class Platform : 
-public Placeholder,
-public std::enable_shared_from_this<Platform> {
+    public Placeholder,
+    public std::enable_shared_from_this<Platform> {
 protected:
     std::string description_ {};
     int energyLevel_ = 0;
@@ -22,7 +22,6 @@ protected:
 public:
     virtual ~Platform() = default;
     
-    void setDescription(std::string description) {description_ = std::move(description);}
     std::string getDescription() const {return description_;}
     int getEnergyLevel() const {return energyLevel_;}
     void setEnergyLevel(int energyLevel) {
@@ -30,23 +29,11 @@ public:
             throw std::invalid_argument("Energy level cannot be negative");
         energyLevel_ = energyLevel;
     }
-    int getSlotCount() const {return slotCount_;}
-    void setSlotCount(int slotCount) {
-        if (slotCount < 0)
-            throw std::invalid_argument("Slot count cannot be negative");
-        slotCount_ = slotCount;
-    }
     int getMaxEnergyLevel() const {return maxEnergyLevel_;}
-    void setMaxEnergyLevel(int maxEnergyLevel) {
-        if (maxEnergyLevel < 0)
-            throw std::invalid_argument("Max energy level cannot be negative");
-        maxEnergyLevel_ = maxEnergyLevel;
-    }
+    int getSlotCount() const {return slotCount_;}
     
     std::vector<std::shared_ptr<Module>> getModules() const {return modules_;}
-
     void installModule(std::shared_ptr<Module> module);
-
     void update() override;
 
     template<typename T>

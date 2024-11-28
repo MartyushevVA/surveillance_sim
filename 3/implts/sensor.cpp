@@ -8,17 +8,20 @@
 
 Report SensorModule::getSurrounding() const {
     std::vector<std::shared_ptr<Placeholder>> tokensInRange;
-    if (!host_.lock())
-        throw std::invalid_argument("Host is not set");
-    
-    auto environment = host_.lock()->getEnvironment();
+    auto hostPtr = host_.lock();
+    auto env = host_.lock()->getEnvironment();
     auto position = host_.lock()->getPosition();
-    if (!environment)
-        throw std::invalid_argument("Environment is not set");
-    for (const auto& token : environment->getTokens())
-        if ((environment->howFar(position, token->getPosition(), range_) <= 1) && token != host_.lock())
-            if (type_ == SensorType::XRay || environment->hasLineOfSight(position, token->getPosition()))
-                tokensInRange.push_back(token);
+    for (int dx = -range_; dx <= range_; dx++)
+        for (int dy = -sqrt(range_ * range_ - dx * dx); dy <= sqrt(range_ * range_ - dx * dx); dy++) {
+            Pair checkPos{position.x + dx, position.y + dy};
+            if (checkPos.x < 0 || checkPos.y < 0 || 
+                checkPos.x >= env->getSize().x || 
+                checkPos.y >= env->getSize().y)
+                continue;
+            if ((env->howFar(position, checkPos, range_) <= 1) && checkPos != hostPtr->getPosition())
+                if (type_ == SensorType::XRay || env->hasLineOfSight(position, checkPos))
+                    tokensInRange.push_back(env->getToken(checkPos));
+        }
     return {position, tokensInRange};
 }
 

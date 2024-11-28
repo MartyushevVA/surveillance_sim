@@ -7,14 +7,20 @@ std::vector<ConnectionModule*> ConnectionModule::scanForModules(Pair position) {
     std::vector<ConnectionModule*> modulesInRange;
     if (position == Pair{-1, 0}) position = host_.lock()->getPosition();
     auto hostPtr = host_.lock();
-    for (const auto& token : hostPtr->getEnvironment()->getTokens())
-        if (hostPtr->getEnvironment()->howFar(position, token->getPosition(), range_) <= 1
-        && hostPtr->getPosition() != token->getPosition()) {
-            //std::cout << "connectionModule6: " << token->getPosition().x << ' ' << token->getPosition().y << std::endl;
-            if (auto platform = dynamic_cast<Platform*>(token.get()))
-                if (auto module = platform->findModuleOfType<ConnectionModule>())
-                    modulesInRange.push_back(module);
-    }
+    auto env = hostPtr->getEnvironment();
+    for (int dx = -range_; dx <= range_; dx++)
+        for (int dy = -sqrt(range_ * range_ - dx * dx); dy <= sqrt(range_ * range_ - dx * dx); dy++) {
+            Pair checkPos{position.x + dx, position.y + dy};
+            if (checkPos == hostPtr->getPosition() || 
+                checkPos.x < 0 || checkPos.y < 0 || 
+                checkPos.x >= env->getSize().x || 
+                checkPos.y >= env->getSize().y)
+                continue;
+            if (auto token = env->getToken(checkPos))
+                if (auto platform = dynamic_cast<Platform*>(token.get()))
+                    if (auto module = platform->findModuleOfType<ConnectionModule>())
+                        modulesInRange.push_back(module);
+        }
     return modulesInRange;
 }
 

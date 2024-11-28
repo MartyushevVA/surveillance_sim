@@ -15,7 +15,6 @@ public:
     Pair findPursuitableSuspect(Report report) const;
 
     void move(Pair position) override { Placeholder::move(position); }
-    bool abilityToMove(Pair position) const override { return Placeholder::abilityToMove(position); }
 
     Pair calculatePursuitMove(Pair target) const override;
 };

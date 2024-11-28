@@ -2,6 +2,7 @@
 
 #include <set>
 #include <memory>
+#include <map>
 #include <stdexcept>
 #include <cmath>
 
@@ -13,14 +14,14 @@ public:
     Obstacle(Pair position, Environment* environment) 
         : Placeholder(position, environment, 0) {}
         
-    void setSpeed(int speed) override { speed_ = 0; }
+    void setSpeed(int speed) override {}
     void update() override {}
 };
 
 class Environment {
 private:
     Pair size_ = {0, 0};
-    std::set<std::shared_ptr<Placeholder>> tokens_ {};
+    std::map<Pair, std::shared_ptr<Placeholder>> tokens_ {};
 
 public:
     Environment() = default;
@@ -30,13 +31,14 @@ public:
     void setSize(int width, int height) {size_ = {width, height};}
     
     void addToken(std::shared_ptr<Placeholder> token);
-    void removeToken(std::shared_ptr<Placeholder> token);
-    void removeToken(Pair position);
-
-    std::set<std::shared_ptr<Placeholder>> getTokens() const {return tokens_;}
     std::shared_ptr<Placeholder> getToken(Pair position) const;
+    void removeToken(Pair position);
+    void moveToken(Pair from, Pair to);
+    bool abilityToMove(Pair from, Pair to) const;
 
-    CellType getCellType(Pair position) const;
+    std::map<Pair, std::shared_ptr<Placeholder>> getTokens() const {return tokens_;}
+    
+    bool isEmpty(Pair position) const;
 
     bool hasLineOfSight(Pair from, Pair to) const;
     double howFar(Pair from, Pair to, int range) const;

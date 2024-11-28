@@ -1,8 +1,8 @@
 #pragma once
 
 #include <memory>
-#include <stdexcept>
 
+#include "platform.h"
 #include "common_types.h"
 
 class Module {
@@ -32,7 +32,13 @@ public:
         host_ = host;
         setUp();
     }
-    bool isInRange(Pair target) const;
+    bool isInRange(Pair target) const {
+        auto hostPtr = host_.lock();
+        if (hostPtr)
+            return (target.x - hostPtr->getPosition().x) * (target.x - hostPtr->getPosition().x) +
+               (target.y - hostPtr->getPosition().y) * (target.y - hostPtr->getPosition().y) <= range_ * range_;
+        return false;
+    }
     virtual bool attachableTo(std::shared_ptr<Platform> host) const = 0;
     virtual void update() = 0;
     virtual void setUp() = 0;
