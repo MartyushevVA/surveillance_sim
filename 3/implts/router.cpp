@@ -49,6 +49,10 @@ bool ConnectionModule::closeConnection(ConnectionModule* target, bool isResponse
     if (!isResponse)
         target->closeConnection(this, true);
     sessionList_.erase(std::find(sessionList_.begin(), sessionList_.end(), target));
+
+    routeList_.erase(std::remove_if(routeList_.begin(), routeList_.end(),
+        [target](const routeNode& node) { return node.destination == target; }), routeList_.end());
+    
     target->recursiveDiscord(this, routeList_);
     return true;
 }
@@ -101,11 +105,11 @@ bool ConnectionModule::attachableTo(std::shared_ptr<Platform> host) const {
 
 void ConnectionModule::update() {
     std::vector<ConnectionModule*> newNeighborsList = scanForModules();
-    for (auto node : routeList_)
-            std::cout << "Host: (" << host_.lock()->getDescription() << ") | Gate: (" << node.gate->getHost()->getDescription()
-            << ") | Destination: (" << node.destination->getHost()->getDescription() << ")" << std::endl;
+    /*for (auto node : routeList_)
+        std::cout << "Host: (" << host_.lock()->getDescription() << ") | Gate: (" << node.gate->getHost()->getDescription()
+        << ") | Destination: (" << node.destination->getHost()->getDescription() << ")" << std::endl;
     std::cout << std::endl;
-    
+    */
     for (auto module : newNeighborsList)
         if (std::find(sessionList_.begin(), sessionList_.end(), module) == sessionList_.end()) {
             establishConnection(module, false);

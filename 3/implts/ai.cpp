@@ -64,6 +64,12 @@ void AI::eliminateAllSuspects() {
                 else
                     officer->move(officer->calculateRandomMove());
             }
+            /*if (auto connection = platform->findModuleOfType<ConnectionModule>()) {
+                for (auto node : connection->getRouteList())
+                    std::cout << "Host: (" << platform->getDescription() << ") | Gate: (" << node.gate->getHost()->getDescription()
+                    << ") | Destination: (" << node.destination->getHost()->getDescription() << ")" << std::endl;
+                std::cout << std::endl;
+            }*/
         }
     }
 }
