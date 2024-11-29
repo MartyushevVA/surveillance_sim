@@ -17,7 +17,6 @@ private:
     static const int WINDOW_HEIGHT = 1000;
     static const int RATIO = 10;
 
-
     Environment environment_ {};
     AI ai_ {&environment_};
 
@@ -27,8 +26,11 @@ private:
     void updateSuspects();
 
 public:
-    Game() = default;
+    Game(const std::string& filename) {
+        loadFieldFromFile(filename);
+    };
 
     void loadFieldFromFile(const std::string& filename);
+
     void start();
 };

@@ -9,7 +9,7 @@ class IConnection {
 public:
     virtual ~IConnection() = default;
 
-    virtual std::vector<ConnectionModule*> scanForModules(Pair position = {-1, 0}) = 0;
+    virtual std::vector<ConnectionModule*> scanForModules(Pair position = {-1, 0}) const = 0;
 
     virtual bool establishConnection(ConnectionModule* module, bool isResponse = false) = 0;
     virtual bool closeConnection(ConnectionModule* module, bool isResponse = false) = 0;

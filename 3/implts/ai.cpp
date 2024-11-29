@@ -57,19 +57,26 @@ void AI::eliminateAllSuspects() {
                 }
             }
             if (MobilePlatform* officer = dynamic_cast<MobilePlatform*>(platform)) {
+                Pair nextPos;
                 if (auto attackableSuspect = sensor->getVisibleSuspect(report))
-                    officer->move(officer->calculatePursuitMove(attackableSuspect->getPosition()));
+                    nextPos = officer->calculatePursuitMove(attackableSuspect->getPosition());
                 else if (!spottedSuspects_.empty())
-                    officer->move(officer->calculatePursuitMove(spottedSuspects_[0]->getPosition()));
+                    nextPos = officer->calculatePursuitMove(spottedSuspects_[0]->getPosition());
                 else
-                    officer->move(officer->calculateRandomMove());
+                    nextPos = officer->calculateRandomMove();
+                //проверить, что если в новой точке нет связи с ии, то начинать обход территории
+                if (ConnectionModule* connection = officer->findModuleOfType<ConnectionModule>(); connection->isControllable(nextPos))
+                    officer->move(nextPos);
+                else
+                    std::cout << "ГОЙДА!!!111!!!111" << std::endl;
+                //иначе начать обход
             }
-            /*if (auto connection = platform->findModuleOfType<ConnectionModule>()) {
+            if (auto connection = platform->findModuleOfType<ConnectionModule>()) {
                 for (auto node : connection->getRouteList())
                     std::cout << "Host: (" << platform->getDescription() << ") | Gate: (" << node.gate->getHost()->getDescription()
                     << ") | Destination: (" << node.destination->getHost()->getDescription() << ")" << std::endl;
                 std::cout << std::endl;
-            }*/
+            }
         }
     }
 }

@@ -27,7 +27,7 @@ public:
     std::vector<ConnectionModule*> getSessionList() const {return sessionList_;}
     std::vector<routeNode> getRouteList() const override {return routeList_;}
     
-    std::vector<ConnectionModule*> scanForModules(Pair position = {-1, 0}) override;
+    std::vector<ConnectionModule*> scanForModules(Pair position = {-1, 0}) const override;
 
     bool establishConnection(ConnectionModule* module, bool isResponse = false) override;
     bool closeConnection(ConnectionModule* module, bool isResponse = false) override;
@@ -38,6 +38,9 @@ public:
     void recursiveDiscord(ConnectionModule* gate, std::vector<routeNode> targetList);
 
     bool attachableTo(std::shared_ptr<Platform> host) const override;
+
+    bool connectedToAI() const;
+    bool isControllable(Pair position) const;
 
     void update() override;
     void setUp() override;

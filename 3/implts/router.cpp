@@ -4,8 +4,9 @@
 
 #include "platform.h"
 #include "environment.h"
+#include "static_platform.h"
 
-std::vector<ConnectionModule*> ConnectionModule::scanForModules(Pair position) {
+std::vector<ConnectionModule*> ConnectionModule::scanForModules(Pair position) const{
     std::vector<ConnectionModule*> modulesInRange;
     if (position == Pair{-1, 0}) position = host_.lock()->getPosition();
     auto hostPtr = host_.lock();
@@ -94,6 +95,38 @@ void ConnectionModule::recursiveDiscord(ConnectionModule* gate, std::vector<rout
     if (isEntered)
         for (auto module : sessionList_)
             module->recursiveDiscord(this, targetList);
+}
+
+bool ConnectionModule::connectedToAI() const {
+    std::set<ConnectionModule*> visited;
+    std::queue<ConnectionModule*> wip;
+    for (auto session : sessionList_) {
+        wip.push(session);
+        while (!wip.empty()) {
+            auto current = wip.front();
+            wip.pop();
+            visited.insert(current);
+            if (auto staticPlatform = dynamic_cast<StaticPlatform*>(current->getHost().get()))
+                return true;
+            for (auto session : current->getSessionList())
+                if (visited.find(session) == visited.end())
+                    wip.push(session);
+        }
+    }
+    return false;
+}
+
+bool ConnectionModule::isControllable(Pair position) const {
+    std::vector<ConnectionModule*> newModules = scanForModules(position);
+    std::vector<ConnectionModule*> resultModules;
+    for (auto module : newModules)
+        if (std::find(sessionList_.begin(), sessionList_.end(), module) != sessionList_.end()) {
+            resultModules.push_back(module);
+        }
+    for (auto module : resultModules)
+        if (module->connectedToAI())
+            return true;
+    return false;
 }
 
 bool ConnectionModule::attachableTo(std::shared_ptr<Platform> host) const {
