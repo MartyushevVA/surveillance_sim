@@ -12,8 +12,6 @@ public:
 
     void setSpeed(int speed) override {speed_ = speed;}
 
-    Pair findPursuitableSuspect(Report report) const;
-
     void move(Pair position) override { Placeholder::move(position); }
 
     Pair calculatePursuitMove(Pair target) const override;

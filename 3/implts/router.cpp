@@ -97,34 +97,25 @@ void ConnectionModule::recursiveDiscord(ConnectionModule* gate, std::vector<rout
             module->recursiveDiscord(this, targetList);
 }
 
-bool ConnectionModule::connectedToAI() const {
-    std::set<ConnectionModule*> visited;
-    std::queue<ConnectionModule*> wip;
-    for (auto session : sessionList_) {
-        wip.push(session);
-        while (!wip.empty()) {
-            auto current = wip.front();
-            wip.pop();
-            visited.insert(current);
-            if (auto staticPlatform = dynamic_cast<StaticPlatform*>(current->getHost().get()))
-                return true;
-            for (auto session : current->getSessionList())
-                if (visited.find(session) == visited.end())
-                    wip.push(session);
-        }
+bool ConnectionModule::connectedToAI(const ConnectionModule* source) const {
+    if (auto staticPlatform = dynamic_cast<StaticPlatform*>(host_.lock().get()); staticPlatform) {
+        return true;
     }
+    for (auto node : routeList_)
+        if (auto staticPlatform = dynamic_cast<StaticPlatform*>(node.destination->getHost().get()); staticPlatform && node.gate != source) {
+            return true;
+        }
     return false;
 }
 
-bool ConnectionModule::isControllable(Pair position) const {
-    std::vector<ConnectionModule*> newModules = scanForModules(position);
-    std::vector<ConnectionModule*> resultModules;
-    for (auto module : newModules)
-        if (std::find(sessionList_.begin(), sessionList_.end(), module) != sessionList_.end()) {
-            resultModules.push_back(module);
-        }
-    for (auto module : resultModules)
-        if (module->connectedToAI())
+bool ConnectionModule::isSafeForSystem(Pair position) const {
+    std::vector<ConnectionModule*> additionModules = scanForModules(position);
+    for (auto module : sessionList_)
+        if (std::find(additionModules.begin(), additionModules.end(), module) == additionModules.end())
+            if (!module->connectedToAI(this))
+                return false;
+    for (auto module : additionModules)
+        if (module->connectedToAI(this))
             return true;
     return false;
 }

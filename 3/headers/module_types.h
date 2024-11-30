@@ -39,8 +39,8 @@ public:
 
     bool attachableTo(std::shared_ptr<Platform> host) const override;
 
-    bool connectedToAI() const;
-    bool isControllable(Pair position) const;
+    bool connectedToAI(const ConnectionModule* source) const;
+    bool isSafeForSystem(Pair position) const;
 
     void update() override;
     void setUp() override;

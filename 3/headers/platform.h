@@ -37,7 +37,7 @@ public:
     void update() override;
 
     template<typename T>
-    T* findModuleOfType() {
+    T* findModuleOfType() const {
         for (const auto& module : getModules())
             if (T* typed_module = dynamic_cast<T*>(module.get()))
                 return typed_module;

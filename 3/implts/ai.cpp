@@ -64,19 +64,15 @@ void AI::eliminateAllSuspects() {
                     nextPos = officer->calculatePursuitMove(spottedSuspects_[0]->getPosition());
                 else
                     nextPos = officer->calculateRandomMove();
-                //проверить, что если в новой точке нет связи с ии, то начинать обход территории
-                if (ConnectionModule* connection = officer->findModuleOfType<ConnectionModule>(); connection->isControllable(nextPos))
+                if (ConnectionModule* connection = officer->findModuleOfType<ConnectionModule>(); connection->isSafeForSystem(nextPos))
                     officer->move(nextPos);
-                else
-                    std::cout << "ГОЙДА!!!111!!!111" << std::endl;
-                //иначе начать обход
             }
-            if (auto connection = platform->findModuleOfType<ConnectionModule>()) {
+            /*if (auto connection = platform->findModuleOfType<ConnectionModule>()) {
                 for (auto node : connection->getRouteList())
                     std::cout << "Host: (" << platform->getDescription() << ") | Gate: (" << node.gate->getHost()->getDescription()
                     << ") | Destination: (" << node.destination->getHost()->getDescription() << ")" << std::endl;
                 std::cout << std::endl;
-            }
+            }*/
         }
     }
 }

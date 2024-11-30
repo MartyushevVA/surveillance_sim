@@ -4,6 +4,7 @@
 
 #include "platform.h"
 #include "common_types.h"
+#include "environment.h"
 
 class Module {
 protected:
@@ -35,8 +36,7 @@ public:
     bool isInRange(Pair target) const {
         auto hostPtr = host_.lock();
         if (hostPtr)
-            return (target.x - hostPtr->getPosition().x) * (target.x - hostPtr->getPosition().x) +
-               (target.y - hostPtr->getPosition().y) * (target.y - hostPtr->getPosition().y) <= range_ * range_;
+            return hostPtr->getEnvironment()->howFar(target, hostPtr->getPosition(), range_) <= range_;
         return false;
     }
     virtual bool attachableTo(std::shared_ptr<Platform> host) const = 0;
