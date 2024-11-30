@@ -1,7 +1,5 @@
 #pragma once
 
-#include <vector>
-
 #include "common_types.h" 
 
 class IConnection {

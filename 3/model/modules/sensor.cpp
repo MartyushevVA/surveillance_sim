@@ -1,10 +1,8 @@
-#include "module_types.h"
+#include "modules.h"
 
 #include <cmath>
 
-#include "platform.h"
-#include "environment.h"
-#include "suspect.h"
+#include "../objects/objects.h"
 
 Report SensorModule::getSurrounding() const {
     std::vector<std::shared_ptr<Placeholder>> tokensInRange;

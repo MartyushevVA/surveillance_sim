@@ -12,21 +12,29 @@ find_package(SFML 2.6.1 COMPONENTS graphics window system REQUIRED)
 find_package(nlohmann_json REQUIRED)
 
 add_library(game_lib
-    implts/ai.cpp
-    implts/game.cpp
-    implts/environment.cpp
-    implts/import.cpp
-    implts/moving.cpp
-    implts/platform.cpp
-    implts/router.cpp
-    implts/sensor.cpp
-    implts/suspect.cpp
-    implts/weapon.cpp
-    implts/graphics.cpp
+    import/import.cpp
+    view/graphics.cpp
+    model/game/game.cpp
+    model/modules/router.cpp
+    model/modules/sensor.cpp
+    model/modules/weapon.cpp
+    model/objects/moving.cpp
+    model/objects/suspect.cpp
+    model/system/ai.cpp
+    model/system/environment.cpp
+    model/objects/base_platform.cpp
 )
 
-target_include_directories(game_lib PUBLIC 
-    ${CMAKE_SOURCE_DIR}/headers
+target_include_directories(game_lib PUBLIC
+    ${CMAKE_CURRENT_SOURCE_DIR}
+    ${CMAKE_CURRENT_SOURCE_DIR}/import
+    ${CMAKE_CURRENT_SOURCE_DIR}/view
+    ${CMAKE_CURRENT_SOURCE_DIR}/model
+    ${CMAKE_CURRENT_SOURCE_DIR}/model/game
+    ${CMAKE_CURRENT_SOURCE_DIR}/model/modules
+    ${CMAKE_CURRENT_SOURCE_DIR}/model/system
+    ${CMAKE_CURRENT_SOURCE_DIR}/model/objects
+
 )
 
 target_link_libraries(game_lib PUBLIC
@@ -36,9 +44,15 @@ target_link_libraries(game_lib PUBLIC
     nlohmann_json::nlohmann_json
 )
 
-add_executable(${PROJECT_NAME} implts/main.cpp)
+add_executable(${PROJECT_NAME} main.cpp)
 
 target_link_libraries(${PROJECT_NAME} PRIVATE game_lib)
+
+target_include_directories(${PROJECT_NAME} PRIVATE 
+    ${CMAKE_CURRENT_SOURCE_DIR}/headers
+    ${CMAKE_CURRENT_SOURCE_DIR}/import
+    ${CMAKE_CURRENT_SOURCE_DIR}/inoutstream
+)
 
 
 

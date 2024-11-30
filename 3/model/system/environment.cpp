@@ -2,8 +2,7 @@
 
 #include <cmath>
 
-#include "platform.h"
-#include "suspect.h"
+#include "../objects/objects.h"
 
 void Environment::addToken(std::shared_ptr<Placeholder> token) {
     if (token->getPosition().x >= size_.x || token->getPosition().y >= size_.y)

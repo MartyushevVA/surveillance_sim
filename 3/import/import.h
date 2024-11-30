@@ -1,12 +1,9 @@
 #pragma once
 
+#include <fstream>
 #include <nlohmann/json.hpp>
 
-#include <string>
-#include <vector>
-#include <chrono>
-
-#include "module_types.h"
+#include "../model/modules/modules.h"
 
 struct ModuleConfig {
     std::string type;

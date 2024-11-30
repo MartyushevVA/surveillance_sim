@@ -1,10 +1,8 @@
+#include "objects.h"
+
 #include <random>
 
-#include "placeholder.h"
-#include "mobile_platform.h"
-#include "suspect.h"
-
-#include "environment.h"
+#include "objects.h"
 
 void Placeholder::move(Pair position) {
     if (environment_->abilityToMove(position_, position))

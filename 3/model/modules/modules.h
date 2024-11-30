@@ -1,10 +1,9 @@
 #pragma once
 
-#include <algorithm>
 #include <chrono>
 
-#include "module.h"
-#include "interfaces.h"
+#include "base_module.h"
+#include "../interfaces.h"
 
 class ConnectionModule :
     public Module,
@@ -19,11 +18,7 @@ public:
         : Module(slotsOccupied, energyConsumption, isOn, range), maxSessions_(maxSessions) {}
 
     int getMaxSessions() const {return maxSessions_;}
-    void setMaxSessions(int maxSessions) {
-        if (maxSessions <= 0)
-            throw std::invalid_argument("Max sessions must be positive");
-        maxSessions_ = maxSessions;
-    }
+    void setMaxSessions(int maxSessions) {maxSessions_ = maxSessions;}
     std::vector<ConnectionModule*> getSessionList() const {return sessionList_;}
     std::vector<routeNode> getRouteList() const override {return routeList_;}
     

@@ -1,10 +1,9 @@
 #pragma once
 
-#include "ai.h"
-#include "environment.h"
-
-#include "graphics.h"
-#include "import.h"
+#include "../system/ai.h"
+#include "../system/environment.h"
+#include "../../import/import.h"
+#include "../../view/graphics.h"
 
 class Game {
 private:

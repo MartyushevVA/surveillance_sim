@@ -1,6 +1,6 @@
-#include "platform.h"
+#include "base_platform.h"
 
-#include "module.h"
+#include "../modules/base_module.h"
 
 void Platform::installModule(std::shared_ptr<Module> module) {
     if (!module->attachableTo(shared_from_this()))

@@ -1,10 +1,8 @@
-#include "module_types.h"
+#include "modules.h"
 
 #include <cmath>
 
-#include "platform.h"
-#include "environment.h"
-#include "static_platform.h"
+#include "../objects/objects.h"
 
 std::vector<ConnectionModule*> ConnectionModule::scanForModules(Pair position) const{
     std::vector<ConnectionModule*> modulesInRange;

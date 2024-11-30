@@ -1,9 +1,6 @@
 #include "game.h"
 
-#include "suspect.h"
-#include "platform.h"
-#include "static_platform.h"
-#include "mobile_platform.h"
+#include "../objects/objects.h"
 
 void Game::initializeField(const FieldConfig& config) {
     environment_.setSize(config.size.width, config.size.height);
@@ -22,7 +19,6 @@ void Game::initializeField(const FieldConfig& config) {
     }
     for (const auto& platformConfig : config.platforms) {
         std::shared_ptr<Platform> platform;
-        
         if (platformConfig.type == "MobilePlatform") {
             platform = std::make_shared<MobilePlatform>(
                 platformConfig.position,
@@ -43,7 +39,6 @@ void Game::initializeField(const FieldConfig& config) {
         }
         for (const auto& moduleConfig : platformConfig.modules) {
             std::shared_ptr<Module> module;
-            
             if (moduleConfig.type == "ConnectionModule") {
                 module = std::make_shared<ConnectionModule>(
                     moduleConfig.slotsOccupied,
@@ -71,7 +66,6 @@ void Game::initializeField(const FieldConfig& config) {
                     moduleConfig.specific.chargingDuration
                 );
             }
-            
             platform->installModule(module);
         }
         environment_.addToken(platform);

@@ -1,8 +1,6 @@
-#include "module_types.h"
+#include "modules.h"
 
-#include "platform.h"
-#include "suspect.h"
-#include "environment.h"
+#include "../objects/objects.h"
 
 void WeaponModule::startCharging() {
     auto hostPtr = host_.lock();

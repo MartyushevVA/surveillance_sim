@@ -2,8 +2,8 @@
 
 #include <memory>
 
-#include "environment.h"
-#include "platform.h"
+#include "../objects/base_platform.h"
+#include "../system/environment.h"
 
 class Module {
 protected:

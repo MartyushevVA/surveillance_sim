@@ -1,10 +1,8 @@
-#include "suspect.h"
+#include "objects.h"
 
+#include <algorithm>
 #include <cmath>
 #include <limits>
-
-#include "platform.h"
-#include "environment.h"
 
 Platform* Suspect::nearestPredatorWithinRange() const {
     Platform* nearestPredator = nullptr;
@@ -20,6 +18,6 @@ Platform* Suspect::nearestPredatorWithinRange() const {
                 if (environment_->hasLineOfSight(position_, checkPos))
                     if (minDistance = std::min(minDistance, environment_->howFar(position_, checkPos, sensorRange_)))
                         nearestPredator = predator;
-        }
+    }
     return nearestPredator;
 }

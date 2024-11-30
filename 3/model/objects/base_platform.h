@@ -1,7 +1,5 @@
 #pragma once
 
-#include <string>
-
 #include "placeholder.h"
 
 class Module;
@@ -33,7 +31,9 @@ public:
     int getSlotCount() const {return slotCount_;}
     
     std::vector<std::shared_ptr<Module>> getModules() const {return modules_;}
+
     void installModule(std::shared_ptr<Module> module);
+
     void update() override;
 
     template<typename T>

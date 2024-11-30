@@ -1,13 +1,5 @@
 #include "graphics.h"
 
-#include <fstream>
-#include <nlohmann/json.hpp>
-
-#include "environment.h"
-#include "suspect.h"
-#include "static_platform.h"
-#include "mobile_platform.h"
-
 Graphics::Graphics(const std::string& configPath) {
     loadConfig(configPath);
     window_.create(

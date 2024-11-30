@@ -1,12 +1,16 @@
 #pragma once
 
+#include <fstream>
+#include <nlohmann/json.hpp>
 #include <SFML/Graphics.hpp>
 
-class StaticPlatform;
+#include "../objects/objects.h"
+
+class Environment;
 class MobilePlatform;
 class Obstacle;
+class StaticPlatform;
 class Suspect;
-class Environment;
 
 struct GraphicsConfig {
     struct {

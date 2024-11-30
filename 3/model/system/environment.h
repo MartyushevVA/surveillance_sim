@@ -1,19 +1,10 @@
 #pragma once
 
-#include <memory>
 #include <map>
 
-#include "common_types.h"
-#include "placeholder.h"
+#include "../common_types.h"
 
-class Obstacle : public Placeholder {
-public:
-    Obstacle(Pair position, Environment* environment) 
-        : Placeholder(position, environment, 0) {}
-        
-    void setSpeed(int speed) override {}
-    void update() override {}
-};
+class Placeholder;
 
 class Environment {
 private:
