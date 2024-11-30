@@ -1,6 +1,6 @@
-#include <queue>
-
 #include "module_types.h"
+
+#include <cmath>
 
 #include "platform.h"
 #include "environment.h"
@@ -68,15 +68,12 @@ std::vector<routeNode> ConnectionModule::requestRouteList(ConnectionModule* sour
 }
 
 void ConnectionModule::recursiveRouteNodeImplementation(ConnectionModule* gate, std::vector<routeNode> routeList) {
-    //std::cout << host_.lock()->getDescription() << " is implementing route list" << std::endl;
-    //std::cout << gate->getHost()->getDescription() << " is the gate" << std::endl;
     bool isEntered = false;
     for (auto& node : routeList)
         if (std::find_if(routeList_.begin(), routeList_.end(),
         [&node](const routeNode& a) {return a.destination == node.destination;}) == routeList_.end() && node.destination != this) {
             isEntered = true;
             routeList_.push_back(routeNode{gate, node.destination});
-            //std::cout << node.destination->getHost()->getDescription() << " is being added to route list" << std::endl;
         }
     if (isEntered) {
         for (auto session : sessionList_)
@@ -129,11 +126,6 @@ bool ConnectionModule::attachableTo(std::shared_ptr<Platform> host) const {
 
 void ConnectionModule::update() {
     std::vector<ConnectionModule*> newNeighborsList = scanForModules();
-    /*for (auto node : routeList_)
-        std::cout << "Host: (" << host_.lock()->getDescription() << ") | Gate: (" << node.gate->getHost()->getDescription()
-        << ") | Destination: (" << node.destination->getHost()->getDescription() << ")" << std::endl;
-    std::cout << std::endl;
-    */
     for (auto module : newNeighborsList)
         if (std::find(sessionList_.begin(), sessionList_.end(), module) == sessionList_.end()) {
             establishConnection(module, false);

@@ -1,10 +1,6 @@
 #pragma once
 
-#include <memory>
-#include <queue>
-#include <set>
 #include <vector>
-#include <algorithm>
 
 class Environment;
 class Platform;
@@ -27,8 +23,3 @@ public:
     void addStaticPlatform(Platform* platform) {staticPlatforms_.push_back(platform);}
     void eliminateAllSuspects();
 };
-
-
-/*
-при обнаружении каким либо сенсором противника, все мобильные роботы в юрисдикции направляются к нему
-нужно организовать приоритетную очередь преступников по наименьшей сумме расстояний от них до всех роботов*/

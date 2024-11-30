@@ -15,13 +15,14 @@ add_library(game_lib
     implts/ai.cpp
     implts/game.cpp
     implts/environment.cpp
-    implts/input.cpp
+    implts/import.cpp
     implts/moving.cpp
     implts/platform.cpp
     implts/router.cpp
     implts/sensor.cpp
     implts/suspect.cpp
     implts/weapon.cpp
+    implts/graphics.cpp
 )
 
 target_include_directories(game_lib PUBLIC 

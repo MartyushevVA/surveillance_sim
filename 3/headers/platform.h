@@ -1,10 +1,10 @@
 #pragma once
 
-#include <iostream>
-
 #include <string>
 
 #include "placeholder.h"
+
+class Module;
 
 class Platform : 
     public Placeholder,

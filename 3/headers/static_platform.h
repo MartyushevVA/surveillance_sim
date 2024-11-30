@@ -2,6 +2,8 @@
 
 #include "platform.h"
 
+class Environment;
+
 class StaticPlatform : public Platform {
 public:
     StaticPlatform(Pair position, Environment* environment, std::string description, int maxEnergyLevel, int slotCount)

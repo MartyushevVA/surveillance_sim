@@ -1,36 +1,25 @@
 #pragma once
 
-#include <memory>
-#include <vector>
-
-#include <SFML/Graphics.hpp>
-
-#include "environment.h"
 #include "ai.h"
+#include "environment.h"
 
-class Module;
+#include "graphics.h"
+#include "import.h"
 
 class Game {
 private:
-    sf::RenderWindow window_;
-    static const int WINDOW_WIDTH = 1000;
-    static const int WINDOW_HEIGHT = 1000;
-    static const int RATIO = 10;
-
-    Environment environment_ {};
-    AI ai_ {&environment_};
-
-    void handleEvents();
-    void render();
+    AI ai_;
+    Environment environment_;
+    Graphics graphics_;
     
     void updateSuspects();
+    void initializeField(const FieldConfig& config);
 
 public:
-    Game(const std::string& filename) {
-        loadFieldFromFile(filename);
-    };
-
-    void loadFieldFromFile(const std::string& filename);
-
+    Game(const std::string& fieldFile, const std::string& graphicsConfigFile) :
+        ai_(&environment_),
+        graphics_(graphicsConfigFile) {
+        initializeField(Import::importFieldConfig(fieldFile));
+    }    
     void start();
 };

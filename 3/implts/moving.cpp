@@ -1,7 +1,5 @@
 #include <random>
 
-#include <iostream>
-
 #include "placeholder.h"
 #include "mobile_platform.h"
 #include "suspect.h"

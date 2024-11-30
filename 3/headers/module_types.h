@@ -45,16 +45,6 @@ public:
     void update() override;
     void setUp() override;
 };
-/*
-sessionList consists of pointers to net modules which can be connected
-to current module directly, at first knee :)
-
-routeList consists of pointers to every possible for connection modules
-even if it cant be connected straightforward and index of certain connection
-from connection table where it need to send package to reach desired destination.
-There is some kind of recursion. It now has gate pointer instead of index.
-*/
-
 
 enum SensorType {
     Optical,
@@ -79,7 +69,7 @@ public:
 
     bool attachableTo(std::shared_ptr<Platform> host) const override;
 
-    void update() override;
+    void update() override {}
     void setUp() override;
 };
 
@@ -110,5 +100,5 @@ public:
     bool attachableTo(std::shared_ptr<Platform> host) const override;
 
     void update() override;
-    void setUp() override;
+    void setUp() override {};
 };

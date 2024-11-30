@@ -1,7 +1,7 @@
 #include "game.h"
 
 int main() {
-    Game game("config2.json");
+    Game game("config2.json", "graphics.json");
     game.start();
     return 0;
 }

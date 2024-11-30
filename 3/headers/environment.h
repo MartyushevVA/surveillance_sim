@@ -1,10 +1,7 @@
 #pragma once
 
-#include <set>
 #include <memory>
 #include <map>
-#include <stdexcept>
-#include <cmath>
 
 #include "common_types.h"
 #include "placeholder.h"

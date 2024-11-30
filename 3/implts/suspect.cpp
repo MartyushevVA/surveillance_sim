@@ -1,5 +1,8 @@
 #include "suspect.h"
 
+#include <cmath>
+#include <limits>
+
 #include "platform.h"
 #include "environment.h"
 

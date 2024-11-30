@@ -2,6 +2,8 @@
 
 #include "interfaces.h"
 
+class Environment;
+
 class Placeholder : public IRandomMovement {
 protected:
     Pair position_ = {0, 0};

@@ -1,11 +1,14 @@
 #include "ai.h"
 
+#include <queue>
+#include <set>
+
 #include "module_types.h"
 #include "mobile_platform.h"
 #include "static_platform.h"
 #include "suspect.h"
 #include "environment.h"
-#include <queue>
+
 
 void AI::updateNetworkForest() {
     allConnectedPlatforms_.clear();

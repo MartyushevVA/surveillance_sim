@@ -1,6 +1,4 @@
 #include "module_types.h"
-#include <iostream>
-
 
 #include "platform.h"
 #include "suspect.h"
@@ -23,7 +21,6 @@ bool WeaponModule::attack(Pair suspect) {
         return false;
     update();
     if (isCharged_) {
-        std::cout << "Shots fired at "<< suspect.x <<" | "<< suspect.y << std::endl;
         host_.lock()->getEnvironment()->removeToken(suspect);
         isCharged_ = false;
         startCharging();
@@ -53,5 +50,3 @@ void WeaponModule::update() {
         isCharging_ = false;
     }
 }
-
-void WeaponModule::setUp() {}

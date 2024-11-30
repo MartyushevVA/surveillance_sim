@@ -3,11 +3,8 @@
 #include <memory>
 #include <vector>
 
-class Placeholder;
 class ConnectionModule;
-class Platform;
-class Module;
-class Environment;
+class Placeholder;
 
 struct Pair {
     int x, y;

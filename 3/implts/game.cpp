@@ -1,61 +1,93 @@
-#include <iostream>
-
 #include "game.h"
 
-#include "mobile_platform.h"
-#include "static_platform.h"
 #include "suspect.h"
-#include "module_types.h"
+#include "platform.h"
+#include "static_platform.h"
+#include "mobile_platform.h"
+
+void Game::initializeField(const FieldConfig& config) {
+    environment_.setSize(config.size.width, config.size.height);
+    for (const auto& position : config.obstacles) {
+        auto obstacle = std::make_shared<Obstacle>(position, &environment_);
+        environment_.addToken(obstacle);
+    }
+    for (const auto& suspectConfig : config.suspects) {
+        auto suspect = std::make_shared<Suspect>(
+            suspectConfig.position,
+            &environment_,
+            suspectConfig.speed,
+            suspectConfig.sensorRange
+        );
+        environment_.addToken(suspect);
+    }
+    for (const auto& platformConfig : config.platforms) {
+        std::shared_ptr<Platform> platform;
+        
+        if (platformConfig.type == "MobilePlatform") {
+            platform = std::make_shared<MobilePlatform>(
+                platformConfig.position,
+                &environment_,
+                platformConfig.description,
+                platformConfig.maxEnergyLevel,
+                platformConfig.slotCount,
+                platformConfig.speed
+            );
+        } else {
+            platform = std::make_shared<StaticPlatform>(
+                platformConfig.position,
+                &environment_,
+                platformConfig.description,
+                platformConfig.maxEnergyLevel,
+                platformConfig.slotCount
+            );
+        }
+        for (const auto& moduleConfig : platformConfig.modules) {
+            std::shared_ptr<Module> module;
+            
+            if (moduleConfig.type == "ConnectionModule") {
+                module = std::make_shared<ConnectionModule>(
+                    moduleConfig.slotsOccupied,
+                    moduleConfig.energyConsumption,
+                    moduleConfig.isOn,
+                    moduleConfig.range,
+                    moduleConfig.specific.maxSessions
+                );
+            }
+            else if (moduleConfig.type == "SensorModule") {
+                module = std::make_shared<SensorModule>(
+                    moduleConfig.slotsOccupied,
+                    moduleConfig.energyConsumption,
+                    moduleConfig.isOn,
+                    moduleConfig.range,
+                    moduleConfig.specific.sensorType
+                );
+            }
+            else if (moduleConfig.type == "WeaponModule") {
+                module = std::make_shared<WeaponModule>(
+                    moduleConfig.slotsOccupied,
+                    moduleConfig.energyConsumption,
+                    moduleConfig.isOn,
+                    moduleConfig.range,
+                    moduleConfig.specific.chargingDuration
+                );
+            }
+            
+            platform->installModule(module);
+        }
+        environment_.addToken(platform);
+        if (auto staticPlatform = dynamic_cast<StaticPlatform*>(platform.get())) {
+            ai_.addStaticPlatform(staticPlatform);
+        }
+    }
+}
 
 void Game::start() {
-    window_.create(sf::VideoMode(WINDOW_WIDTH, WINDOW_HEIGHT), "Surveillance Game");
-    window_.setFramerateLimit(60);
-
-    while (window_.isOpen()) {
-        handleEvents();
+    while (graphics_.isWindowOpen()) {
+        graphics_.handleEvents();
         updateSuspects();
         ai_.eliminateAllSuspects();
-        render();
+        graphics_.render(environment_);
     }
-}
-
-void Game::handleEvents() {
-    sf::Event event;
-    while (window_.pollEvent(event))
-        if (event.type == sf::Event::Closed)
-            window_.close();
-}
-
-void Game::render() {
-    window_.clear(sf::Color::Black);
-    
-    for (const auto& token : environment_.getTokens()) {
-        if (Suspect* suspect = dynamic_cast<Suspect*>(token.second.get())) {
-            sf::CircleShape shape(static_cast<float>(RATIO) / 2.f);
-            shape.setFillColor(sf::Color::Red);
-            shape.setPosition(suspect->getPosition().x * RATIO, suspect->getPosition().y * RATIO);
-            window_.draw(shape);
-        }
-        if (StaticPlatform* platform = dynamic_cast<StaticPlatform*>(token.second.get())) {
-            sf::RectangleShape shape(sf::Vector2f(static_cast<float>(RATIO), static_cast<float>(RATIO)));
-            shape.setFillColor(sf::Color::White);
-            shape.setPosition(platform->getPosition().x * RATIO, platform->getPosition().y * RATIO);
-            window_.draw(shape);
-        }
-        if (MobilePlatform* platform = dynamic_cast<MobilePlatform*>(token.second.get())) {
-            sf::RectangleShape shape(sf::Vector2f(static_cast<float>(RATIO), static_cast<float>(RATIO)));
-            shape.setFillColor(sf::Color::Blue);
-            shape.setPosition(platform->getPosition().x * RATIO, platform->getPosition().y * RATIO);
-            window_.draw(shape);
-        }
-        if (Obstacle* obstacle = dynamic_cast<Obstacle*>(token.second.get())) {
-            sf::RectangleShape shape(sf::Vector2f(static_cast<float>(RATIO), static_cast<float>(RATIO)));
-            shape.setFillColor(sf::Color::Magenta);
-            shape.setPosition(obstacle->getPosition().x * RATIO, obstacle->getPosition().y * RATIO);
-            window_.draw(shape);
-        }
-    }
-    window_.display();
 }
 
 void Game::updateSuspects() {

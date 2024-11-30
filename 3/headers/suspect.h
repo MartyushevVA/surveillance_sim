@@ -3,6 +3,8 @@
 #include "placeholder.h"
 #include "interfaces.h"
 
+class Platform;
+
 class Suspect : 
     public Placeholder,
     public IAvoidanceMovement {

@@ -1,6 +1,6 @@
-#include <iostream>
-
 #include "module_types.h"
+
+#include <cmath>
 
 #include "platform.h"
 #include "environment.h"
@@ -31,6 +31,7 @@ bool SensorModule::attachableTo(std::shared_ptr<Platform> host) const {
     return (host->getEnergyLevel() + energyConsumption_ <= host->getMaxEnergyLevel())
     && (host->getModules().size() + slotsOccupied_ <= host->getSlotCount());
 }
+
 std::shared_ptr<Placeholder> SensorModule::getVisibleSuspect(Report report) const {
     for (auto placeholder : report.objects)
         if (Suspect* suspect = dynamic_cast<Suspect*>(placeholder.get()))
@@ -38,7 +39,6 @@ std::shared_ptr<Placeholder> SensorModule::getVisibleSuspect(Report report) cons
                 return placeholder;
     return nullptr;
 }
-void SensorModule::update() {}
 
 void SensorModule::setUp() {
     if (host_.lock())
