@@ -15,9 +15,13 @@ Platform* Suspect::nearestPredatorWithinRange() const {
                 checkPos.y >= environment_->getSize().y)
                 continue;
             if (Platform* predator = dynamic_cast<Platform*>(environment_->getToken(checkPos).get()))
-                if (environment_->hasLineOfSight(position_, checkPos))
-                    if (minDistance = std::min(minDistance, environment_->howFar(position_, checkPos, sensorRange_)))
+                if (environment_->hasLineOfSight(position_, checkPos)) {
+                    double distance = environment_->howFar(position_, checkPos, sensorRange_);
+                    if (minDistance > distance) {
+                        minDistance = distance;
                         nearestPredator = predator;
+                    }
+                }
     }
     return nearestPredator;
 }

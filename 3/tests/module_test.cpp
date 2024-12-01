@@ -71,10 +71,10 @@ TEST_F(ModuleTest, ConnectionModule) {
     auto scannedModules = conn1->scanForModules();
     EXPECT_FALSE(scannedModules.empty());
     
-    EXPECT_TRUE(conn1->establishConnection(conn2));
+    EXPECT_TRUE(conn1->establishConnection(conn2.get()));
     EXPECT_FALSE(conn1->getSessionList().empty());
     
-    EXPECT_TRUE(conn1->closeConnection(conn2));
+    EXPECT_TRUE(conn1->closeConnection(conn2.get()));
     EXPECT_TRUE(conn1->getSessionList().empty());
 }
 
@@ -148,14 +148,14 @@ TEST_F(ModuleTest, ConnectionModuleRouting) {
     platform3->installModule(conn3);
     
     // Test route propagation
-    conn1->establishConnection(conn2);
-    conn2->establishConnection(conn3);
+    conn1->establishConnection(conn2.get());
+    conn2->establishConnection(conn3.get());
     
     auto routes = conn1->getRouteList();
     EXPECT_EQ(routes.size(), 2); // Should include both conn2 and conn3
     
     // Test route removal
-    conn2->closeConnection(conn3);
+    conn2->closeConnection(conn3.get());
     routes = conn1->getRouteList();
     EXPECT_EQ(routes.size(), 1); // Should only include conn2
 } 

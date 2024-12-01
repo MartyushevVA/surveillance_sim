@@ -11,7 +11,7 @@ private:
     Environment environment_;
     Graphics graphics_;
     
-    void updateSuspects();
+    
     void initializeField(const FieldConfig& config);
 
 public:
@@ -21,4 +21,5 @@ public:
         initializeField(Import::importFieldConfig(fieldFile));
     }    
     void start();
+    void updateSuspects();
 };

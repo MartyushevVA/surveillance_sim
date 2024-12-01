@@ -27,7 +27,7 @@ bool SensorModule::attachableTo(std::shared_ptr<Platform> host) const {
     if (!host)
         throw std::invalid_argument("Host is not set");
     return (host->getEnergyLevel() + energyConsumption_ <= host->getMaxEnergyLevel())
-    && (host->getModules().size() + slotsOccupied_ <= host->getSlotCount());
+    && ((int)host->getModules().size() + slotsOccupied_ <= host->getSlotCount());
 }
 
 std::shared_ptr<Placeholder> SensorModule::getVisibleSuspect(Report report) const {

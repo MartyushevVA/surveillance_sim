@@ -31,7 +31,7 @@ bool WeaponModule::attack(Pair suspect) {
 bool WeaponModule::attachableTo(std::shared_ptr<Platform> host) const {
     if (!host)
         throw std::invalid_argument("Host is not set");
-    return host->getModules().size() + slotsOccupied_ <= host->getSlotCount();
+    return ((int)host->getModules().size() + slotsOccupied_ <= host->getSlotCount());
 }
 
 void WeaponModule::update() {

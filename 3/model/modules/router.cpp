@@ -26,7 +26,7 @@ std::vector<ConnectionModule*> ConnectionModule::scanForModules(Pair position) c
 }
 
 bool ConnectionModule::establishConnection(ConnectionModule* target, bool isResponse) {
-    if (sessionList_.size() < maxSessions_ && std::find_if(routeList_.begin(), routeList_.end(),
+    if ((int)sessionList_.size() < maxSessions_ && std::find_if(routeList_.begin(), routeList_.end(),
     [target](const routeNode& a) {return a.destination == target;}) == routeList_.end()) {
         if (!isResponse)
             if (!target->establishConnection(this, true))
@@ -119,7 +119,7 @@ bool ConnectionModule::attachableTo(std::shared_ptr<Platform> host) const {
     if (!host)
         throw std::invalid_argument("Host is not set");
     return (host->getEnergyLevel() + energyConsumption_ <= host->getMaxEnergyLevel())
-    && (host->getModules().size() + slotsOccupied_ <= host->getSlotCount());
+    && ((int)host->getModules().size() + slotsOccupied_ <= host->getSlotCount());
 }
 
 void ConnectionModule::update() {
