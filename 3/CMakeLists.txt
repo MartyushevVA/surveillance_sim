@@ -10,6 +10,7 @@ enable_testing()
 
 find_package(SFML 2.6.1 COMPONENTS graphics window system REQUIRED)
 find_package(nlohmann_json REQUIRED)
+find_package(GTest REQUIRED)
 
 add_library(game_lib
     import/import.cpp
@@ -34,6 +35,7 @@ target_include_directories(game_lib PUBLIC
     ${CMAKE_CURRENT_SOURCE_DIR}/model/modules
     ${CMAKE_CURRENT_SOURCE_DIR}/model/system
     ${CMAKE_CURRENT_SOURCE_DIR}/model/objects
+    ${CMAKE_CURRENT_SOURCE_DIR}/tests
 
 )
 
@@ -42,17 +44,27 @@ target_link_libraries(game_lib PUBLIC
     sfml-window 
     sfml-system
     nlohmann_json::nlohmann_json
+    GTest::gtest
+    GTest::gtest_main
 )
 
-add_executable(${PROJECT_NAME} main.cpp)
+# add_executable(${PROJECT_NAME} main.cpp)
 
-target_link_libraries(${PROJECT_NAME} PRIVATE game_lib)
-
-target_include_directories(${PROJECT_NAME} PRIVATE 
-    ${CMAKE_CURRENT_SOURCE_DIR}/headers
-    ${CMAKE_CURRENT_SOURCE_DIR}/import
-    ${CMAKE_CURRENT_SOURCE_DIR}/inoutstream
+add_executable(unit_tests
+    tests/test_main.cpp
+    tests/environment_test.cpp
+    tests/platform_test.cpp
+    tests/module_test.cpp
+    tests/movement_test.cpp
+    tests/ai_test.cpp
+    tests/suspect_test.cpp
+    tests/game_test.cpp
 )
+
+target_link_libraries(unit_tests PRIVATE game_lib GTest::gtest GTest::gtest_main)
+
+include(GoogleTest)
+gtest_discover_tests(unit_tests)
 
 
 
