@@ -83,7 +83,7 @@ TEST_F(ModuleTest, SensorModuleTypes) {
     
     // XRay sensor should see through obstacles
     Report xrayReport = xraySensor->getSurrounding();
-    EXPECT_NE(xraySensor->getVisibleSuspect(xrayReport), nullptr);
+    EXPECT_EQ(xrayReport.objects.size(), 2);
 }
 
 TEST_F(ModuleTest, WeaponModuleStates) {

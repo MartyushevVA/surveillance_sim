@@ -24,7 +24,7 @@ protected:
             1, 10, true, 5, SensorType::Optical
         );
         auto weapon = std::make_shared<WeaponModule>(
-            1, 10, true, 5, std::chrono::milliseconds(0)
+            1, 10, true, 5, std::chrono::milliseconds(50)
         );
         
         staticPlatform->installModule(sensor);
@@ -43,6 +43,8 @@ protected:
 
 TEST_F(AITest, EliminateSuspect) {
     EXPECT_NE(env.getToken(Pair{3, 3}), nullptr);
+    staticPlatform->update();
+    std::this_thread::sleep_for(std::chrono::milliseconds(100));
     ai.eliminateAllSuspects();
     EXPECT_EQ(env.getToken(Pair{3, 3}), nullptr);
 }
