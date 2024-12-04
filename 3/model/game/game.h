@@ -11,7 +11,6 @@ private:
     Environment environment_;
     Graphics graphics_;
     
-    
     void initializeField(const FieldConfig& config);
 
 public:

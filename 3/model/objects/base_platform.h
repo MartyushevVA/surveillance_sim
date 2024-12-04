@@ -22,11 +22,7 @@ public:
     
     std::string getDescription() const {return description_;}
     int getEnergyLevel() const {return energyLevel_;}
-    void setEnergyLevel(int energyLevel) {
-        if (energyLevel < 0)
-            throw std::invalid_argument("Energy level cannot be negative");
-        energyLevel_ = energyLevel;
-    }
+    void setEnergyLevel(int energyLevel) {energyLevel_ = energyLevel;}
     int getMaxEnergyLevel() const {return maxEnergyLevel_;}
     int getSlotCount() const {return slotCount_;}
     

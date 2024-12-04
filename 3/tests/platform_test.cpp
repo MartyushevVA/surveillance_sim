@@ -9,13 +9,7 @@ protected:
     
     void SetUp() override {
         env.setSize(10, 10);
-        platform = std::make_shared<StaticPlatform>(
-            Pair{1, 1},
-            &env,
-            "Test Platform",
-            100,  // maxEnergyLevel
-            3     // slotCount
-        );
+        platform = std::make_shared<StaticPlatform>(Pair{1, 1}, &env, "Test Platform", 100, 3);
     }
 };
 
@@ -29,12 +23,10 @@ TEST_F(PlatformTest, EnergyManagement) {
     EXPECT_NO_THROW(platform->setEnergyLevel(50));
     EXPECT_EQ(platform->getEnergyLevel(), 50);
     
-    // Test energy limit
     EXPECT_THROW(platform->setEnergyLevel(-1), std::invalid_argument);
 }
 
 TEST_F(PlatformTest, ModuleManagement) {
-    // Test module slot limit
     auto module1 = std::make_shared<SensorModule>(1, 10, true, 5, SensorType::Optical);
     auto module2 = std::make_shared<WeaponModule>(1, 10, true, 5, std::chrono::milliseconds(100));
     auto module3 = std::make_shared<ConnectionModule>(2, 10, true, 5, 5);
@@ -48,17 +40,13 @@ TEST_F(PlatformTest, ModuleTypeSearch) {
     auto sensor = std::make_shared<SensorModule>(1, 10, true, 5, SensorType::Optical);
     platform->installModule(sensor);
     
-    // Test finding existing module type
     EXPECT_NE(platform->findModuleOfType<SensorModule>(), nullptr);
     
-    // Test finding non-existent module type
     EXPECT_EQ(platform->findModuleOfType<WeaponModule>(), nullptr);
 }
 
 TEST_F(PlatformTest, PlatformUpdate) {
-    auto weapon = std::make_shared<WeaponModule>(
-        1, 10, true, 5, std::chrono::milliseconds(100)
-    );
+    auto weapon = std::make_shared<WeaponModule>(1, 10, true, 5, std::chrono::milliseconds(100));
     platform->installModule(weapon);
     
     weapon->startCharging();
@@ -67,15 +55,11 @@ TEST_F(PlatformTest, PlatformUpdate) {
 }
 
 TEST_F(PlatformTest, MobilePlatformBehavior) {
-    auto mobilePlatform = std::make_shared<MobilePlatform>(
-        Pair{1, 1}, &env, "Mobile", 100, 3, 2
-    );
+    auto mobilePlatform = std::make_shared<MobilePlatform>(Pair{1, 1}, &env, "Mobile", 100, 3, 2);
     
-    // Test speed setting
     mobilePlatform->setSpeed(3);
     EXPECT_EQ(mobilePlatform->getSpeed(), 3);
     
-    // Test static platform speed immutability
     platform->setSpeed(3);
     EXPECT_EQ(platform->getSpeed(), 0);
-} 
+}

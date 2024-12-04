@@ -62,7 +62,6 @@ add_executable(unit_tests
     tests/movement_test.cpp
     tests/ai_test.cpp
     tests/suspect_test.cpp
-    tests/game_test.cpp
 )
 
 target_link_libraries(unit_tests

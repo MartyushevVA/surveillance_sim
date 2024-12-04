@@ -8,17 +8,13 @@ protected:
     
     void SetUp() override {
         env.setSize(10, 10);
-        suspect = std::make_shared<Suspect>(
-            Pair{5, 5}, &env, 2, 3
-        );
+        suspect = std::make_shared<Suspect>(Pair{5, 5}, &env, 2, 3);
         env.addToken(suspect);
     }
 };
 
 TEST_F(SuspectTest, DetectPredator) {
-    auto platform = std::make_shared<StaticPlatform>(
-        Pair{6, 6}, &env, "Predator", 100, 3
-    );
+    auto platform = std::make_shared<StaticPlatform>(Pair{6, 6}, &env, "Predator", 100, 3);
     env.addToken(platform);
     
     Platform* detected = suspect->nearestPredatorWithinRange();
@@ -27,15 +23,11 @@ TEST_F(SuspectTest, DetectPredator) {
 }
 
 TEST_F(SuspectTest, MovementBehavior) {
-    // Test random movement
     Pair initialPos = suspect->getPosition();
     Pair newPos = suspect->calculateRandomMove();
     EXPECT_TRUE(env.abilityToMove(initialPos, newPos));
     
-    // Test avoidance
-    auto predator = std::make_shared<StaticPlatform>(
-        Pair{6, 6}, &env, "Predator", 100, 3
-    );
+    auto predator = std::make_shared<StaticPlatform>(Pair{6, 6}, &env, "Predator", 100, 3);
     env.addToken(predator);
     
     Pair avoidancePos = suspect->calculateAvoidanceMove(predator->getPosition());

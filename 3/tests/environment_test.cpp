@@ -27,19 +27,15 @@ TEST_F(EnvironmentTest, LineOfSight) {
     auto obstacle = std::make_shared<Obstacle>(Pair{1, 1}, &env);
     env.addToken(obstacle);
     
-    // Direct line blocked by obstacle
     EXPECT_FALSE(env.hasLineOfSight(Pair{0, 0}, Pair{2, 2}));
     
-    // Clear line of sight
     EXPECT_TRUE(env.hasLineOfSight(Pair{0, 0}, Pair{0, 2}));
 }
 
 TEST_F(EnvironmentTest, OutOfBoundsOperations) {
-    // Test adding token out of bounds
     auto obstacle = std::make_shared<Obstacle>(Pair{11, 11}, &env);
     EXPECT_THROW(env.addToken(obstacle), std::invalid_argument);
     
-    // Test movement out of bounds
     auto movable = std::make_shared<Suspect>(Pair{0, 0}, &env, 1, 1);
     env.addToken(movable);
     EXPECT_FALSE(env.abilityToMove(Pair{0, 0}, Pair{-1, -1}));
@@ -49,13 +45,11 @@ TEST_F(EnvironmentTest, OutOfBoundsOperations) {
 TEST_F(EnvironmentTest, DistanceCalculations) {
     EXPECT_EQ(env.getDistance(Pair{0, 0}, Pair{3, 4}), 5);
     
-    // Test normalized distance
     EXPECT_DOUBLE_EQ(env.howFar(Pair{0, 0}, Pair{3, 0}, 3), 1.0);
     EXPECT_LT(env.howFar(Pair{0, 0}, Pair{1, 0}, 3), 1.0);
 }
 
 TEST_F(EnvironmentTest, ComplexLineOfSight) {
-    // Create a line of obstacles
     auto obstacle1 = std::make_shared<Obstacle>(Pair{2, 2}, &env);
     auto obstacle2 = std::make_shared<Obstacle>(Pair{2, 3}, &env);
     auto obstacle3 = std::make_shared<Obstacle>(Pair{2, 4}, &env);
@@ -63,23 +57,19 @@ TEST_F(EnvironmentTest, ComplexLineOfSight) {
     env.addToken(obstacle2);
     env.addToken(obstacle3);
     
-    // Test diagonal line of sight
     EXPECT_FALSE(env.hasLineOfSight(Pair{1, 1}, Pair{3, 5}));
     EXPECT_TRUE(env.hasLineOfSight(Pair{1, 1}, Pair{1, 5}));
 }
 
 TEST_F(EnvironmentTest, TokenManagement) {
-    // Test adding token to occupied position
     auto obstacle1 = std::make_shared<Obstacle>(Pair{1, 1}, &env);
     auto obstacle2 = std::make_shared<Obstacle>(Pair{1, 1}, &env);
     
     env.addToken(obstacle1);
     EXPECT_THROW(env.addToken(obstacle2), std::invalid_argument);
     
-    // Test removing non-existent token
     EXPECT_NO_THROW(env.removeToken(Pair{5, 5}));
     
-    // Test getting tokens
     auto tokens = env.getTokens();
     EXPECT_EQ(tokens.size(), 1);
     EXPECT_EQ(tokens.begin()->second, obstacle1);
