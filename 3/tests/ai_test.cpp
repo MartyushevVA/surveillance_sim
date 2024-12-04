@@ -24,7 +24,7 @@ protected:
             1, 10, true, 5, SensorType::Optical
         );
         auto weapon = std::make_shared<WeaponModule>(
-            1, 10, true, 5, std::chrono::milliseconds(100)
+            1, 10, true, 5, std::chrono::milliseconds(0)
         );
         
         staticPlatform->installModule(sensor);

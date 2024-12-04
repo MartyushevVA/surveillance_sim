@@ -30,5 +30,5 @@ public:
 
     bool hasLineOfSight(Pair from, Pair to) const;
     double howFar(Pair from, Pair to, int range) const;
-    int getDistance(Pair from, Pair to) const;
+    double getDistance(Pair from, Pair to) const;
 };

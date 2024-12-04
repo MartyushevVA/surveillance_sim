@@ -14,15 +14,18 @@ void WeaponModule::startCharging() {
 }
 
 bool WeaponModule::attack(Pair suspect) {
-    if (!host_.lock() || !isOn_ || !host_.lock()->getEnvironment()->hasLineOfSight(host_.lock()->getPosition(), suspect) ||
-    host_.lock()->getEnvironment()->howFar(host_.lock()->getPosition(), suspect, range_) > 1)
+    auto hostPtr = host_.lock();
+    if (!hostPtr || !isOn_ || !hostPtr->getEnvironment()->hasLineOfSight(hostPtr->getPosition(), suspect) ||
+    hostPtr->getEnvironment()->howFar(hostPtr->getPosition(), suspect, range_) > 1)
         return false;
     update();
     if (isCharged_) {
-        host_.lock()->getEnvironment()->removeToken(suspect);
-        isCharged_ = false;
-        startCharging();
-        return true;
+        if (hostPtr->getEnvironment()->getToken(suspect) != nullptr) {
+            hostPtr->getEnvironment()->removeToken(suspect);
+            isCharged_ = false;
+            startCharging();
+            return true;
+        }
     }
 
     return false;

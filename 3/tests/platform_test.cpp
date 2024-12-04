@@ -20,14 +20,7 @@ protected:
 };
 
 TEST_F(PlatformTest, InstallModule) {
-    auto module = std::make_shared<SensorModule>(
-        1,  // slotsOccupied
-        10, // energyConsumption
-        true, // isOn
-        5,    // range
-        SensorType::Optical
-    );
-    
+    auto module = std::make_shared<SensorModule>(1, 10, true, 5, SensorType::Optical);
     EXPECT_NO_THROW(platform->installModule(module));
     EXPECT_EQ(platform->getModules().size(), 1);
 }

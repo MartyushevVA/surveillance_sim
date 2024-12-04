@@ -46,13 +46,15 @@ bool Environment::isEmpty(Pair position) const {
 }
 
 bool Environment::hasLineOfSight(Pair from, Pair to) const {
-    double distance = sqrt((from.x - to.x) * (from.x - to.x) + (from.y - to.y) * (from.y - to.y));
+    double distance = getDistance(from, to);
     double stepX = (to.x - from.x) / distance;
     double stepY = (to.y - from.y) / distance;
 
-    for (double i = 1; i < distance; i += 1) {
-        int x = from.x + stepX * i;
-        int y = from.y + stepY * i;
+    for (int i = 0; i <= distance; i++) {
+        int x = static_cast<int>(from.x + stepX * i);
+        int y = static_cast<int>(from.y + stepY * i);
+        if (Pair{x, y} == from || Pair{x, y} == to)
+            continue;
         if (!isEmpty({x, y}))
             return false;
     }
@@ -63,6 +65,6 @@ double Environment::howFar(Pair from, Pair to, int range) const {
     return getDistance(from, to) / range;
 }
 
-int Environment::getDistance(Pair from, Pair to) const {
-    return abs(from.x - to.x) + abs(from.y - to.y);
+double Environment::getDistance(Pair from, Pair to) const {
+    return sqrt((from.x - to.x) * (from.x - to.x) + (from.y - to.y) * (from.y - to.y));
 }

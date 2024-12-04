@@ -16,9 +16,12 @@ Report SensorModule::getSurrounding() const {
                 checkPos.x >= env->getSize().x || 
                 checkPos.y >= env->getSize().y)
                 continue;
-            if ((env->howFar(position, checkPos, range_) <= 1) && checkPos != hostPtr->getPosition())
-                if (type_ == SensorType::XRay || env->hasLineOfSight(position, checkPos))
-                    tokensInRange.push_back(env->getToken(checkPos));
+            if (checkPos != hostPtr->getPosition())
+                if (type_ == SensorType::XRay || env->hasLineOfSight(position, checkPos)) {
+                    auto token = env->getToken(checkPos);
+                    if (token)
+                        tokensInRange.push_back(token);
+                }
         }
     return {position, tokensInRange};
 }

@@ -4,7 +4,7 @@
 #include <nlohmann/json.hpp>
 #include <SFML/Graphics.hpp>
 
-#include "../objects/objects.h"
+#include "../model/objects/objects.h"
 
 class Environment;
 class MobilePlatform;

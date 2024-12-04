@@ -1,4 +1,4 @@
-#include "game.h"
+#include "model/game/game.h"
 
 int main() {
     Game game("configs/config2.json", "configs/graphics.json");

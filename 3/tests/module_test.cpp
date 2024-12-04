@@ -9,24 +9,17 @@ protected:
     
     void SetUp() override {
         env.setSize(10, 10);
-        platform = std::make_shared<StaticPlatform>(
-            Pair{1, 1}, &env, "Test Platform", 100, 3
-        );
+        platform = std::make_shared<StaticPlatform>(Pair{1, 1}, &env, "Test Platform", 100, 3);
         env.addToken(platform);
     }
 };
 
 TEST_F(ModuleTest, SensorModule) {
-    auto sensor = std::make_shared<SensorModule>(
-        1, 10, true, 5, SensorType::Optical
-    );
+    auto sensor = std::make_shared<SensorModule>(1, 10, true, 5, SensorType::Optical);
     platform->installModule(sensor);
     
-    auto suspect = std::make_shared<Suspect>(
-        Pair{2, 2}, &env, 2, 3
-    );
+    auto suspect = std::make_shared<Suspect>(Pair{3, 3}, &env, 2, 3);
     env.addToken(suspect);
-    
     Report report = sensor->getSurrounding();
     EXPECT_FALSE(report.objects.empty());
     auto visibleSuspect = sensor->getVisibleSuspect(report);
@@ -34,14 +27,10 @@ TEST_F(ModuleTest, SensorModule) {
 }
 
 TEST_F(ModuleTest, WeaponModule) {
-    auto weapon = std::make_shared<WeaponModule>(
-        1, 10, true, 5, std::chrono::milliseconds(100)
-    );
+    auto weapon = std::make_shared<WeaponModule>(1, 10, true, 5, std::chrono::milliseconds(100));
     platform->installModule(weapon);
     
-    auto suspect = std::make_shared<Suspect>(
-        Pair{2, 2}, &env, 2, 3
-    );
+    auto suspect = std::make_shared<Suspect>(Pair{2, 2}, &env, 2, 3);
     env.addToken(suspect);
     
     weapon->startCharging();
@@ -53,16 +42,10 @@ TEST_F(ModuleTest, WeaponModule) {
 }
 
 TEST_F(ModuleTest, ConnectionModule) {
-    auto conn1 = std::make_shared<ConnectionModule>(
-        1, 10, true, 5, 5
-    );
-    auto conn2 = std::make_shared<ConnectionModule>(
-        1, 10, true, 5, 5
-    );
+    auto conn1 = std::make_shared<ConnectionModule>(1, 10, true, 5, 5);
+    auto conn2 = std::make_shared<ConnectionModule>(1, 10, true, 5, 5);
     
-    auto platform2 = std::make_shared<StaticPlatform>(
-        Pair{2, 2}, &env, "Platform2", 100, 3
-    );
+    auto platform2 = std::make_shared<StaticPlatform>(Pair{2, 2}, &env, "Platform2", 100, 3);
     env.addToken(platform2);
     
     platform->installModule(conn1);
@@ -79,12 +62,8 @@ TEST_F(ModuleTest, ConnectionModule) {
 }
 
 TEST_F(ModuleTest, SensorModuleTypes) {
-    auto opticalSensor = std::make_shared<SensorModule>(
-        1, 10, true, 5, SensorType::Optical
-    );
-    auto xraySensor = std::make_shared<SensorModule>(
-        1, 10, true, 5, SensorType::XRay
-    );
+    auto opticalSensor = std::make_shared<SensorModule>(1, 10, true, 5, SensorType::Optical);
+    auto xraySensor = std::make_shared<SensorModule>(1, 10, true, 5, SensorType::XRay);
     
     platform->installModule(opticalSensor);
     
@@ -108,9 +87,7 @@ TEST_F(ModuleTest, SensorModuleTypes) {
 }
 
 TEST_F(ModuleTest, WeaponModuleStates) {
-    auto weapon = std::make_shared<WeaponModule>(
-        1, 10, true, 5, std::chrono::milliseconds(100)
-    );
+    auto weapon = std::make_shared<WeaponModule>(1, 10, true, 5, std::chrono::milliseconds(100));
     platform->installModule(weapon);
     
     // Test charging states
@@ -133,12 +110,8 @@ TEST_F(ModuleTest, ConnectionModuleRouting) {
     auto conn2 = std::make_shared<ConnectionModule>(1, 10, true, 5, 5);
     auto conn3 = std::make_shared<ConnectionModule>(1, 10, true, 5, 5);
     
-    auto platform2 = std::make_shared<StaticPlatform>(
-        Pair{2, 2}, &env, "Platform2", 100, 3
-    );
-    auto platform3 = std::make_shared<StaticPlatform>(
-        Pair{3, 3}, &env, "Platform3", 100, 3
-    );
+    auto platform2 = std::make_shared<StaticPlatform>(Pair{2, 2}, &env, "Platform2", 100, 3);
+    auto platform3 = std::make_shared<StaticPlatform>(Pair{3, 3}, &env, "Platform3", 100, 3);
     
     env.addToken(platform2);
     env.addToken(platform3);

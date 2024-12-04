@@ -3,9 +3,8 @@ project(SecuritySystemSimulation)
 
 set(CMAKE_CXX_STANDARD 20)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
-set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -fprofile-arcs -ftest-coverage")
+set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -fprofile-arcs -ftest-coverage -Wall -Wextra")
 set(CMAKE_EXE_LINKER_FLAGS "${CMAKE_EXE_LINKER_FLAGS} -fprofile-arcs -ftest-coverage")
-set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Wall -Wextra")
 
 enable_testing()
 
@@ -40,7 +39,7 @@ target_include_directories(game_lib PUBLIC
 
 )
 
-target_link_libraries(game_lib PUBLIC
+target_link_libraries(game_lib
     sfml-graphics 
     sfml-window 
     sfml-system
@@ -49,7 +48,11 @@ target_link_libraries(game_lib PUBLIC
     GTest::gtest_main
 )
 
-# add_executable(${PROJECT_NAME} main.cpp)
+#add_executable(sss main.cpp)
+
+#target_link_libraries(sss PRIVATE game_lib)
+
+#target_include_directories(sss PUBLIC ${CMAKE_CURRENT_SOURCE_DIR})
 
 add_executable(unit_tests
     tests/test_main.cpp
@@ -62,22 +65,18 @@ add_executable(unit_tests
     tests/game_test.cpp
 )
 
-target_link_libraries(unit_tests PRIVATE game_lib GTest::gtest GTest::gtest_main)
-
-include(GoogleTest)
-gtest_discover_tests(unit_tests)
-
-
+target_link_libraries(unit_tests
+    game_lib
+    GTest::gtest
+    GTest::gtest_main)
 
 
-# rm -rf build
-# cmake -S . -DCOMPLEX_CLASS=OFF(ON) -B build
-# cmake --build build; build/test_class
-# lcov --directory build/CMakeFiles/simple(complex)_class.dir/ --capture --output-file coverage.info; genhtml coverage.info --output-directory out; firefox out/index.html
+
+
+# rm -rf build; cmake -S . -B build; cmake --build build; build/unit_tests
+# lcov --directory build/CMakeFiles/game_lib.dir/ --capture --output-file coverage.info --exclude "/usr/include/*"
+# genhtml coverage.info --output-directory out --ignore-errors inconsistent --ignore-errors corrupt
+# firefox out/index.html
+
 
 # doxygen; firefox doxygen/html/index.html
-
-# --exclude-throw-branches gcovr
-
-
-# rm -rf build; cmake -S . -B build; cmake --build build; build/SecuritySystemSimulation

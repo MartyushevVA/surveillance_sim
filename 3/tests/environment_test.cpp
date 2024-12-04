@@ -47,8 +47,7 @@ TEST_F(EnvironmentTest, OutOfBoundsOperations) {
 }
 
 TEST_F(EnvironmentTest, DistanceCalculations) {
-    // Test Manhattan distance
-    EXPECT_EQ(env.getDistance(Pair{0, 0}, Pair{3, 4}), 7);
+    EXPECT_EQ(env.getDistance(Pair{0, 0}, Pair{3, 4}), 5);
     
     // Test normalized distance
     EXPECT_DOUBLE_EQ(env.howFar(Pair{0, 0}, Pair{3, 0}, 3), 1.0);

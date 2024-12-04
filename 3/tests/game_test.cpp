@@ -2,11 +2,10 @@
 #include "game/game.h"
 
 TEST(GameTest, Initialization) {
-    EXPECT_NO_THROW(Game game("test_field.json", "test_graphics.json"));
+    EXPECT_NO_THROW(Game game("configs/config2.json", "configs/graphics.json"));
 }
 
 TEST(GameTest, UpdateCycle) {
-    Game game("test_field.json", "test_graphics.json");
-    // Test one update cycle
+    Game game("configs/config2.json", "configs/graphics.json");
     EXPECT_NO_THROW(game.updateSuspects());
 } 
