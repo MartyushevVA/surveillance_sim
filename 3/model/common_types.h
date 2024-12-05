@@ -30,7 +30,7 @@ struct routeNode {
     ConnectionModule* gate;
 
     bool operator==(const routeNode& other) const {
-        return gate == other.gate && destination == other.destination;
+        return destination == other.destination;
     }
     routeNode(ConnectionModule* gate, ConnectionModule* destination) : destination(destination), gate(gate) {}
 };

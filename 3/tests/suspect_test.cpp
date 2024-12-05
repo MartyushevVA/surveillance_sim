@@ -16,8 +16,8 @@ protected:
 TEST_F(SuspectTest, DetectPredator) {
     auto platform = std::make_shared<StaticPlatform>(Pair{6, 6}, &env, "Predator", 100, 3);
     env.addToken(platform);
-    
     Platform* detected = suspect->nearestPredatorWithinRange();
+
     EXPECT_NE(detected, nullptr);
     EXPECT_EQ(detected, platform.get());
 }
@@ -25,13 +25,16 @@ TEST_F(SuspectTest, DetectPredator) {
 TEST_F(SuspectTest, MovementBehavior) {
     Pair initialPos = suspect->getPosition();
     Pair newPos = suspect->calculateRandomMove();
+    suspect->setSpeed(2);
+    suspect->update();
+
     EXPECT_TRUE(env.abilityToMove(initialPos, newPos));
     
     auto predator = std::make_shared<StaticPlatform>(Pair{6, 6}, &env, "Predator", 100, 3);
     env.addToken(predator);
-    
     Pair avoidancePos = suspect->calculateAvoidanceMove(predator->getPosition());
     int oldDist = env.getDistance(suspect->getPosition(), predator->getPosition());
     int newDist = env.getDistance(avoidancePos, predator->getPosition());
+
     EXPECT_GE(newDist, oldDist);
 } 

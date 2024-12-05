@@ -69,7 +69,7 @@ void ConnectionModule::recursiveRouteNodeImplementation(ConnectionModule* gate, 
     bool isEntered = false;
     for (auto& node : routeList)
         if (std::find_if(routeList_.begin(), routeList_.end(),
-        [&node](const routeNode& a) {return a.destination == node.destination;}) == routeList_.end() && node.destination != this) {
+        [&node](const routeNode& a) {return a == node;}) == routeList_.end() && node.destination != this) {
             isEntered = true;
             routeList_.push_back(routeNode{gate, node.destination});
         }
