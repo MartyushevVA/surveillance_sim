@@ -1,14 +1,18 @@
+#include <thread>
+
 #include "game.h"
 
 #include "../objects/objects.h"
+#include "../modules/modules.h"
 
-void Game::initializeField(const FieldConfig& config) {
-    environment_.setSize(config.size.width, config.size.height);
-    for (const auto& position : config.obstacles) {
+void Game::initializeField(const GameConfig& config) {
+    updateInterval_ = config.updateInterval;
+    environment_.setSize(config.field.size.x, config.field.size.y);
+    for (const auto& position : config.field.obstacles) {
         auto obstacle = std::make_shared<Obstacle>(position, &environment_);
         environment_.addToken(obstacle);
     }
-    for (const auto& suspectConfig : config.suspects) {
+    for (const auto& suspectConfig : config.field.suspects) {
         auto suspect = std::make_shared<Suspect>(
             suspectConfig.position,
             &environment_,
@@ -17,7 +21,7 @@ void Game::initializeField(const FieldConfig& config) {
         );
         environment_.addToken(suspect);
     }
-    for (const auto& platformConfig : config.platforms) {
+    for (const auto& platformConfig : config.field.platforms) {
         std::shared_ptr<Platform> platform;
         if (platformConfig.type == "MobilePlatform") {
             platform = std::make_shared<MobilePlatform>(
@@ -77,10 +81,13 @@ void Game::initializeField(const FieldConfig& config) {
 
 void Game::start() {
     while (graphics_.isWindowOpen()) {
+        auto start = std::chrono::steady_clock::now();
         graphics_.handleEvents();
         updateSuspects();
         ai_.eliminateAllSuspects();
         graphics_.render(environment_);
+        auto end = std::chrono::steady_clock::now();
+        std::this_thread::sleep_for(updateInterval_ - (end - start));
     }
 }
 

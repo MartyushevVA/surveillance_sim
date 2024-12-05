@@ -22,7 +22,7 @@ void Graphics::loadConfig(const std::string& configPath) {
     config_.window.height = j["window"]["height"];
     config_.window.title = j["window"]["title"];
     config_.window.frameRateLimit = j["window"]["framerate_limit"];
-    config_.window.pixelRatio = j["window"]["pixel_ratio"];
+    config_.window.objectSize = j["window"]["object_size"];
 
     auto loadColor = [](const nlohmann::json& j) -> GraphicsConfig::Color {
         return {
@@ -32,11 +32,38 @@ void Graphics::loadConfig(const std::string& configPath) {
         };
     };
 
-    config_.colors.background = loadColor(j["colors"]["background"]);
-    config_.colors.suspect = loadColor(j["colors"]["suspect"]);
-    config_.colors.staticPlatform = loadColor(j["colors"]["static_platform"]);
-    config_.colors.mobilePlatform = loadColor(j["colors"]["mobile_platform"]);
-    config_.colors.obstacle = loadColor(j["colors"]["obstacle"]);
+    config_.background = loadColor(j["background_color"]);
+
+    auto loadTexture = [](const std::string& path) -> sf::Texture {
+        sf::Texture texture;
+        if (!texture.loadFromFile(path)) {
+            throw std::runtime_error("Failed to load texture: " + path);
+        }
+        return texture;
+    };
+
+    textures_.suspect = loadTexture(j["textures"]["suspect"]);
+    textures_.staticPlatform = loadTexture(j["textures"]["static_platform"]);
+    textures_.mobilePlatform = loadTexture(j["textures"]["mobile_platform"]);
+    textures_.obstacle = loadTexture(j["textures"]["obstacle"]);
+
+    sprites_.suspect.setTexture(textures_.suspect);
+    sprites_.staticPlatform.setTexture(textures_.staticPlatform);
+    sprites_.mobilePlatform.setTexture(textures_.mobilePlatform);
+    sprites_.obstacle.setTexture(textures_.obstacle);
+
+    float scale = static_cast<float>(config_.window.objectSize) / 
+            static_cast<float>(textures_.suspect.getSize().x);
+    sprites_.suspect.setScale(scale, scale);
+    scale = static_cast<float>(config_.window.objectSize) / 
+            static_cast<float>(textures_.staticPlatform.getSize().x);
+    sprites_.staticPlatform.setScale(scale, scale);
+    scale = static_cast<float>(config_.window.objectSize) / 
+            static_cast<float>(textures_.mobilePlatform.getSize().x);
+    sprites_.mobilePlatform.setScale(scale, scale);
+    scale = static_cast<float>(config_.window.objectSize) / 
+            static_cast<float>(textures_.obstacle.getSize().x);
+    sprites_.obstacle.setScale(scale, scale);
 }
 
 void Graphics::handleEvents() {
@@ -48,67 +75,26 @@ void Graphics::handleEvents() {
 }
 
 void Graphics::render(const Environment& environment) {
-    window_.clear(config_.colors.background.toSFMLColor());
+    window_.clear(config_.background.toSFMLColor());
     
     for (const auto& token : environment.getTokens()) {
         if (const Suspect* suspect = dynamic_cast<const Suspect*>(token.second.get()))
-            drawSuspect(suspect);
+            drawObject(sprites_.suspect, suspect);
         else if (const StaticPlatform* platform = dynamic_cast<const StaticPlatform*>(token.second.get()))
-            drawStaticPlatform(platform);
+            drawObject(sprites_.staticPlatform, platform);
         else if (const MobilePlatform* platform = dynamic_cast<const MobilePlatform*>(token.second.get()))
-            drawMobilePlatform(platform);
+            drawObject(sprites_.mobilePlatform, platform);
         else if (const Obstacle* obstacle = dynamic_cast<const Obstacle*>(token.second.get()))
-            drawObstacle(obstacle);
+            drawObject(sprites_.obstacle, obstacle);
     }
     
     window_.display();
 }
 
-void Graphics::drawSuspect(const Suspect* suspect) {
-    sf::CircleShape shape(static_cast<float>(config_.window.pixelRatio) / 2.f);
-    shape.setFillColor(config_.colors.suspect.toSFMLColor());
-    shape.setPosition(
-        suspect->getPosition().x * config_.window.pixelRatio,
-        suspect->getPosition().y * config_.window.pixelRatio
+void Graphics::drawObject(sf::Sprite& sprite, const Placeholder* object) {
+    sprite.setPosition(
+        object->getPosition().x * config_.window.objectSize,
+        object->getPosition().y * config_.window.objectSize
     );
-    window_.draw(shape);
-}
-
-void Graphics::drawStaticPlatform(const StaticPlatform* platform) {
-    sf::RectangleShape shape(sf::Vector2f(
-        static_cast<float>(config_.window.pixelRatio),
-        static_cast<float>(config_.window.pixelRatio)
-    ));
-    shape.setFillColor(config_.colors.staticPlatform.toSFMLColor());
-    shape.setPosition(
-        platform->getPosition().x * config_.window.pixelRatio,
-        platform->getPosition().y * config_.window.pixelRatio
-    );
-    window_.draw(shape);
-}
-
-void Graphics::drawMobilePlatform(const MobilePlatform* platform) {
-    sf::RectangleShape shape(sf::Vector2f(
-        static_cast<float>(config_.window.pixelRatio),
-        static_cast<float>(config_.window.pixelRatio)
-    ));
-    shape.setFillColor(config_.colors.mobilePlatform.toSFMLColor());
-    shape.setPosition(
-        platform->getPosition().x * config_.window.pixelRatio,
-        platform->getPosition().y * config_.window.pixelRatio
-    );
-    window_.draw(shape);
-}
-
-void Graphics::drawObstacle(const Obstacle* obstacle) {
-    sf::RectangleShape shape(sf::Vector2f(
-        static_cast<float>(config_.window.pixelRatio),
-        static_cast<float>(config_.window.pixelRatio)
-    ));
-    shape.setFillColor(config_.colors.obstacle.toSFMLColor());
-    shape.setPosition(
-        obstacle->getPosition().x * config_.window.pixelRatio,
-        obstacle->getPosition().y * config_.window.pixelRatio
-    );
-    window_.draw(shape);
+    window_.draw(sprite);
 }

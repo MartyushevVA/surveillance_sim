@@ -10,7 +10,7 @@ enable_testing()
 
 find_package(SFML 2.6.1 COMPONENTS graphics window system REQUIRED)
 find_package(nlohmann_json REQUIRED)
-find_package(GTest REQUIRED)
+
 
 add_library(game_lib
     import/import.cpp
@@ -44,13 +44,12 @@ target_link_libraries(game_lib
     sfml-window 
     sfml-system
     nlohmann_json::nlohmann_json
-    GTest::gtest
-    GTest::gtest_main
 )
 
 option(T "Запуск тестов" OFF)
 
 if(T)
+    find_package(GTest REQUIRED)
     add_executable(sss
         tests/test_main.cpp
         tests/environment_test.cpp
@@ -74,7 +73,7 @@ endif()
 
 
 
-# rm -rf build; cmake -S . -DT=ON -B build; cmake --build build; build/unit_tests
+# rm -rf build; cmake -S . -DT=ON -B build; cmake --build build; build/sss
 # lcov --directory build/CMakeFiles/game_lib.dir/ --capture --output-file coverage.info --exclude "/usr/include/*"; genhtml coverage.info --output-directory out --ignore-errors inconsistent --ignore-errors corrupt; firefox out/index.html
 
 

@@ -25,6 +25,11 @@ struct Report {
     std::vector<std::shared_ptr<Placeholder>> objects;
 };
 
+enum SensorType {
+    Optical,
+    XRay
+};
+
 struct routeNode {
     ConnectionModule* destination;
     ConnectionModule* gate;

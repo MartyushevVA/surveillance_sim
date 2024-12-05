@@ -3,7 +3,7 @@
 #include <fstream>
 #include <nlohmann/json.hpp>
 
-#include "../model/modules/modules.h"
+#include "../model/common_types.h"
 
 struct ModuleConfig {
     std::string type;
@@ -35,23 +35,26 @@ struct SuspectConfig {
 };
 
 struct FieldConfig {
-    struct {
-        int width;
-        int height;
-    } size;
+    Pair size;
     std::vector<Pair> obstacles;
     std::vector<SuspectConfig> suspects;
     std::vector<PlatformConfig> platforms;
 };
 
+struct GameConfig {
+    std::chrono::milliseconds updateInterval;
+    FieldConfig field;
+};
+
 class Import {
 public:
-    static FieldConfig importFieldConfig(const std::string& configPath);
+    static GameConfig importGameConfig(const std::string& configPath);
 
 private:
     static ModuleConfig parseModule(const nlohmann::json& moduleJson);
     static PlatformConfig parsePlatform(const nlohmann::json& platformJson);
     static SuspectConfig parseSuspect(const nlohmann::json& suspectJson);
     static Pair parsePosition(const nlohmann::json& positionJson);
+    static Pair parseSize(const nlohmann::json& sizeJson);
     static std::chrono::milliseconds parseChargingDuration(const std::string& durationStr);
 };

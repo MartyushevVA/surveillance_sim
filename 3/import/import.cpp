@@ -1,23 +1,23 @@
 #include "import.h"
 
-FieldConfig Import::importFieldConfig(const std::string& configPath) {
+GameConfig Import::importGameConfig(const std::string& configPath) {
     std::ifstream file(configPath);
     if (!file.is_open()) {
         throw std::runtime_error("Could not open file: " + configPath);
     }
     nlohmann::json j;
     file >> j;
-    FieldConfig config;
-    config.size.width = j["field"]["width"];
-    config.size.height = j["field"]["height"];
+    GameConfig config;
+    config.updateInterval = parseChargingDuration(j["update_interval"]);
+    config.field.size = parseSize(j["field_size"]);
     for (const auto& obstacleJson : j["obstacles"]) {
-        config.obstacles.push_back(parsePosition(obstacleJson["position"]));
+        config.field.obstacles.push_back(parsePosition(obstacleJson["position"]));
     }
     for (const auto& suspectJson : j["suspects"]) {
-        config.suspects.push_back(parseSuspect(suspectJson));
+        config.field.suspects.push_back(parseSuspect(suspectJson));
     }
     for (const auto& platformJson : j["platforms"]) {
-        config.platforms.push_back(parsePlatform(platformJson));
+        config.field.platforms.push_back(parsePlatform(platformJson));
     }
     return config;
 }
@@ -92,6 +92,13 @@ Pair Import::parsePosition(const nlohmann::json& positionJson) {
         throw std::runtime_error("Position must contain x and y coordinates");
     }
     return {positionJson["x"], positionJson["y"]};
+}
+
+Pair Import::parseSize(const nlohmann::json& sizeJson) {
+    if (!sizeJson.contains("width") || !sizeJson.contains("height")) {
+        throw std::runtime_error("Size must contain width and height");
+    }
+    return {sizeJson["width"], sizeJson["height"]};
 }
 
 std::chrono::milliseconds Import::parseChargingDuration(const std::string& durationStr) {

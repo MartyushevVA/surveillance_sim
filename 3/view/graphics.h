@@ -6,19 +6,13 @@
 
 #include "../model/objects/objects.h"
 
-class Environment;
-class MobilePlatform;
-class Obstacle;
-class StaticPlatform;
-class Suspect;
-
 struct GraphicsConfig {
     struct {
         int width;
         int height;
         std::string title;
         int frameRateLimit;
-        int pixelRatio;
+        int objectSize;
     } window;
 
     struct Color {
@@ -26,13 +20,7 @@ struct GraphicsConfig {
         sf::Color toSFMLColor() const { return sf::Color(r, g, b); }
     };
 
-    struct {
-        Color background;
-        Color suspect;
-        Color staticPlatform;
-        Color mobilePlatform;
-        Color obstacle;
-    } colors;
+    Color background;
 };
 
 class Graphics {
@@ -40,11 +28,22 @@ private:
     sf::RenderWindow window_;
     GraphicsConfig config_;
 
+    struct {
+        sf::Texture suspect;
+        sf::Texture staticPlatform;
+        sf::Texture mobilePlatform;
+        sf::Texture obstacle;
+    } textures_;
+
+    struct {
+        sf::Sprite suspect;
+        sf::Sprite staticPlatform;
+        sf::Sprite mobilePlatform;
+        sf::Sprite obstacle;
+    } sprites_;
+
     void loadConfig(const std::string& configPath);
-    void drawSuspect(const Suspect* suspect);
-    void drawStaticPlatform(const StaticPlatform* platform);
-    void drawMobilePlatform(const MobilePlatform* platform);
-    void drawObstacle(const Obstacle* obstacle);
+    void drawObject(sf::Sprite& sprite, const Placeholder* object);
 
 public:
     Graphics(const std::string& configPath);

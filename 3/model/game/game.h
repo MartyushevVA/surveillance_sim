@@ -10,14 +10,15 @@ private:
     AI ai_;
     Environment environment_;
     Graphics graphics_;
+    std::chrono::milliseconds updateInterval_;
     
-    void initializeField(const FieldConfig& config);
+    void initializeField(const GameConfig& config);
 
 public:
-    Game(const std::string& fieldFile, const std::string& graphicsConfigFile) :
+    Game(const std::string& gameConfigFile, const std::string& graphicsConfigFile) :
         ai_(&environment_),
         graphics_(graphicsConfigFile) {
-        initializeField(Import::importFieldConfig(fieldFile));
+        initializeField(Import::importGameConfig(gameConfigFile));
     }    
     void start();
     void updateSuspects();

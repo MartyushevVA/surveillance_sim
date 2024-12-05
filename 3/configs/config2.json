@@ -1,14 +1,15 @@
 {
-    "field": {
-        "width": 100,
-        "height": 100
+    "update_interval": "00:00:00:075",
+    "field_size": {
+        "width": 20,
+        "height": 20
     },
     "suspects": [
         {
             "type": "Suspect",
             "position": {"x": 10, "y": 10},
             "sensorRange": 5,
-            "speed": 2
+            "speed": 3
         }
     ],
     "platforms": [
@@ -25,7 +26,7 @@
                     "slotsOccupied": 1,
                     "energyConsumption": 8,
                     "isOn": true,
-                    "range": 10,
+                    "range": 8,
                     "maxSessions": 4
                 },
                 {
@@ -59,7 +60,7 @@
                     "slotsOccupied": 1,
                     "energyConsumption": 8,
                     "isOn": true,
-                    "range": 10,
+                    "range": 8,
                     "maxSessions": 4
                 },
                 {
@@ -92,7 +93,7 @@
                     "slotsOccupied": 1,
                     "energyConsumption": 12,
                     "isOn": true,
-                    "range": 10,
+                    "range": 8,
                     "maxSessions": 4
                 },
                 {

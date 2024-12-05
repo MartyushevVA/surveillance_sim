@@ -41,11 +41,6 @@ public:
     void setUp() override;
 };
 
-enum SensorType {
-    Optical,
-    XRay
-};
-
 class SensorModule :
     public Module,
     public ISensor {
