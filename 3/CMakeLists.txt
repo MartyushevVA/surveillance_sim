@@ -8,13 +8,9 @@ set(CMAKE_EXE_LINKER_FLAGS "${CMAKE_EXE_LINKER_FLAGS} -fprofile-arcs -ftest-cove
 
 enable_testing()
 
-find_package(SFML 2.6.1 COMPONENTS graphics window system REQUIRED)
 find_package(nlohmann_json REQUIRED)
 
-
 add_library(game_lib
-    import/import.cpp
-    view/graphics.cpp
     model/game/game.cpp
     model/modules/router.cpp
     model/modules/sensor.cpp
@@ -24,6 +20,14 @@ add_library(game_lib
     model/system/ai.cpp
     model/system/environment.cpp
     model/objects/base_platform.cpp
+)
+
+add_library(view_lib
+    view/graphics.cpp
+)
+
+add_library(import_lib
+    import/import.cpp
 )
 
 target_include_directories(game_lib PUBLIC
@@ -36,20 +40,14 @@ target_include_directories(game_lib PUBLIC
     ${CMAKE_CURRENT_SOURCE_DIR}/model/system
     ${CMAKE_CURRENT_SOURCE_DIR}/model/objects
     ${CMAKE_CURRENT_SOURCE_DIR}/tests
-
 )
 
-target_link_libraries(game_lib
-    sfml-graphics 
-    sfml-window 
-    sfml-system
-    nlohmann_json::nlohmann_json
-)
+target_link_libraries(import_lib nlohmann_json::nlohmann_json)
+target_link_libraries(view_lib nlohmann_json::nlohmann_json sfml-graphics sfml-window sfml-system)
 
 option(T "Запуск тестов" OFF)
 
 if(T)
-    find_package(GTest REQUIRED)
     add_executable(sss
         tests/test_main.cpp
         tests/environment_test.cpp
@@ -60,14 +58,12 @@ if(T)
         tests/suspect_test.cpp
         tests/connection_test.cpp
     )
-    target_link_libraries(sss
-        game_lib
-        GTest::gtest
-        GTest::gtest_main
-    )
+    find_package(GTest REQUIRED)
+    target_link_libraries(sss game_lib GTest::gtest GTest::gtest_main)
 else()
     add_executable(sss main.cpp)
-    target_link_libraries(sss game_lib)
+    find_package(SFML 2.6.1 COMPONENTS graphics window system REQUIRED)
+    target_link_libraries(sss game_lib import_lib view_lib)
 endif()
 
 
