@@ -62,6 +62,7 @@ add_executable(unit_tests
     tests/movement_test.cpp
     tests/ai_test.cpp
     tests/suspect_test.cpp
+    tests/connection_test.cpp
 )
 
 target_link_libraries(unit_tests
@@ -73,9 +74,7 @@ target_link_libraries(unit_tests
 
 
 # rm -rf build; cmake -S . -B build; cmake --build build; build/unit_tests
-# lcov --directory build/CMakeFiles/game_lib.dir/ --capture --output-file coverage.info --exclude "/usr/include/*"
-# genhtml coverage.info --output-directory out --ignore-errors inconsistent --ignore-errors corrupt
-# firefox out/index.html
+# lcov --directory build/CMakeFiles/game_lib.dir/ --capture --output-file coverage.info --exclude "/usr/include/*"; genhtml coverage.info --output-directory out --ignore-errors inconsistent --ignore-errors corrupt; firefox out/index.html
 
 
 # doxygen; firefox doxygen/html/index.html

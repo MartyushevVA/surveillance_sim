@@ -41,26 +41,6 @@ TEST_F(ModuleTest, WeaponModule) {
     EXPECT_EQ(env.getToken(Pair{2, 2}), nullptr);
 }
 
-TEST_F(ModuleTest, ConnectionModule) {
-    auto conn1 = std::make_shared<ConnectionModule>(1, 10, true, 5, 5);
-    auto conn2 = std::make_shared<ConnectionModule>(1, 10, true, 5, 5);
-    
-    auto platform2 = std::make_shared<MobilePlatform>(Pair{2, 2}, &env, "Platform2", 100, 3, 2);
-    env.addToken(platform2);
-    
-    platform->installModule(conn1);
-    platform2->installModule(conn2);
-    
-    auto scannedModules = conn1->scanForModules();
-    EXPECT_TRUE(scannedModules[0] == conn2.get());
-    
-    EXPECT_TRUE(conn1->closeConnection(conn2.get()));
-    EXPECT_TRUE(conn1->getSessionList().empty());
-
-    EXPECT_TRUE(conn1->establishConnection(conn2.get()));
-    EXPECT_FALSE(conn1->getSessionList().empty());
-}
-
 TEST_F(ModuleTest, SensorModuleTypes) {
     auto opticalSensor = std::make_shared<SensorModule>(1, 10, true, 5, SensorType::Optical);
     auto xraySensor = std::make_shared<SensorModule>(1, 10, true, 5, SensorType::XRay);
@@ -129,38 +109,3 @@ TEST_F(ModuleTest, WeaponModuleNoLineOfSight) {
     
     EXPECT_FALSE(weapon->attack(suspect->getPosition()));
 }
-
-/*TEST_F(ModuleTest, ConnectionModuleRouting) {
-    auto conn1 = std::make_shared<ConnectionModule>(1, 10, true, 5, 5);
-    auto conn2 = std::make_shared<ConnectionModule>(1, 10, true, 5, 5);
-    auto conn3 = std::make_shared<ConnectionModule>(1, 10, true, 5, 5);
-    
-    auto platform2 = std::make_shared<MobilePlatform>(Pair{2, 2}, &env, "Platform2", 100, 3, 2);
-    auto platform3 = std::make_shared<MobilePlatform>(Pair{3, 3}, &env, "Platform3", 100, 3, 2);
-    
-    env.addToken(platform2);
-    env.addToken(platform3);
-    
-    platform->installModule(conn1);
-    platform2->installModule(conn2);
-    platform3->installModule(conn3);
-    
-    conn1->closeConnection(conn2.get());
-    conn1->closeConnection(conn3.get());
-    conn2->closeConnection(conn3.get());
-
-    EXPECT_EQ(conn1->getRouteList().size(), 0);
-    EXPECT_EQ(conn2->getRouteList().size(), 0);
-    EXPECT_EQ(conn3->getRouteList().size(), 0);
-
-    conn1->establishConnection(conn2.get());
-    conn1->establishConnection(conn3.get());
-
-    auto routes = conn1->getRouteList();
-    for (auto route : routes)
-        std::cout << route.destination->getHost()->getPosition().x << " " << route.destination->getHost()->getPosition().y << std::endl;
-    EXPECT_EQ(routes.size(), 2);
-    
-    routes = conn1->getRouteList();
-    EXPECT_EQ(routes.size(), 1);
-}*/

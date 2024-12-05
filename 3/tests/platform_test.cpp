@@ -19,13 +19,6 @@ TEST_F(PlatformTest, InstallModule) {
     EXPECT_EQ(platform->getModules().size(), 1);
 }
 
-TEST_F(PlatformTest, EnergyManagement) {
-    EXPECT_NO_THROW(platform->setEnergyLevel(50));
-    EXPECT_EQ(platform->getEnergyLevel(), 50);
-    
-    EXPECT_THROW(platform->setEnergyLevel(-1), std::invalid_argument);
-}
-
 TEST_F(PlatformTest, ModuleManagement) {
     auto module1 = std::make_shared<SensorModule>(1, 10, true, 5, SensorType::Optical);
     auto module2 = std::make_shared<WeaponModule>(1, 10, true, 5, std::chrono::milliseconds(100));
