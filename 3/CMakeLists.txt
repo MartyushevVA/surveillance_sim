@@ -48,32 +48,33 @@ target_link_libraries(game_lib
     GTest::gtest_main
 )
 
-#add_executable(sss main.cpp)
+option(T "Запуск тестов" OFF)
 
-#target_link_libraries(sss PRIVATE game_lib)
+if(T)
+    add_executable(sss
+        tests/test_main.cpp
+        tests/environment_test.cpp
+        tests/platform_test.cpp
+        tests/module_test.cpp
+        tests/movement_test.cpp
+        tests/ai_test.cpp
+        tests/suspect_test.cpp
+        tests/connection_test.cpp
+    )
+    target_link_libraries(sss
+        game_lib
+        GTest::gtest
+        GTest::gtest_main
+    )
+else()
+    add_executable(sss main.cpp)
+    target_link_libraries(sss game_lib)
+endif()
 
-#target_include_directories(sss PUBLIC ${CMAKE_CURRENT_SOURCE_DIR})
-
-add_executable(unit_tests
-    tests/test_main.cpp
-    tests/environment_test.cpp
-    tests/platform_test.cpp
-    tests/module_test.cpp
-    tests/movement_test.cpp
-    tests/ai_test.cpp
-    tests/suspect_test.cpp
-    tests/connection_test.cpp
-)
-
-target_link_libraries(unit_tests
-    game_lib
-    GTest::gtest
-    GTest::gtest_main)
 
 
 
-
-# rm -rf build; cmake -S . -B build; cmake --build build; build/unit_tests
+# rm -rf build; cmake -S . -DT=ON -B build; cmake --build build; build/unit_tests
 # lcov --directory build/CMakeFiles/game_lib.dir/ --capture --output-file coverage.info --exclude "/usr/include/*"; genhtml coverage.info --output-directory out --ignore-errors inconsistent --ignore-errors corrupt; firefox out/index.html
 
 
