@@ -1,5 +1,9 @@
 #pragma once
 
+#include <atomic>
+#include <mutex>
+#include <thread>
+
 #include "../system/ai.h"
 #include "../system/environment.h"
 #include "../../import/import.h"
@@ -11,8 +15,13 @@ private:
     Environment environment_;
     Graphics graphics_;
     std::chrono::milliseconds updateInterval_;
+    std::mutex environmentMutex_;
+    std::atomic<bool> isRunning_{false};
     
     void initializeField(const GameConfig& config);
+    void suspectThread(std::shared_ptr<Suspect> suspect);
+    void platformThread(std::shared_ptr<MobilePlatform> platform);
+    void updateEntitiesParallel();
 
 public:
     Game(const std::string& gameConfigFile, const std::string& graphicsConfigFile) :
@@ -21,5 +30,4 @@ public:
         initializeField(Import::importGameConfig(gameConfigFile));
     }    
     void start();
-    void updateSuspects();
 };

@@ -8,8 +8,3 @@ void Platform::installModule(std::shared_ptr<Module> module) {
     module->setHost(shared_from_this());
     modules_.push_back(module);
 }
-
-void Platform::update() {
-    for (auto& module : modules_)
-        module->update();
-}

@@ -24,7 +24,8 @@ void AI::updateNetworkForest() {
         }
     }
     for (auto platform : visited)
-        allConnectedPlatforms_.push_back(platform);
+        if (auto mobile = dynamic_cast<MobilePlatform*>(platform))
+            allConnectedPlatforms_.push_back(mobile);
 }
 
 void AI::updateSpottedSuspects() {
@@ -48,31 +49,7 @@ void AI::updateSpottedSuspects() {
 void AI::eliminateAllSuspects() {
     updateNetworkForest();
     updateSpottedSuspects();
-    for (auto platform : allConnectedPlatforms_) {
-        if (auto sensor = platform->findModuleOfType<SensorModule>()) {
-            Report report = sensor->getSurrounding();
-            if (WeaponModule* weapon = platform->findModuleOfType<WeaponModule>()) {
-                if (auto attackableSuspect = sensor->getVisibleSuspect(report)) {
-                    weapon->attack(attackableSuspect->getPosition());
-                }
-            }
-            if (MobilePlatform* officer = dynamic_cast<MobilePlatform*>(platform)) {
-                Pair nextPos;
-                if (auto attackableSuspect = sensor->getVisibleSuspect(report))
-                    nextPos = officer->calculatePursuitMove(attackableSuspect->getPosition());
-                else if (!spottedSuspects_.empty())
-                    nextPos = officer->calculatePursuitMove(spottedSuspects_[0]->getPosition());
-                else
-                    nextPos = officer->calculateRandomMove();
-                if (ConnectionModule* connection = officer->findModuleOfType<ConnectionModule>(); connection->isSafeForSystem(nextPos))
-                    officer->move(nextPos);
-            }
-            /*if (auto connection = platform->findModuleOfType<ConnectionModule>()) {
-                for (auto node : connection->getRouteList())
-                    std::cout << "Host: (" << platform->getDescription() << ") | Gate: (" << node.gate->getHost()->getDescription()
-                    << ") | Destination: (" << node.destination->getHost()->getDescription() << ")" << std::endl;
-                std::cout << std::endl;
-            }*/
-        }
-    }
+    for (auto platform : allConnectedPlatforms_)
+        if (MobilePlatform* officer = dynamic_cast<MobilePlatform*>(platform))
+            officer->iterate(spottedSuspects_);
 }

@@ -26,8 +26,8 @@ protected:
      * @param slotCount Number of slots available for modules.
      * @param speed Speed of the platform.
      */
-    Platform(Pair position, Environment* environment, std::string description, int maxEnergyLevel, int slotCount, int speed)
-        : Placeholder(position, environment, speed), description_(description), maxEnergyLevel_(maxEnergyLevel), slotCount_(slotCount) {}
+    Platform(Pair position, Environment* environment, std::string description, int maxEnergyLevel, int slotCount)
+        : Placeholder(position, environment), description_(description), maxEnergyLevel_(maxEnergyLevel), slotCount_(slotCount) {}
 
 public:
     virtual ~Platform() = default; ///< Destructor for the Platform class.
@@ -74,11 +74,6 @@ public:
      * @throws std::runtime_error if the module is not attachable to the platform.
      */
     void installModule(std::shared_ptr<Module> module);
-
-    /**
-     * @brief Updates the platform and its modules.
-     */
-    void update() override;
 
     /**
      * @brief Finds a module of a specific type attached to the platform.

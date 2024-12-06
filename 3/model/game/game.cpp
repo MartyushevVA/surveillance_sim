@@ -1,9 +1,8 @@
-#include <thread>
-
 #include "game.h"
 
 #include "../objects/objects.h"
 #include "../modules/modules.h"
+#include "../system/ai.h"
 
 void Game::initializeField(const GameConfig& config) {
     updateInterval_ = config.updateInterval;
@@ -79,25 +78,60 @@ void Game::initializeField(const GameConfig& config) {
     }
 }
 
-void Game::start() {
-    while (graphics_.isWindowOpen()) {
-        auto start = std::chrono::steady_clock::now();
-        graphics_.handleEvents();
-        updateSuspects();
-        ai_.eliminateAllSuspects();
-        graphics_.render(environment_);
-        auto end = std::chrono::steady_clock::now();
-        std::this_thread::sleep_for(updateInterval_ - (end - start));
+void Game::suspectThread(std::shared_ptr<Suspect> suspect) {
+    while (isRunning_) {
+        Pair nextPosition;
+        {
+            std::lock_guard<std::mutex> lock(environmentMutex_);
+            suspect->iterate();
+        }
+        {
+            std::lock_guard<std::mutex> lock(environmentMutex_);
+            suspect->move(nextPosition);
+        }
+        std::this_thread::sleep_for(updateInterval_);
     }
 }
 
-void Game::updateSuspects() {
-    for (const auto& token : environment_.getTokens()) {
-        if (Suspect* suspect = dynamic_cast<Suspect*>(token.second.get())) {
-            if (Platform* predator = suspect->nearestPredatorWithinRange())
-                token.second->move(suspect->calculateAvoidanceMove(predator->getPosition()));
-            else
-                token.second->move(suspect->calculateRandomMove());
+void Game::platformThread(std::shared_ptr<MobilePlatform> platform) {
+    while (isRunning_) {
+        {
+            std::lock_guard<std::mutex> lock(environmentMutex_);
+            platform->iterate(ai_.getSpottedSuspects());
+        }
+        std::this_thread::sleep_for(updateInterval_);
+    }
+}
+
+void Game::updateEntitiesParallel() {
+    std::vector<std::thread> threads;
+    for (const auto& [pos, token] : environment_.getTokens()) {
+        if (auto suspect = std::dynamic_pointer_cast<Suspect>(token)) {
+            threads.emplace_back(&Game::suspectThread, this, suspect);
+        }
+        if (auto platform = std::dynamic_pointer_cast<MobilePlatform>(token)) {
+            threads.emplace_back(&Game::platformThread, this, platform);
         }
     }
+    for (auto& thread : threads) {
+        thread.detach();
+    }
+}
+
+void Game::start() {
+    isRunning_ = true;
+    updateEntitiesParallel();
+
+    while (graphics_.isWindowOpen()) {
+        auto start = std::chrono::steady_clock::now();
+        graphics_.handleEvents();
+        {
+            std::lock_guard<std::mutex> lock(environmentMutex_);
+            ai_.eliminateAllSuspects();
+            graphics_.render(environment_);
+        }
+        auto end = std::chrono::steady_clock::now();
+        std::this_thread::sleep_for(updateInterval_ - (end - start));
+    }
+    isRunning_ = false;
 }

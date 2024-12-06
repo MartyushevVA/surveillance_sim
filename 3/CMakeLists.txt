@@ -16,7 +16,7 @@ add_library(game_lib
     model/modules/sensor.cpp
     model/modules/weapon.cpp
     model/objects/moving.cpp
-    model/objects/suspect.cpp
+    model/objects/objects.cpp
     model/system/ai.cpp
     model/system/environment.cpp
     model/objects/base_platform.cpp
@@ -55,7 +55,7 @@ if(T)
         tests/module_test.cpp
         tests/movement_test.cpp
         tests/ai_test.cpp
-        tests/suspect_test.cpp
+        tests/objects_test.cpp
         tests/connection_test.cpp
     )
     find_package(GTest REQUIRED)

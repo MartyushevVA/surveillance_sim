@@ -27,26 +27,17 @@ public:
     virtual Report getSurrounding() const = 0;
 };
 
-class IMove {
+class IMoving {
+protected:
+    int speed_ = 0;
+
 public:
-    virtual ~IMove() = default;
+    IMoving(int speed) : speed_(speed) {}
+    virtual ~IMoving() = default;
+
+    virtual int getSpeed() const = 0;
+    virtual void setSpeed(int speed) = 0;
     virtual void move(Pair position) = 0;
-};
-
-class IRandomMovement : public IMove {
-public:
-    virtual ~IRandomMovement() = default;
-    virtual Pair calculateRandomMove() const = 0;
-};
-
-class IPursuitMovement : public IMove {
-public:
-    virtual ~IPursuitMovement() = default;
-    virtual Pair calculatePursuitMove(Pair target) const = 0;
-};
-
-class IAvoidanceMovement : public IMove {
-public:
-    virtual ~IAvoidanceMovement() = default;
-    virtual Pair calculateAvoidanceMove(Pair threat) const = 0;
+    virtual Pair opponentBasedMove(Pair opponent) const = 0;
+    virtual Pair randomMove() const = 0;
 };
