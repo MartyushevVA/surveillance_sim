@@ -9,20 +9,11 @@ Report SensorModule::getSurrounding() const {
     auto hostPtr = host_.lock();
     auto env = host_.lock()->getEnvironment();
     auto position = host_.lock()->getPosition();
-    for (int dx = -range_; dx <= range_; dx++)
-        for (int dy = -sqrt(range_ * range_ - dx * dx); dy <= sqrt(range_ * range_ - dx * dx); dy++) {
-            Pair checkPos{position.x + dx, position.y + dy};
-            if (checkPos.x < 0 || checkPos.y < 0 || 
-                checkPos.x >= env->getSize().x || 
-                checkPos.y >= env->getSize().y)
-                continue;
-            if (checkPos != hostPtr->getPosition())
-                if (type_ == SensorType::XRay || env->hasLineOfSight(position, checkPos)) {
-                    auto token = env->getToken(checkPos);
-                    if (token)
-                        tokensInRange.push_back(token);
-                }
-        }
+    auto area = env->getArea(position, range_);
+    for (auto& [checkPos, token] : area)
+        if (checkPos != hostPtr->getPosition())
+            if (type_ == SensorType::XRay || env->hasLineOfSight(position, checkPos))
+                tokensInRange.push_back(token);
     return {position, tokensInRange};
 }
 

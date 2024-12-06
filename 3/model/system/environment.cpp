@@ -68,3 +68,15 @@ double Environment::howFar(Pair from, Pair to, int range) const {
 double Environment::getDistance(Pair from, Pair to) const {
     return sqrt((from.x - to.x) * (from.x - to.x) + (from.y - to.y) * (from.y - to.y));
 }
+
+std::map<Pair, std::shared_ptr<Placeholder>> Environment::getArea(Pair position, int range) const {
+    std::map<Pair, std::shared_ptr<Placeholder>> area;
+    for (int dx = -range; dx <= range; dx++)
+        for (int dy = -sqrt(range * range - dx * dx); dy <= sqrt(range * range - dx * dx); dy++) {
+            Pair checkPos{position.x + dx, position.y + dy};
+            if (checkPos == position || checkPos.x < 0 || checkPos.y < 0 || checkPos.x >= size_.x || checkPos.y >= size_.y)
+                continue;
+            area[checkPos] = getToken(checkPos);
+        }
+    return area;
+}
