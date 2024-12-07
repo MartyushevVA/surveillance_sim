@@ -16,7 +16,7 @@ void WeaponModule::startCharging() {
 bool WeaponModule::attack(Pair suspect) {
     auto hostPtr = host_.lock();
     if (!hostPtr || !isOn_ || !hostPtr->getEnvironment()->hasLineOfSight(hostPtr->getPosition(), suspect) ||
-    hostPtr->getEnvironment()->howFar(hostPtr->getPosition(), suspect, range_) > 1)
+    hostPtr->getEnvironment()->isInRange(hostPtr->getPosition(), suspect, range_) > 1)
         return false;
     update();
     if (isCharged_) {

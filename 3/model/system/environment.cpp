@@ -46,7 +46,7 @@ bool Environment::isEmpty(Pair position) const {
 }
 
 bool Environment::hasLineOfSight(Pair from, Pair to) const {
-    double distance = getDistance(from, to);
+    double distance = calculateDistance(from, to);
     double stepX = (to.x - from.x) / distance;
     double stepY = (to.y - from.y) / distance;
 
@@ -61,11 +61,11 @@ bool Environment::hasLineOfSight(Pair from, Pair to) const {
     return true;
 }
 
-double Environment::howFar(Pair from, Pair to, int range) const {
-    return getDistance(from, to) / range;
+double Environment::isInRange(Pair from, Pair to, int range) const {
+    return calculateDistance(from, to) / range;
 }
 
-double Environment::getDistance(Pair from, Pair to) const {
+double Environment::calculateDistance(Pair from, Pair to) const {
     return sqrt((from.x - to.x) * (from.x - to.x) + (from.y - to.y) * (from.y - to.y));
 }
 

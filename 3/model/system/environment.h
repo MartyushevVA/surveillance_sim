@@ -29,8 +29,8 @@ public:
     bool isEmpty(Pair position) const;
 
     bool hasLineOfSight(Pair from, Pair to) const;
-    double howFar(Pair from, Pair to, int range) const;
-    double getDistance(Pair from, Pair to) const;
+    double isInRange(Pair from, Pair to, int range) const;
+    double calculateDistance(Pair from, Pair to) const;
 
     std::map<Pair, std::shared_ptr<Placeholder>> getArea(Pair position, int range) const;
 };

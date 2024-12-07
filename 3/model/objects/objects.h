@@ -1,49 +1,52 @@
 #pragma once
 
+#include "placeholder.h"
 #include "base_platform.h"
 
 class StaticPlatform :
+    public Placeholder,
     public Platform {
 public:
     StaticPlatform(Pair position, Environment* environment, std::string description, int maxEnergyLevel, int slotCount)
-        : Platform(position, environment, description, maxEnergyLevel, slotCount) {}
+        : Placeholder(position, environment), Platform(description, maxEnergyLevel, slotCount) {}
+
+    Environment* getEnvironment() const override {return environment_;}
+    Pair getPosition() const override {return position_;}
+
+    void iterate(std::vector<Placeholder*>) override;
 };
 
 class MobilePlatform :
-    public Platform,
-    public IMoving {
+    public MovablePlaceholder,
+    public Platform {
 public:
     MobilePlatform(Pair position, Environment* environment, std::string description, int maxEnergyLevel, int slotCount, int speed)
-        : Platform(position, environment, description, maxEnergyLevel, slotCount), IMoving(speed) {}
+        : MovablePlaceholder(position, environment, speed), Platform(description, maxEnergyLevel, slotCount) {}
 
-    int getSpeed() const override {return speed_;}
-    void setSpeed(int speed) override {speed_ = speed;}
-    void move(Pair position) override;
+    Environment* getEnvironment() const override {return environment_;}
+    Pair getPosition() const override {return position_;}
+
     Pair opponentBasedMove(Pair opponent) const override;
-    Pair randomMove() const override;
 
-    void iterate(std::vector<Placeholder*> spottedSuspects);
+    void iterate(std::vector<Placeholder*> spottedSuspects) override;
 };
 
 class Suspect : 
-    public Placeholder,
-    public IMoving {
+    public MovablePlaceholder,
+    public ISensor {
 private:
-    int sensorRange_ = 0;
+    int visionRange_ = 0;
+    Report getSurrounding() const override;
 
 public:
-    Suspect(Pair position, Environment* environment, int speed, int sensorRange)
-        : Placeholder(position, environment), IMoving(speed), sensorRange_(sensorRange) {}
+    Suspect(Pair position, Environment* environment, int speed, int visionRange)
+        : MovablePlaceholder(position, environment, speed), visionRange_(visionRange) {}
 
-    int getSpeed() const override {return speed_;}
-    void setSpeed(int speed) override {speed_ = speed;}
-    void move(Pair position) override;
     Pair opponentBasedMove(Pair opponent) const override;
-    Pair randomMove() const override;
 
     void iterate();
-
-    Platform* nearestPredatorWithinRange() const;
+    
+    std::shared_ptr<Placeholder> getNearestVisibleOpponent() const override;
 };
 
 class Obstacle : public Placeholder {

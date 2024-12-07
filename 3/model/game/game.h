@@ -11,6 +11,8 @@
 
 class Game {
 private:
+    std::vector<std::thread> gameThreads_;
+
     AI ai_;
     Environment environment_;
     Graphics graphics_;
@@ -22,7 +24,7 @@ private:
     void suspectThread(std::shared_ptr<Suspect> suspect);
     void platformThread(std::shared_ptr<MobilePlatform> platform);
     void updateEntitiesParallel();
-
+    void cleanupThreads();
 public:
     Game(const std::string& gameConfigFile, const std::string& graphicsConfigFile) :
         ai_(&environment_),
@@ -30,4 +32,5 @@ public:
         initializeField(Import::importGameConfig(gameConfigFile));
     }    
     void start();
+    ~Game() {cleanupThreads();}
 };

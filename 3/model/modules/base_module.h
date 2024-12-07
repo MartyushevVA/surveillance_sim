@@ -35,7 +35,7 @@ public:
     bool isInRange(Pair target) const {
         auto hostPtr = host_.lock();
         if (hostPtr)
-            return hostPtr->getEnvironment()->howFar(target, hostPtr->getPosition(), range_) <= range_;
+            return hostPtr->getEnvironment()->isInRange(target, hostPtr->getPosition(), range_) <= 1;
         return false;
     }
     virtual bool attachableTo(std::shared_ptr<Platform> host) const = 0;

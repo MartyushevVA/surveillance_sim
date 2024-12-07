@@ -7,6 +7,7 @@
 Report SensorModule::getSurrounding() const {
     std::vector<std::shared_ptr<Placeholder>> tokensInRange;
     auto hostPtr = host_.lock();
+    if (!hostPtr) return {{}, {}};
     auto env = host_.lock()->getEnvironment();
     auto position = host_.lock()->getPosition();
     auto area = env->getArea(position, range_);
@@ -24,12 +25,30 @@ bool SensorModule::attachableTo(std::shared_ptr<Platform> host) const {
     && ((int)host->getModules().size() + slotsOccupied_ <= host->getSlotCount());
 }
 
-std::shared_ptr<Placeholder> SensorModule::getVisibleSuspect(Report report) const {
+std::shared_ptr<Placeholder> SensorModule::getNearestVisibleOpponent() const {
+    auto report = getSurrounding();
+    std::shared_ptr<Placeholder> nearestThreat = nullptr;
+    double minDistance = std::numeric_limits<double>::max();
     for (auto placeholder : report.objects)
-        if (Suspect* suspect = dynamic_cast<Suspect*>(placeholder.get()))
-            if (host_.lock()->getEnvironment()->hasLineOfSight(report.position, suspect->getPosition()))
-                return placeholder;
-    return nullptr;
+        if (auto threat = dynamic_cast<Suspect*>(placeholder.get())) {
+            if (host_.lock()->getEnvironment()->hasLineOfSight(report.position, threat->getPosition())) {
+                double distance = host_.lock()->getEnvironment()->calculateDistance(report.position, threat->getPosition());
+                if (minDistance > distance) {
+                    minDistance = distance;
+                    nearestThreat = placeholder;
+                }
+            }
+        }
+    return nearestThreat;
+}
+
+std::vector<std::shared_ptr<Placeholder>> SensorModule::getSuspects() const {
+    auto report = getSurrounding();
+    std::vector<std::shared_ptr<Placeholder>> suspects;
+    for (auto placeholder : report.objects)
+        if (dynamic_cast<Suspect*>(placeholder.get()))
+            suspects.push_back(placeholder);
+    return suspects;
 }
 
 void SensorModule::setUp() {

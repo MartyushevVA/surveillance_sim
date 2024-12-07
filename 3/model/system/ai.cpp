@@ -12,29 +12,30 @@ void AI::updateNetworkForest() {
     std::set<Platform*> visited;
     std::queue<Platform*> wip;
     for (auto platform : staticPlatforms_) {
-        wip.push(platform);
+        wip.push(platform.get());
         while (!wip.empty()) {
             auto current = wip.front();
             wip.pop();
             visited.insert(current);
-            if (auto connection = current->findModuleOfType<ConnectionModule>())
-                for (auto session : connection->getSessionList())
-                    if (visited.find(session->getHost().get()) == visited.end())
-                        wip.push(session->getHost().get());
+            auto connection = current->findModuleOfType<ConnectionModule>();
+            if (!connection) continue;
+            for (auto session : connection->getSessionList()) {
+                if (visited.find(session->getHost().get()) == visited.end()) {
+                    wip.push(session->getHost().get());
+                }
+            }
         }
     }
     for (auto platform : visited)
-        if (auto mobile = dynamic_cast<MobilePlatform*>(platform))
-            allConnectedPlatforms_.push_back(mobile);
+        allConnectedPlatforms_.push_back(platform);
 }
 
 void AI::updateSpottedSuspects() {
-    std::vector<Suspect*> wip;
+    std::vector<Placeholder*> wip;
     for (auto platform : allConnectedPlatforms_)
         if (auto sensor = platform->findModuleOfType<SensorModule>())
-            for (auto placeholder : sensor->getSurrounding().objects)
-                if (auto suspect = dynamic_cast<Suspect*>(placeholder.get()))
-                    wip.push_back(suspect);
+            for (auto suspect : sensor->getSuspects())
+                wip.push_back(suspect.get());
     for (auto it = spottedSuspects_.begin(); it != spottedSuspects_.end();) {
         if (std::find(wip.begin(), wip.end(), *it) == wip.end())
             it = spottedSuspects_.erase(it);
@@ -50,6 +51,6 @@ void AI::eliminateAllSuspects() {
     updateNetworkForest();
     updateSpottedSuspects();
     for (auto platform : allConnectedPlatforms_)
-        if (MobilePlatform* officer = dynamic_cast<MobilePlatform*>(platform))
-            officer->iterate(spottedSuspects_);
+        if (platform)
+            platform->iterate(spottedSuspects_);
 }

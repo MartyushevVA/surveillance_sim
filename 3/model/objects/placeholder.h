@@ -18,3 +18,20 @@ public:
     Pair getPosition() const {return position_;}
     void setPosition(Pair position) {position_ = position;}
 };
+
+class MovablePlaceholder :
+    public Placeholder,
+    public IMoving {
+protected:
+    int speed_ = 0;
+
+    MovablePlaceholder(Pair position, Environment* environment, int speed)
+        : Placeholder(position, environment), speed_(speed) {}
+public:
+    virtual ~MovablePlaceholder() = default;
+
+    int getSpeed() const override {return speed_;}
+    void setSpeed(int speed) override {speed_ = speed;}
+    void move(Pair position) override;
+    Pair randomMove() const override;
+};

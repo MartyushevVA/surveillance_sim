@@ -8,7 +8,7 @@
 class ConnectionModule :
     public Module,
     public IConnection {
-protected:
+private:
     int maxSessions_ = 5;
     std::vector<ConnectionModule*> sessionList_ {};
     std::vector<routeNode> routeList_ {};
@@ -20,14 +20,14 @@ public:
     int getMaxSessions() const {return maxSessions_;}
     void setMaxSessions(int maxSessions) {maxSessions_ = maxSessions;}
     std::vector<ConnectionModule*> getSessionList() const {return sessionList_;}
-    std::vector<routeNode> getRouteList() const override {return routeList_;}
+    std::vector<routeNode> getRouteList() const {return routeList_;}
     
-    std::vector<ConnectionModule*> scanForModules(Pair position = {-1, 0}) const override;
+    std::vector<ConnectionModule*> scanForModules(Pair position = {-1, 0}) const;
 
     bool establishConnection(ConnectionModule* module, bool isResponse = false) override;
     bool closeConnection(ConnectionModule* module, bool isResponse = false) override;
     
-    std::vector<routeNode> requestRouteList(ConnectionModule* source) const override;
+    std::vector<routeNode> requestRouteList(ConnectionModule* source) const;
     
     void recursiveRouteNodeImplementation(ConnectionModule* gate, std::vector<routeNode> routeList);
     void recursiveDiscord(ConnectionModule* gate, std::vector<routeNode> targetList);
@@ -44,8 +44,9 @@ public:
 class SensorModule :
     public Module,
     public ISensor {
-protected:
+private:
     SensorType type_ = SensorType::Optical;
+    Report getSurrounding() const override;
 
 public:
     SensorModule(int slotsOccupied, int energyConsumption, bool isOn, int range, SensorType type)
@@ -54,8 +55,8 @@ public:
     SensorType getType() const {return type_;}
     void setType(SensorType type) {type_ = type;}
 
-    Report getSurrounding() const override;
-    std::shared_ptr<Placeholder> getVisibleSuspect(Report report) const;
+    std::shared_ptr<Placeholder> getNearestVisibleOpponent() const override;
+    std::vector<std::shared_ptr<Placeholder>> getSuspects() const;
 
     bool attachableTo(std::shared_ptr<Platform> host) const override;
 
@@ -66,7 +67,7 @@ public:
 class WeaponModule :
     public Module,
     public IWeapon {
-protected:
+private:
     std::chrono::steady_clock::time_point chargingStarted_;
     std::chrono::milliseconds chargingDuration_;
     bool isCharging_ = false;

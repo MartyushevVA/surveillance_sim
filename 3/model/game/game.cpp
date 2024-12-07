@@ -70,24 +70,21 @@ void Game::initializeField(const GameConfig& config) {
                 );
             }
             platform->installModule(module);
+
         }
-        environment_.addToken(platform);
-        if (auto staticPlatform = dynamic_cast<StaticPlatform*>(platform.get())) {
-            ai_.addStaticPlatform(staticPlatform);
-        }
+        environment_.addToken(std::dynamic_pointer_cast<Placeholder>(platform));
+        ai_.addStaticPlatform(std::dynamic_pointer_cast<StaticPlatform>(platform));
     }
 }
 
 void Game::suspectThread(std::shared_ptr<Suspect> suspect) {
     while (isRunning_) {
-        Pair nextPosition;
         {
             std::lock_guard<std::mutex> lock(environmentMutex_);
-            suspect->iterate();
-        }
-        {
-            std::lock_guard<std::mutex> lock(environmentMutex_);
-            suspect->move(nextPosition);
+            if (suspect)
+                suspect->iterate();
+            else
+                break;
         }
         std::this_thread::sleep_for(updateInterval_);
     }
@@ -104,34 +101,41 @@ void Game::platformThread(std::shared_ptr<MobilePlatform> platform) {
 }
 
 void Game::updateEntitiesParallel() {
-    std::vector<std::thread> threads;
     for (const auto& [pos, token] : environment_.getTokens()) {
         if (auto suspect = std::dynamic_pointer_cast<Suspect>(token)) {
-            threads.emplace_back(&Game::suspectThread, this, suspect);
+            gameThreads_.emplace_back(&Game::suspectThread, this, suspect);
         }
         if (auto platform = std::dynamic_pointer_cast<MobilePlatform>(token)) {
-            threads.emplace_back(&Game::platformThread, this, platform);
+            gameThreads_.emplace_back(&Game::platformThread, this, platform);
         }
     }
-    for (auto& thread : threads) {
-        thread.detach();
-    }
+}
+
+void Game::cleanupThreads() {
+    isRunning_ = false;
+    for (auto& thread : gameThreads_)
+        if (thread.joinable())
+            thread.join();
+    gameThreads_.clear();
 }
 
 void Game::start() {
     isRunning_ = true;
     updateEntitiesParallel();
 
+    auto lastUpdate = std::chrono::steady_clock::now();
     while (graphics_.isWindowOpen()) {
-        auto start = std::chrono::steady_clock::now();
+        auto currentTime = std::chrono::steady_clock::now();
+        auto deltaTime = currentTime - lastUpdate;
         graphics_.handleEvents();
         {
             std::lock_guard<std::mutex> lock(environmentMutex_);
             ai_.eliminateAllSuspects();
             graphics_.render(environment_);
         }
-        auto end = std::chrono::steady_clock::now();
-        std::this_thread::sleep_for(updateInterval_ - (end - start));
+        lastUpdate = currentTime;
+        if (deltaTime < updateInterval_)
+            std::this_thread::sleep_for(updateInterval_ - deltaTime);
     }
-    isRunning_ = false;
+    cleanupThreads();
 }

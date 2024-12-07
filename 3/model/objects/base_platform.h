@@ -1,6 +1,8 @@
 #pragma once
 
-#include "placeholder.h"
+#include "../system/environment.h"
+
+#include <iostream>
 
 class Module;
 
@@ -8,9 +10,7 @@ class Module;
  * @class Platform
  * @brief Class representing a platform that can hold modules and interact with the environment.
  */
-class Platform : 
-    public Placeholder,
-    public std::enable_shared_from_this<Platform> {
+class Platform : public std::enable_shared_from_this<Platform> {
 protected:
     std::string description_ {};
     int energyLevel_ = 0;
@@ -26,8 +26,8 @@ protected:
      * @param slotCount Number of slots available for modules.
      * @param speed Speed of the platform.
      */
-    Platform(Pair position, Environment* environment, std::string description, int maxEnergyLevel, int slotCount)
-        : Placeholder(position, environment), description_(description), maxEnergyLevel_(maxEnergyLevel), slotCount_(slotCount) {}
+    Platform(std::string description, int maxEnergyLevel, int slotCount)
+        : description_(description), maxEnergyLevel_(maxEnergyLevel), slotCount_(slotCount) {}
 
 public:
     virtual ~Platform() = default; ///< Destructor for the Platform class.
@@ -62,11 +62,17 @@ public:
      */
     int getSlotCount() const { return slotCount_; }
 
+    virtual Environment* getEnvironment() const = 0;
+
+    virtual Pair getPosition() const = 0;
+
+    virtual void iterate(std::vector<Placeholder*> spottedSuspects) = 0;
+
     /**
      * @brief Gets the list of modules attached to the platform.
      * @return std::vector<std::shared_ptr<Module>> The list of modules.
      */
-    std::vector<std::shared_ptr<Module>> getModules() const { return modules_; }
+    std::vector<std::shared_ptr<Module>> getModules() const {return modules_;}
 
     /**
      * @brief Installs a module onto the platform.
@@ -82,7 +88,8 @@ public:
      */
     template<typename T>
     T* findModuleOfType() const {
-        for (const auto& module : getModules())
+        auto modules = getModules();
+        for (const auto& module : modules)
             if (T* typed_module = dynamic_cast<T*>(module.get()))
                 return typed_module;
         return nullptr;

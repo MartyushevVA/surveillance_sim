@@ -2,12 +2,7 @@
 
 #include <random>
 
-void Suspect::move(Pair position) {
-    if (environment_->abilityToMove(position_, position))
-        environment_->moveToken(position_, position);
-}
-
-void MobilePlatform::move(Pair position) {
+void MovablePlaceholder::move(Pair position) {
     if (environment_->abilityToMove(position_, position))
         environment_->moveToken(position_, position);
 }
@@ -15,7 +10,7 @@ void MobilePlatform::move(Pair position) {
 Pair Suspect::opponentBasedMove(Pair opponent) const {
     double dx = opponent.x - position_.x;
     double dy = opponent.y - position_.y;
-    double distance = sqrt(dx * dx + dy * dy);
+    double distance = environment_->calculateDistance(position_, opponent);
     double nx = dx / distance;
     double ny = dy / distance;
 
@@ -42,7 +37,7 @@ Pair Suspect::opponentBasedMove(Pair opponent) const {
     return position_;
 }
 
-Pair Suspect::randomMove() const {
+Pair MovablePlaceholder::randomMove() const {
     static std::random_device rd;
     static std::mt19937 gen(rd());
 
@@ -66,7 +61,7 @@ Pair Suspect::randomMove() const {
 Pair MobilePlatform::opponentBasedMove(Pair opponent) const {
     double dx = opponent.x - position_.x;
     double dy = opponent.y - position_.y;
-    double distance = sqrt(dx * dx + dy * dy);
+    double distance = environment_->calculateDistance(position_, opponent);
     int speed = distance > speed_ ? speed_ : static_cast<int>(distance) - 1;
     double nx = dx / distance;
     double ny = dy / distance;
@@ -85,25 +80,4 @@ Pair MobilePlatform::opponentBasedMove(Pair opponent) const {
     double adjusted_dy = adjusted_ny * speed;
 
     return {position_.x + static_cast<int>(adjusted_dx), position_.y + static_cast<int>(adjusted_dy)};
-}
-
-Pair MobilePlatform::randomMove() const {
-    static std::random_device rd;
-    static std::mt19937 gen(rd());
-
-    for (int i = 0; i < 8; i++) {
-        std::uniform_int_distribution<> dis(-speed_, speed_);
-        int dx = dis(gen);
-        int remaining = speed_ * speed_ - dx * dx;
-        int dy = 0;
-        if (remaining > 0) {
-            int max_dy = static_cast<int>(sqrt(remaining));
-            std::uniform_int_distribution<> dis_y(-max_dy, max_dy);
-            dy = dis_y(gen);
-        }
-        Pair newPos = {position_.x + dx, position_.y + dy};
-        if (environment_->abilityToMove(position_, newPos))
-            return newPos;
-    }
-    return position_;
 }

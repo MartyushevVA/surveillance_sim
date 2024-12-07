@@ -7,41 +7,68 @@
 
 void MobilePlatform::iterate(std::vector<Placeholder*> spottedSuspects) {
     if (auto sensor = findModuleOfType<SensorModule>()) {
-        Report report = sensor->getSurrounding();
+        auto nearestSuspect = sensor->getNearestVisibleOpponent();
         if (WeaponModule* weapon = findModuleOfType<WeaponModule>())
-            if (auto attackableSuspect = sensor->getVisibleSuspect(report))
-                weapon->attack(attackableSuspect->getPosition());
+            if (nearestSuspect)
+                weapon->attack(nearestSuspect->getPosition());
+        
         Pair nextPos;
-        if (auto attackableSuspect = sensor->getVisibleSuspect(report))
-            nextPos = opponentBasedMove(attackableSuspect->getPosition());
+        if (nearestSuspect)
+            nextPos = opponentBasedMove(nearestSuspect->getPosition());
         else if (!spottedSuspects.empty())
             nextPos = opponentBasedMove(spottedSuspects[0]->getPosition());
         else
             nextPos = randomMove();
-        if (ConnectionModule* connection = findModuleOfType<ConnectionModule>(); connection->isSafeForSystem(nextPos))
-            move(nextPos);
+        
+        if (auto connection = findModuleOfType<ConnectionModule>())
+            if (connection->isSafeForSystem(nextPos))
+                move(nextPos);
+    }
+}
+
+void StaticPlatform::iterate(std::vector<Placeholder*>) {
+    if (auto sensor = findModuleOfType<SensorModule>()) {
+        auto nearestSuspect = sensor->getNearestVisibleOpponent();
+        if (WeaponModule* weapon = findModuleOfType<WeaponModule>())
+            if (nearestSuspect)
+                weapon->attack(nearestSuspect->getPosition());
     }
 }
 
 void Suspect::iterate() {
-    if (Platform* predator = nearestPredatorWithinRange())
-        move(opponentBasedMove(predator->getPosition()));
+    auto predator = getNearestVisibleOpponent();
+    Pair nextPos;
+    if (predator)
+        nextPos = opponentBasedMove(predator->getPosition());
     else
-        move(randomMove());
+        nextPos = randomMove();
+    if (nextPos != getPosition())
+        move(nextPos);
 }
 
-Platform* Suspect::nearestPredatorWithinRange() const {
-    auto area = environment_->getArea(position_, sensorRange_);
-    Platform* nearestPredator = nullptr;
-    double minDistance = std::numeric_limits<double>::max();
+Report Suspect::getSurrounding() const {
+    std::vector<std::shared_ptr<Placeholder>> tokensInRange;
+    auto env = getEnvironment();
+    auto position = getPosition();
+    auto area = env->getArea(position, visionRange_);
     for (auto& [checkPos, token] : area)
-        if (Platform* predator = dynamic_cast<Platform*>(token.get()))
-            if (environment_->hasLineOfSight(position_, checkPos)) {
-                double distance = environment_->howFar(position_, checkPos, sensorRange_);
-                if (minDistance > distance) {
-                    minDistance = distance;
-                    nearestPredator = predator;
-                }
+        if (checkPos != getPosition())
+            if (env->hasLineOfSight(position, checkPos))
+                tokensInRange.push_back(token);
+    return {position, tokensInRange};
+}
+
+std::shared_ptr<Placeholder> Suspect::getNearestVisibleOpponent() const {
+    auto report = getSurrounding();
+    std::shared_ptr<Placeholder> nearestPredator = nullptr;
+    double minDistance = std::numeric_limits<double>::max();
+    for (auto placeholder : report.objects)
+        if (auto predator = dynamic_cast<Platform*>(placeholder.get())) {
+            double distance = environment_->calculateDistance(position_, predator->getPosition());
+            if (minDistance > distance) {
+                minDistance = distance;
+                nearestPredator = placeholder;
             }
+        }
     return nearestPredator;
 }
