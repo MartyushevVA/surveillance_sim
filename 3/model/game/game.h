@@ -21,16 +21,14 @@ private:
     std::atomic<bool> isRunning_{false};
     
     void initializeField(const GameConfig& config);
-    void suspectThread(std::shared_ptr<Suspect> suspect);
-    void platformThread(std::shared_ptr<MobilePlatform> platform);
-    void updateEntitiesParallel();
-    void cleanupThreads();
 public:
     Game(const std::string& gameConfigFile, const std::string& graphicsConfigFile) :
         ai_(&environment_),
-        graphics_(graphicsConfigFile) {
+        graphics_(graphicsConfigFile),
+        isRunning_(false) {
+        std::cout << "Initializing game..." << std::endl;
         initializeField(Import::importGameConfig(gameConfigFile));
+        std::cout << "Game initialized" << std::endl;
     }    
     void start();
-    ~Game() {cleanupThreads();}
 };

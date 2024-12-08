@@ -7,14 +7,14 @@
 
 class Module {
 protected:
-    int slotsOccupied_ = 0;
-    int energyConsumption_ = 0;
-    bool isOn_ = false;
-    int range_ = 0;
+    int slotsOccupied_;
+    int energyConsumption_;
+    int range_;
+    bool isOn_;
     std::weak_ptr<Platform> host_ {};
 
-    Module(int slotsOccupied, int energyConsumption, bool isOn, int range)
-        : slotsOccupied_(slotsOccupied), energyConsumption_(energyConsumption), isOn_(isOn), range_(range) {}
+    Module(int slotsOccupied, int energyConsumption, int range)
+        : slotsOccupied_(slotsOccupied), energyConsumption_(energyConsumption), range_(range), isOn_(false) {}
 
 public:
     virtual ~Module() = default;
@@ -28,17 +28,10 @@ public:
     int getRange() const {return range_;}
     void setRange(int range) {range_ = range;}
     std::shared_ptr<Platform> getHost() const {return host_.lock();}
-    void setHost(std::weak_ptr<Platform> host) {
-        host_ = host;
-        setUp();
-    }
-    bool isInRange(Pair target) const {
-        auto hostPtr = host_.lock();
-        if (hostPtr)
-            return hostPtr->getEnvironment()->isInRange(target, hostPtr->getPosition(), range_) <= 1;
-        return false;
-    }
-    virtual bool attachableTo(std::shared_ptr<Platform> host) const = 0;
+    void setHost(std::weak_ptr<Platform> host) {host_ = host;}
+
+    virtual void turnOn() = 0;
+    virtual void turnOff() = 0;
+    
     virtual void update() = 0;
-    virtual void setUp() = 0;
 };

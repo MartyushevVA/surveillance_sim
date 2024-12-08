@@ -37,7 +37,8 @@ void Game::initializeField(const GameConfig& config) {
                 &environment_,
                 platformConfig.description,
                 platformConfig.maxEnergyLevel,
-                platformConfig.slotCount
+                platformConfig.slotCount,
+                &ai_
             );
         }
         for (const auto& moduleConfig : platformConfig.modules) {
@@ -46,7 +47,6 @@ void Game::initializeField(const GameConfig& config) {
                 module = std::make_shared<ConnectionModule>(
                     moduleConfig.slotsOccupied,
                     moduleConfig.energyConsumption,
-                    moduleConfig.isOn,
                     moduleConfig.range,
                     moduleConfig.specific.maxSessions
                 );
@@ -55,7 +55,6 @@ void Game::initializeField(const GameConfig& config) {
                 module = std::make_shared<SensorModule>(
                     moduleConfig.slotsOccupied,
                     moduleConfig.energyConsumption,
-                    moduleConfig.isOn,
                     moduleConfig.range,
                     moduleConfig.specific.sensorType
                 );
@@ -64,7 +63,6 @@ void Game::initializeField(const GameConfig& config) {
                 module = std::make_shared<WeaponModule>(
                     moduleConfig.slotsOccupied,
                     moduleConfig.energyConsumption,
-                    moduleConfig.isOn,
                     moduleConfig.range,
                     moduleConfig.specific.chargingDuration
                 );
@@ -77,51 +75,8 @@ void Game::initializeField(const GameConfig& config) {
     }
 }
 
-void Game::suspectThread(std::shared_ptr<Suspect> suspect) {
-    while (isRunning_) {
-        {
-            std::lock_guard<std::mutex> lock(environmentMutex_);
-            if (suspect)
-                suspect->iterate();
-            else
-                break;
-        }
-        std::this_thread::sleep_for(updateInterval_);
-    }
-}
-
-void Game::platformThread(std::shared_ptr<MobilePlatform> platform) {
-    while (isRunning_) {
-        {
-            std::lock_guard<std::mutex> lock(environmentMutex_);
-            platform->iterate(ai_.getSpottedSuspects());
-        }
-        std::this_thread::sleep_for(updateInterval_);
-    }
-}
-
-void Game::updateEntitiesParallel() {
-    for (const auto& [pos, token] : environment_.getTokens()) {
-        if (auto suspect = std::dynamic_pointer_cast<Suspect>(token)) {
-            gameThreads_.emplace_back(&Game::suspectThread, this, suspect);
-        }
-        if (auto platform = std::dynamic_pointer_cast<MobilePlatform>(token)) {
-            gameThreads_.emplace_back(&Game::platformThread, this, platform);
-        }
-    }
-}
-
-void Game::cleanupThreads() {
-    isRunning_ = false;
-    for (auto& thread : gameThreads_)
-        if (thread.joinable())
-            thread.join();
-    gameThreads_.clear();
-}
-
 void Game::start() {
     isRunning_ = true;
-    updateEntitiesParallel();
 
     auto lastUpdate = std::chrono::steady_clock::now();
     while (graphics_.isWindowOpen()) {
@@ -130,6 +85,9 @@ void Game::start() {
         graphics_.handleEvents();
         {
             std::lock_guard<std::mutex> lock(environmentMutex_);
+            for (const auto& [pos, token] : environment_.getTokens())
+                if (auto suspect = std::dynamic_pointer_cast<Suspect>(token))
+                    suspect->iterate();
             ai_.eliminateAllSuspects();
             graphics_.render(environment_);
         }
@@ -137,5 +95,5 @@ void Game::start() {
         if (deltaTime < updateInterval_)
             std::this_thread::sleep_for(updateInterval_ - deltaTime);
     }
-    cleanupThreads();
+    isRunning_ = false;
 }

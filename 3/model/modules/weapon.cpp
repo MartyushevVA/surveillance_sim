@@ -4,13 +4,17 @@
 
 void WeaponModule::startCharging() {
     auto hostPtr = host_.lock();
-    if (!hostPtr || !isOn_ || isCharging_ || isCharged_)
-        return;   
+    if (!hostPtr) return;   
     if (hostPtr->getEnergyLevel() + energyConsumption_ > hostPtr->getMaxEnergyLevel())
         return;
     hostPtr->setEnergyLevel(hostPtr->getEnergyLevel() + energyConsumption_);
     isCharging_ = true;
     chargingStarted_ = std::chrono::steady_clock::now();
+}
+
+void WeaponModule::stopCharging() {
+    host_.lock()->setEnergyLevel(host_.lock()->getEnergyLevel() - energyConsumption_);
+    isCharging_ = false;
 }
 
 bool WeaponModule::attack(Pair suspect) {
@@ -27,27 +31,35 @@ bool WeaponModule::attack(Pair suspect) {
             return true;
         }
     }
-
     return false;
 }
 
-bool WeaponModule::attachableTo(std::shared_ptr<Platform> host) const {
-    if (!host)
-        throw std::invalid_argument("Host is not set");
-    return ((int)host->getModules().size() + slotsOccupied_ <= host->getSlotCount());
-}
-
 void WeaponModule::update() {
-    if (isCharged_) return;
-    if (!isCharging_) {
+    if (isOn_) {
+        if (isCharged_) return;
+        if (isCharging_) {
+            auto currentTime = std::chrono::steady_clock::now();
+            auto elapsedTime = std::chrono::duration_cast<std::chrono::milliseconds>(currentTime - chargingStarted_);
+            if (elapsedTime >= chargingDuration_) {
+                host_.lock()->setEnergyLevel(host_.lock()->getEnergyLevel() - energyConsumption_);
+                isCharged_ = true;
+                isCharging_ = false;
+            }
+            return;
+        }
         startCharging();
         return;
     }
-    auto currentTime = std::chrono::steady_clock::now();
-    auto elapsedTime = std::chrono::duration_cast<std::chrono::milliseconds>(currentTime - chargingStarted_);
-    if (elapsedTime >= chargingDuration_) {
-        host_.lock()->setEnergyLevel(host_.lock()->getEnergyLevel() - energyConsumption_);
-        isCharged_ = true;
-        isCharging_ = false;
-    }
+    if (isCharging_)
+        stopCharging();
+}
+
+void WeaponModule::turnOn() {
+    setIsOn(true);
+    update();
+}
+
+void WeaponModule::turnOff() {
+    setIsOn(false);
+    update();
 }

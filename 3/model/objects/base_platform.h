@@ -15,7 +15,7 @@ protected:
     std::string description_ {};
     int energyLevel_ = 0;
     int maxEnergyLevel_ = 0;
-    int slotCount_ = 0;
+    size_t slotCount_ = 0;
     std::vector<std::shared_ptr<Module>> modules_ {};
     /**
      * @brief Constructs a Platform object.
@@ -26,7 +26,7 @@ protected:
      * @param slotCount Number of slots available for modules.
      * @param speed Speed of the platform.
      */
-    Platform(std::string description, int maxEnergyLevel, int slotCount)
+    Platform(std::string description, int maxEnergyLevel, size_t slotCount)
         : description_(description), maxEnergyLevel_(maxEnergyLevel), slotCount_(slotCount) {}
 
 public:
@@ -58,15 +58,27 @@ public:
 
     /**
      * @brief Gets the number of slots available for modules.
-     * @return int The number of slots.
+     * @return size_t The number of slots.
      */
-    int getSlotCount() const { return slotCount_; }
+    size_t getSlotCount() const { return slotCount_; }
 
+    /**
+     * @brief Gets the environment the platform is in.
+     * @return Environment* Pointer to the environment.
+     */
     virtual Environment* getEnvironment() const = 0;
 
+    /**
+     * @brief Gets the current position of the platform.
+     * @return Pair The current position coordinates.
+     */
     virtual Pair getPosition() const = 0;
 
-    virtual void iterate(std::vector<Placeholder*> spottedSuspects) = 0;
+    /**
+     * @brief Updates the platform's state based on spotted suspects.
+     * @param spottedSuspects Vector of pointers to spotted suspects.
+     */
+    virtual void iterate() = 0;
 
     /**
      * @brief Gets the list of modules attached to the platform.

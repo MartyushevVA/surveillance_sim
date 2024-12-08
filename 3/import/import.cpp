@@ -24,7 +24,7 @@ GameConfig Import::importGameConfig(const std::string& configPath) {
 
 ModuleConfig Import::parseModule(const nlohmann::json& moduleJson) {
     const std::vector<std::string> requiredFields = {
-        "type", "slotsOccupied", "energyConsumption", "isOn", "range"
+        "type", "slotsOccupied", "energyConsumption", "range"
     };
     for (const auto& field : requiredFields) {
         if (!moduleJson.contains(field)) {
@@ -35,7 +35,6 @@ ModuleConfig Import::parseModule(const nlohmann::json& moduleJson) {
     config.type = moduleJson["type"];
     config.slotsOccupied = moduleJson["slotsOccupied"];
     config.energyConsumption = moduleJson["energyConsumption"];
-    config.isOn = moduleJson["isOn"];
     config.range = moduleJson["range"];
     if (config.type == "ConnectionModule") {
         config.specific.maxSessions = moduleJson["maxSessions"];

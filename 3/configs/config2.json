@@ -25,7 +25,6 @@
                     "type": "ConnectionModule",
                     "slotsOccupied": 1,
                     "energyConsumption": 8,
-                    "isOn": true,
                     "range": 8,
                     "maxSessions": 4
                 },
@@ -33,7 +32,6 @@
                     "type": "SensorModule",
                     "slotsOccupied": 1,
                     "energyConsumption": 6,
-                    "isOn": true,
                     "range": 20,
                     "sensorType": "Optical"
                 },
@@ -41,7 +39,6 @@
                     "type": "WeaponModule",
                     "slotsOccupied": 1,
                     "energyConsumption": 10,
-                    "isOn": true,
                     "range": 20,
                     "chargingDuration": "00:00:20:000"
                 }
@@ -59,7 +56,6 @@
                     "type": "ConnectionModule",
                     "slotsOccupied": 1,
                     "energyConsumption": 8,
-                    "isOn": true,
                     "range": 8,
                     "maxSessions": 4
                 },
@@ -67,7 +63,6 @@
                     "type": "SensorModule",
                     "slotsOccupied": 1,
                     "energyConsumption": 6,
-                    "isOn": true,
                     "range": 20,
                     "sensorType": "Optical"
                 },
@@ -75,7 +70,6 @@
                     "type": "WeaponModule",
                     "slotsOccupied": 1,
                     "energyConsumption": 10,
-                    "isOn": true,
                     "range": 20,
                     "chargingDuration": "00:00:20:000"
                 }
@@ -92,7 +86,6 @@
                     "type": "ConnectionModule",
                     "slotsOccupied": 1,
                     "energyConsumption": 12,
-                    "isOn": true,
                     "range": 8,
                     "maxSessions": 4
                 },
@@ -100,7 +93,6 @@
                     "type": "SensorModule",
                     "slotsOccupied": 1,
                     "energyConsumption": 5,
-                    "isOn": true,
                     "range": 25,
                     "sensorType": "XRay"
                 }

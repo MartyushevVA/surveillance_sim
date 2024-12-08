@@ -4,17 +4,21 @@
 
 #include "../objects/objects.h"
 
-std::vector<ConnectionModule*> ConnectionModule::scanForModules(Pair position) const{
-    std::vector<ConnectionModule*> modulesInRange;
-    if (position == Pair{-1, 0}) position = host_.lock()->getPosition();
-    auto hostPtr = host_.lock();
-    auto env = hostPtr->getEnvironment();
-    auto area = env->getArea(position, range_);
-    for (auto& [checkPos, token] : area)
-        if (auto platform = dynamic_cast<Platform*>(token.get()))
-            if (auto module = platform->findModuleOfType<ConnectionModule>())
-                modulesInRange.push_back(module);
-    return modulesInRange;
+std::vector<ConnectionModule*> ConnectionModule::scanForModules(Pair pos) const {
+    std::vector<ConnectionModule*> result;
+    auto host = host_.lock();
+    if (!host) return result;
+    
+    auto env = host->getEnvironment();
+    if (!env) return result;
+    
+    auto area = env->getArea(pos, range_);
+    for (const auto& [checkPos, token] : area)
+        if (auto platform = std::dynamic_pointer_cast<Platform>(token))
+            if (platform.get() != host.get())
+                if (auto module = platform->findModuleOfType<ConnectionModule>())
+                    result.push_back(module);
+    return result;
 }
 
 bool ConnectionModule::establishConnection(ConnectionModule* target, bool isResponse) {
@@ -95,41 +99,60 @@ bool ConnectionModule::connectedToAI(const ConnectionModule* source) const {
     return false;
 }
 
-bool ConnectionModule::isSafeForSystem(Pair position) const {
-    std::vector<ConnectionModule*> additionModules = scanForModules(position);
-    for (auto module : sessionList_)
-        if (std::find(additionModules.begin(), additionModules.end(), module) == additionModules.end())
-            if (!module->connectedToAI(this))
-                return false;
-    for (auto module : additionModules)
-        if (module->connectedToAI(this))
-            return true;
-    return false;
+bool ConnectionModule::isSafeForSystem(Pair newPosition) const {
+    auto host = host_.lock();
+    if (!host) return false;    
+    auto staticPlatform = getConnectedToAIDirectly();
+    if (!staticPlatform) return false;    
+    for (const auto& session : sessionList_) {
+        if (!session) continue;
+        auto connectedPlatform = session->getHost();
+        if (!connectedPlatform) continue;
+        auto distance = host->getEnvironment()->calculateDistance(newPosition, connectedPlatform->getPosition());
+        if (distance > range_)
+            return false;
+    }
+    return true;
 }
 
-bool ConnectionModule::attachableTo(std::shared_ptr<Platform> host) const {
-    if (!host)
-        throw std::invalid_argument("Host is not set");
-    return (host->getEnergyLevel() + energyConsumption_ <= host->getMaxEnergyLevel())
-    && ((int)host->getModules().size() + slotsOccupied_ <= host->getSlotCount());
+StaticPlatform* ConnectionModule::getConnectedToAIDirectly() const {
+    if (auto staticPlatform = dynamic_cast<StaticPlatform*>(host_.lock().get()); staticPlatform)
+        return staticPlatform;
+    for (auto node : routeList_)
+        if (auto staticPlatform = dynamic_cast<StaticPlatform*>(node.destination->getHost().get()); staticPlatform)
+            return staticPlatform;
+    return nullptr;
 }
 
 void ConnectionModule::update() {
-    std::vector<ConnectionModule*> newNeighborsList = scanForModules();
-    for (auto module : newNeighborsList)
-        if (std::find(sessionList_.begin(), sessionList_.end(), module) == sessionList_.end()) {
-            establishConnection(module, false);
-        }
-    for (auto module : sessionList_)
-        if (std::find(newNeighborsList.begin(), newNeighborsList.end(), module) == newNeighborsList.end()) {
-            closeConnection(module, false);
-        }
+    auto host = host_.lock();
+    if (!host) return;
+    auto newNeighbors = scanForModules(host->getPosition());
+    
+    for (auto* neighbor : newNeighbors) {
+        if (!neighbor) continue;
+        auto neighborHost = neighbor->getHost();
+        if (!neighborHost) continue;
+        if (std::find(sessionList_.begin(), sessionList_.end(), neighbor) == sessionList_.end())
+            establishConnection(neighbor);
+    }
+    
+    auto it = sessionList_.begin();
+    while (it != sessionList_.end()) {
+        auto* session = *it;
+        if (!session || std::find(newNeighbors.begin(), newNeighbors.end(), session) == newNeighbors.end())
+            it = sessionList_.erase(it);
+        else
+            ++it;
+    }
 }
 
-void ConnectionModule::setUp() {
-    if (host_.lock())
-        host_.lock()->setEnergyLevel(host_.lock()->getEnergyLevel() + energyConsumption_);
-    std::vector<ConnectionModule*> neighborsList = scanForModules(host_.lock()->getPosition());
-    for (auto module : neighborsList)
-        establishConnection(module, false);
+void ConnectionModule::turnOn() {
+    setIsOn(true);
+    host_.lock()->setEnergyLevel(host_.lock()->getEnergyLevel() + energyConsumption_);
+}
+
+void ConnectionModule::turnOff() {
+    setIsOn(false);
+    host_.lock()->setEnergyLevel(host_.lock()->getEnergyLevel() - energyConsumption_);
 }

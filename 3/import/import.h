@@ -9,7 +9,6 @@ struct ModuleConfig {
     std::string type;
     int slotsOccupied;
     int energyConsumption;
-    bool isOn;
     int range;
     struct {
         int maxSessions;

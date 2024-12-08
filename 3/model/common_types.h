@@ -3,12 +3,13 @@
 #include <memory>
 #include <string>
 #include <vector>
+#include <map>
 
 class ConnectionModule;
 class Placeholder;
 
 struct Pair {
-    int x, y;
+    size_t x, y;
     bool operator==(const Pair& other) const {
         return x == other.x && y == other.y;
     }
@@ -22,7 +23,7 @@ struct Pair {
 
 struct Report {
     Pair position;
-    std::vector<std::shared_ptr<Placeholder>> objects;
+    std::map<Pair, std::shared_ptr<Placeholder>> objects;
 };
 
 enum SensorType {

@@ -1,19 +1,26 @@
 #pragma once
 
+#include "../system/ai.h"
 #include "placeholder.h"
 #include "base_platform.h"
 
 class StaticPlatform :
     public Placeholder,
     public Platform {
+
+private:
+    AI* ai_;
+
 public:
-    StaticPlatform(Pair position, Environment* environment, std::string description, int maxEnergyLevel, int slotCount)
-        : Placeholder(position, environment), Platform(description, maxEnergyLevel, slotCount) {}
+    StaticPlatform(Pair position, Environment* environment, std::string description, int maxEnergyLevel, int slotCount, AI* ai)
+        : Placeholder(position, environment), Platform(description, maxEnergyLevel, slotCount), ai_(ai) {}
 
     Environment* getEnvironment() const override {return environment_;}
     Pair getPosition() const override {return position_;}
 
-    void iterate(std::vector<Placeholder*>) override;
+    AI* getAI() const {return ai_;}
+
+    void iterate() override;
 };
 
 class MobilePlatform :
@@ -28,7 +35,7 @@ public:
 
     Pair opponentBasedMove(Pair opponent) const override;
 
-    void iterate(std::vector<Placeholder*> spottedSuspects) override;
+    void iterate() override;
 };
 
 class Suspect : 

@@ -1,6 +1,7 @@
 #pragma once
 
 #include <map>
+#include <shared_mutex>
 
 #include "../common_types.h"
 
@@ -10,13 +11,16 @@ class Environment {
 private:
     Pair size_ = {0, 0};
     std::map<Pair, std::shared_ptr<Placeholder>> tokens_ {};
+    
 
 public:
+    mutable std::shared_mutex environmentMutex_;
+
     Environment() = default;
-    Environment(int width, int height) {setSize(width, height);}
+    Environment(size_t width, size_t height) {setSize(width, height);}
 
     Pair getSize() const {return size_;}
-    void setSize(int width, int height) {size_ = {width, height};}
+    void setSize(size_t width, size_t height) {size_ = {width, height};}
     
     void addToken(std::shared_ptr<Placeholder> token);
     std::shared_ptr<Placeholder> getToken(Pair position) const;
@@ -33,4 +37,14 @@ public:
     double calculateDistance(Pair from, Pair to) const;
 
     std::map<Pair, std::shared_ptr<Placeholder>> getArea(Pair position, int range) const;
+
+    template <typename T>
+    std::shared_ptr<T> getClosestOfType(Pair position, std::map<Pair, std::shared_ptr<Placeholder>> area) const {
+        std::shared_ptr<T> closest = nullptr;
+        for (auto [pos, token] : area)
+            if (auto typed_token = std::dynamic_pointer_cast<T>(token))
+                if (!closest || calculateDistance(position, pos) < calculateDistance(position, closest->getPosition()))
+                    closest = typed_token;
+        return closest;
+    }
 };

@@ -23,7 +23,7 @@ std::shared_ptr<Placeholder> Environment::getToken(Pair position) const {
 }
 
 bool Environment::abilityToMove(Pair from, Pair to) const {
-    if (to.x >= size_.x || to.y >= size_.y || to.x < 0 || to.y < 0)
+    if (to.x >= size_.x || to.y >= size_.y)
         return false;
     auto token = getToken(from);
     if (!token) return false;
@@ -50,9 +50,9 @@ bool Environment::hasLineOfSight(Pair from, Pair to) const {
     double stepX = (to.x - from.x) / distance;
     double stepY = (to.y - from.y) / distance;
 
-    for (int i = 0; i <= distance; i++) {
-        int x = static_cast<int>(from.x + stepX * i);
-        int y = static_cast<int>(from.y + stepY * i);
+    for (size_t i = 0; i <= distance; i++) {
+        size_t x = static_cast<size_t>(from.x + stepX * i);
+        size_t y = static_cast<size_t>(from.y + stepY * i);
         if (Pair{x, y} == from || Pair{x, y} == to)
             continue;
         if (!isEmpty({x, y}))
@@ -74,7 +74,7 @@ std::map<Pair, std::shared_ptr<Placeholder>> Environment::getArea(Pair position,
     for (int dx = -range; dx <= range; dx++)
         for (int dy = -sqrt(range * range - dx * dx); dy <= sqrt(range * range - dx * dx); dy++) {
             Pair checkPos{position.x + dx, position.y + dy};
-            if (checkPos == position || checkPos.x < 0 || checkPos.y < 0 || checkPos.x >= size_.x || checkPos.y >= size_.y)
+            if (checkPos == position || checkPos.x >= size_.x || checkPos.y >= size_.y)
                 continue;
             area[checkPos] = getToken(checkPos);
         }
