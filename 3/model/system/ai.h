@@ -18,11 +18,7 @@ private:
     Environment* environment_;
     std::vector<std::shared_ptr<StaticPlatform>> staticPlatforms_ {};
     std::vector<Platform*> allConnectedPlatforms_ {};
-    std::map<Pair, std::shared_ptr<Placeholder>> spottedSuspects_ {};
-
-    std::mutex networkMutex_;
-
-    
+    std::map<Pair, std::shared_ptr<Placeholder>> spottedSuspects_ {};  
 
 public:
     AI(Environment* environment) : environment_(environment) {};

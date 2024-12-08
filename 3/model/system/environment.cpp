@@ -14,6 +14,8 @@ void Environment::addToken(std::shared_ptr<Placeholder> token) {
 
 void Environment::removeToken(Pair position) {
     auto token = getToken(position);
+    if (!token)
+        return;
     tokens_.erase(position);
 }
 
@@ -23,19 +25,28 @@ std::shared_ptr<Placeholder> Environment::getToken(Pair position) const {
 }
 
 bool Environment::abilityToMove(Pair from, Pair to) const {
-    if (to.x >= size_.x || to.y >= size_.y)
+    if (to.x >= size_.x || to.y >= size_.y || to.x < 0 || to.y < 0 || !hasLineOfSight(from, to))
         return false;
+
     auto token = getToken(from);
-    if (!token) return false;
-    if (from != to && !isEmpty(to))
+    if (!token)
         return false;
-    if (!hasLineOfSight(from, to))
-        return false;
+    
     return true;
 }
 
 void Environment::moveToken(Pair from, Pair to) {
+    std::lock_guard<std::mutex> lock(mutex_);
+    if (to.x >= size_.x || to.y >= size_.y || to.x < 0 || to.y < 0 || from == to)
+        return;
+    
     auto token = getToken(from);
+    if (!token)
+        return;
+    
+    if (!isEmpty(to))
+        return;
+    
     tokens_.erase(from);
     tokens_.insert({to, token});
     token->setPosition(to);
@@ -50,9 +61,9 @@ bool Environment::hasLineOfSight(Pair from, Pair to) const {
     double stepX = (to.x - from.x) / distance;
     double stepY = (to.y - from.y) / distance;
 
-    for (size_t i = 0; i <= distance; i++) {
-        size_t x = static_cast<size_t>(from.x + stepX * i);
-        size_t y = static_cast<size_t>(from.y + stepY * i);
+    for (int i = 0; i <= distance; i++) {
+        int x = static_cast<int>(from.x + stepX * i);
+        int y = static_cast<int>(from.y + stepY * i);
         if (Pair{x, y} == from || Pair{x, y} == to)
             continue;
         if (!isEmpty({x, y}))

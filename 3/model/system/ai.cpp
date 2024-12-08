@@ -26,19 +26,15 @@ void AI::getNetworkForest() {
             auto current = wip.front();
             wip.pop();
             auto connection = current->findModuleOfType<ConnectionModule>();
-            if (!connection) {
-                continue;
-            }
+            if (!connection) continue;
             
-            auto sessions = connection->getSessionList();  // Теперь тут будет подробный вывод
+            auto sessions = connection->getSessionList();
             
             for (const auto& connectedModule : sessions) {
                 if (!connectedModule) continue;
                 
                 auto connectedPlatform = connectedModule->getHost();
-                if (!connectedPlatform) {
-                    continue;
-                }
+                if (!connectedPlatform) continue;
                 if (visited.insert(connectedPlatform.get()).second) {
                     allConnectedPlatforms_.push_back(connectedPlatform.get());
                     wip.push(connectedPlatform.get());
@@ -55,8 +51,9 @@ void AI::eliminateAllSuspects() {
     std::mutex environmentMutex;
     
     getNetworkForest();
+    auto platforms = allConnectedPlatforms_;
 
-    for (auto platform : allConnectedPlatforms_) {
+    for (auto platform : platforms) {
         if (!platform) continue;
         
         futures.emplace_back(pool.enqueue([platform, &environmentMutex]() {
@@ -81,6 +78,12 @@ void AI::addSuspects(std::map<Pair, std::shared_ptr<Placeholder>> suspects) {
 }
 
 void AI::removeSuspect(std::shared_ptr<Placeholder> suspect) {
+    if (!suspect)
+        return;
+    
+    std::mutex suspectsMutex;
+
+    std::lock_guard<std::mutex> lock(suspectsMutex);
     for (auto it = spottedSuspects_.begin(); it != spottedSuspects_.end();)
         if (it->second == suspect)
             it = spottedSuspects_.erase(it);

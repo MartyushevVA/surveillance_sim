@@ -17,8 +17,7 @@ private:
     Environment environment_;
     Graphics graphics_;
     std::chrono::milliseconds updateInterval_;
-    std::mutex environmentMutex_;
-    std::atomic<bool> isRunning_{false};
+    bool isRunning_{false};
     
     void initializeField(const GameConfig& config);
 public:
@@ -26,9 +25,7 @@ public:
         ai_(&environment_),
         graphics_(graphicsConfigFile),
         isRunning_(false) {
-        std::cout << "Initializing game..." << std::endl;
         initializeField(Import::importGameConfig(gameConfigFile));
-        std::cout << "Game initialized" << std::endl;
     }    
     void start();
 };

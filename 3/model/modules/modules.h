@@ -75,7 +75,7 @@ private:
     std::chrono::milliseconds chargingDuration_;
     bool isCharging_ = false;
     bool isCharged_ = false;
-    
+
     void startCharging();
     void stopCharging();
 

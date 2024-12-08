@@ -9,7 +9,7 @@ class ConnectionModule;
 class Placeholder;
 
 struct Pair {
-    size_t x, y;
+    int x, y;
     bool operator==(const Pair& other) const {
         return x == other.x && y == other.y;
     }

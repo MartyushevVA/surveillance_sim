@@ -8,52 +8,68 @@
 
 void MobilePlatform::iterate() {
     auto connection = findModuleOfType<ConnectionModule>();
+    if (!connection) return;
+    
     connection->update();
-    if (auto sensor = findModuleOfType<SensorModule>()) {    
-        if (!connection) throw std::runtime_error("wtf lol");
 
-        auto staticPlatform = connection->getConnectedToAIDirectly();
-        if (!staticPlatform) throw std::runtime_error("No static platform");
-
-        Pair nextPos;
-        std::cout << getPosition().x << " " << getPosition().y << std::endl;
-
-        staticPlatform->getAI()->addSuspects(sensor->getSuspects());
-        auto nearestSuspect = environment_->getClosestOfType<Suspect>(getPosition(), staticPlatform->getAI()->getSuspects());
-
-        if (WeaponModule* weapon = findModuleOfType<WeaponModule>()) {
-            if (nearestSuspect) {
-                std::cout << nearestSuspect->getPosition().x << " " << nearestSuspect->getPosition().y << std::endl;
-                if (weapon->attack(nearestSuspect->getPosition()))
-                    staticPlatform->getAI()->removeSuspect(nearestSuspect);
+    auto staticPlatform = connection->getConnectedToAIDirectly();
+    if (!staticPlatform) return;
+    
+    auto ai = staticPlatform->getAI();
+    if (!ai) return;
+    
+    std::shared_ptr<Suspect> target = nullptr;
+    {
+        auto suspects = ai->getSuspects();
+        if (!suspects.empty())
+            target = environment_->getClosestOfType<Suspect>(getPosition(), suspects);
+    }
+    
+    auto nextPos = randomMove();
+    if (target) {
+        if (auto weapon = findModuleOfType<WeaponModule>()) {
+            weapon->update();
+            if (weapon->attack(target->getPosition())) {
+                ai->removeSuspect(target);
+                return;
             }
         }
-
-        if (!staticPlatform->getAI()->getSuspects().empty()) {
-            auto target = environment_->getClosestOfType<Suspect>(getPosition(), staticPlatform->getAI()->getSuspects());
-            nextPos = opponentBasedMove(target->getPosition());
-        }
-        else
-            nextPos = randomMove();
+        nextPos = opponentBasedMove(target->getPosition());
         
-        if (connection->isSafeForSystem(nextPos)) {
-            move(nextPos);
-            connection->update();
-        }
+    }
+    if (connection->isSafeForSystem(nextPos)) {
+        move(nextPos);
+        connection->update();
     }
 }
 
 void StaticPlatform::iterate() {
     auto connection = findModuleOfType<ConnectionModule>();
+    if (!connection) return;
     connection->update();
-    if (auto sensor = findModuleOfType<SensorModule>()) {
-        getAI()->addSuspects(sensor->getSuspects());
-        auto nearestSuspect = environment_->getClosestOfType<Suspect>(getPosition(), getAI()->getSuspects());
-        if (WeaponModule* weapon = findModuleOfType<WeaponModule>())
-            if (nearestSuspect)
-                if (weapon->attack(nearestSuspect->getPosition()))
-                    getAI()->removeSuspect(nearestSuspect);
+    
+    auto sensor = findModuleOfType<SensorModule>();
+    if (!sensor) return;
+    
+    auto ai = getAI();
+    if (!ai) return;
+    
+    ai->addSuspects(sensor->getSuspects());
+    
+    std::shared_ptr<Suspect> target = nullptr;
+    {
+        auto suspects = ai->getSuspects();
+        if (!suspects.empty())
+            target = environment_->getClosestOfType<Suspect>(getPosition(), suspects);
     }
+    if (target)
+        if (auto weapon = findModuleOfType<WeaponModule>()) {
+            weapon->update();
+            if (weapon->attack(target->getPosition())) {
+                ai->removeSuspect(target);
+                return;
+            }
+        }
 }
 
 void Suspect::iterate() {

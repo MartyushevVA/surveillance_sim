@@ -9,7 +9,7 @@
             "type": "Suspect",
             "position": {"x": 10, "y": 10},
             "sensorRange": 5,
-            "speed": 3
+            "speed": 2
         }
     ],
     "platforms": [
@@ -32,7 +32,7 @@
                     "type": "SensorModule",
                     "slotsOccupied": 1,
                     "energyConsumption": 6,
-                    "range": 20,
+                    "range": 5,
                     "sensorType": "Optical"
                 },
                 {
@@ -40,7 +40,7 @@
                     "slotsOccupied": 1,
                     "energyConsumption": 10,
                     "range": 20,
-                    "chargingDuration": "00:00:20:000"
+                    "chargingDuration": "00:00:10:000"
                 }
             ]
         },
@@ -63,7 +63,7 @@
                     "type": "SensorModule",
                     "slotsOccupied": 1,
                     "energyConsumption": 6,
-                    "range": 20,
+                    "range": 5,
                     "sensorType": "Optical"
                 },
                 {
@@ -71,7 +71,7 @@
                     "slotsOccupied": 1,
                     "energyConsumption": 10,
                     "range": 20,
-                    "chargingDuration": "00:00:20:000"
+                    "chargingDuration": "00:00:10:000"
                 }
             ]
         },
@@ -93,7 +93,7 @@
                     "type": "SensorModule",
                     "slotsOccupied": 1,
                     "energyConsumption": 5,
-                    "range": 25,
+                    "range": 10,
                     "sensorType": "XRay"
                 }
             ]

@@ -127,8 +127,8 @@ StaticPlatform* ConnectionModule::getConnectedToAIDirectly() const {
 void ConnectionModule::update() {
     auto host = host_.lock();
     if (!host) return;
-    auto newNeighbors = scanForModules(host->getPosition());
     
+    auto newNeighbors = scanForModules(host->getPosition());
     for (auto* neighbor : newNeighbors) {
         if (!neighbor) continue;
         auto neighborHost = neighbor->getHost();

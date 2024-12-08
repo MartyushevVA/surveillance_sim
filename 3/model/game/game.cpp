@@ -84,7 +84,6 @@ void Game::start() {
         auto deltaTime = currentTime - lastUpdate;
         graphics_.handleEvents();
         {
-            std::lock_guard<std::mutex> lock(environmentMutex_);
             for (const auto& [pos, token] : environment_.getTokens())
                 if (auto suspect = std::dynamic_pointer_cast<Suspect>(token))
                     suspect->iterate();
