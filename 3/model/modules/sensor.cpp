@@ -8,8 +8,8 @@ Report SensorModule::getSurrounding() const {
     std::map<Pair, std::shared_ptr<Placeholder>> tokensInRange;
     auto hostPtr = host_.lock();
     if (!hostPtr) return {{}, {}};
-    auto env = host_.lock()->getEnvironment();
-    auto position = host_.lock()->getPosition();
+    auto env = hostPtr->getEnvironment();
+    auto position = hostPtr->getPosition();
     auto area = env->getArea(position, range_);
     for (auto& [checkPos, token] : area)
         if (checkPos != hostPtr->getPosition())

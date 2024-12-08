@@ -34,7 +34,7 @@ public:
     void recursiveRouteNodeImplementation(ConnectionModule* gate, std::vector<routeNode> routeList);
     void recursiveDiscord(ConnectionModule* gate, std::vector<routeNode> targetList);
 
-    bool connectedToAI(const ConnectionModule* source) const;
+    bool isGateToAI(const ConnectionModule* gate) const;
     bool isSafeForSystem(Pair position) const;
     StaticPlatform* getConnectedToAIDirectly() const;
 
@@ -49,7 +49,6 @@ class SensorModule :
     public ISensor {
 private:
     SensorType type_ = SensorType::Optical;
-    Report getSurrounding() const override;
 
 public:
     SensorModule(int slotsOccupied, int energyConsumption, int range, SensorType type)
@@ -60,6 +59,8 @@ public:
 
     std::shared_ptr<Placeholder> getNearestVisibleOpponent() const override;
     std::map<Pair, std::shared_ptr<Placeholder>> getSuspects() const;
+
+    Report getSurrounding() const override;
 
     void turnOn() override;
     void turnOff() override;
@@ -76,9 +77,6 @@ private:
     bool isCharging_ = false;
     bool isCharged_ = false;
 
-    void startCharging();
-    void stopCharging();
-
 public:
     WeaponModule(int slotsOccupied, int energyConsumption, int range, std::chrono::milliseconds chargingDuration)
         : Module(slotsOccupied, energyConsumption, range), chargingDuration_(chargingDuration), isCharging_(false), isCharged_(false) {}
@@ -91,6 +89,9 @@ public:
     void setIsCharged(bool isCharged) {isCharged_ = isCharged;}
 
     bool attack(Pair suspect) override;
+
+    void startCharging();
+    void stopCharging();
 
     void turnOn() override;
     void turnOff() override;

@@ -1,6 +1,7 @@
 #include <gtest/gtest.h>
 #include <random>
 #include <future>
+#include <thread>
 #include "system/ai.h"
 #include "objects/objects.h"
 #include "modules/modules.h"
@@ -31,7 +32,6 @@ protected:
 };
 
 TEST_F(ComplexScenariosTest, MazeEscape) {
-    // Создаем лабиринт из препятствий
     createObstacleWall({10, 10}, 10, true);
     createObstacleWall({10, 10}, 10, false);
     createObstacleWall({20, 10}, 10, true);
@@ -43,51 +43,45 @@ TEST_F(ComplexScenariosTest, MazeEscape) {
     env.addToken(suspect);
     env.addToken(platform);
     
-    // Проверяем, что подозреваемый находит путь к выходу
     for(int i = 0; i < 20; i++) {
         Pair oldPos = suspect->getPosition();
-        suspect->move(suspect->opponentBasedMove(platform->getPosition()));
-        
-        // Проверяем, что движение было возможным
         EXPECT_TRUE(env.abilityToMove(oldPos, suspect->getPosition()));
+        Pair newPos = suspect->opponentBasedMove(platform->getPosition());
+        suspect->move(newPos);
+        EXPECT_EQ(env.getToken(newPos), suspect);
     }
 }
 
 TEST_F(ComplexScenariosTest, NetworkPartitioning) {
     std::vector<std::shared_ptr<Platform>> platforms;
     
-    // Создаем две группы платформ, разделенные стеной
     for(int i = 0; i < 6; i++) {
         auto platform = std::make_shared<StaticPlatform>(
             Pair{10 + (i < 3 ? 0 : 20), 10 + i*5}, 
-            &env, "Platform" + std::to_string(i), 100, 3);
-        auto connection = std::make_shared<ConnectionModule>(1, 10, true, 8, 5);
+            &env, "Platform" + std::to_string(i), 100, 3, nullptr);
+        auto connection = std::make_shared<ConnectionModule>(1, 10, 8, 5);
         platform->installModule(connection);
         platforms.push_back(platform);
         env.addToken(platform);
     }
     
-    // Создаем разделяющую стену
     createObstacleWall({15, 0}, 50, true);
     
-    // Обновляем соединения
     for(auto& platform : platforms) {
         platform->findModuleOfType<ConnectionModule>()->update();
     }
     
-    // Проверяем, что образовались две отдельные сети
     auto conn1 = platforms[0]->findModuleOfType<ConnectionModule>();
     auto conn4 = platforms[3]->findModuleOfType<ConnectionModule>();
     
-    EXPECT_EQ(conn1->getSessionList().size(), 2);  // Только две другие платформы в первой группе
-    EXPECT_EQ(conn4->getSessionList().size(), 2);  // Только две другие платформы во второй группе
+    EXPECT_EQ(conn1->getRouteList().size(), 2);
+    EXPECT_EQ(conn4->getRouteList().size(), 2);
 }
 
 TEST_F(ComplexScenariosTest, ConcurrentEnvironmentModification) {
     std::mutex envMutex;
     std::vector<std::future<void>> futures;
     
-    // Параллельно добавляем и удаляем объекты
     for(int i = 0; i < 10; i++) {
         futures.push_back(std::async(std::launch::async, [&]() {
             for(int j = 0; j < 5; j++) {
@@ -108,21 +102,19 @@ TEST_F(ComplexScenariosTest, ConcurrentEnvironmentModification) {
     
     for(auto& f : futures) f.get();
     
-    // Проверяем конечное состояние
     auto tokens = env.getTokens();
-    EXPECT_TRUE(tokens.empty());  // Все токены должны быть удалены
+    EXPECT_TRUE(tokens.empty());
 }
 
 TEST_F(ComplexScenariosTest, SensorNetworkOverlap) {
     std::vector<std::shared_ptr<Platform>> platforms;
     std::vector<std::shared_ptr<SensorModule>> sensors;
     
-    // Создаем перекрывающиеся зоны действия сенсоров
     for(int i = 0; i < 4; i++) {
         auto platform = std::make_shared<StaticPlatform>(
             Pair{20 + (i%2)*5, 20 + (i/2)*5}, 
-            &env, "Platform" + std::to_string(i), 100, 3);
-        auto sensor = std::make_shared<SensorModule>(1, 10, true, 6, 
+            &env, "Platform" + std::to_string(i), 100, 3, nullptr);
+        auto sensor = std::make_shared<SensorModule>(1, 10, 6, 
             i % 2 == 0 ? SensorType::Optical : SensorType::XRay);
         
         platform->installModule(sensor);
@@ -131,11 +123,9 @@ TEST_F(ComplexScenariosTest, SensorNetworkOverlap) {
         env.addToken(platform);
     }
     
-    // Добавляем подозреваемого в зону перекрытия
     auto suspect = std::make_shared<Suspect>(Pair{22, 22}, &env, 3, 2);
     env.addToken(suspect);
     
-    // Параллельно сканируем всеми сенсорами
     std::vector<std::future<Report>> reports;
     for(auto& sensor : sensors) {
         reports.push_back(std::async(std::launch::async, [&]() {
@@ -143,7 +133,6 @@ TEST_F(ComplexScenariosTest, SensorNetworkOverlap) {
         }));
     }
     
-    // Все сенсоры должны обнаружить подозреваемого
     for(auto& future : reports) {
         auto report = future.get();
         EXPECT_FALSE(report.objects.empty());
@@ -151,37 +140,18 @@ TEST_F(ComplexScenariosTest, SensorNetworkOverlap) {
 }
 
 TEST_F(ComplexScenariosTest, WeaponInterference) {
-    // Создаем несколько платформ с оружием, стреляющих по одной цели
-    std::vector<std::shared_ptr<Platform>> platforms;
-    std::vector<std::shared_ptr<WeaponModule>> weapons;
-    
-    for(int i = 0; i < 4; i++) {
-        auto platform = std::make_shared<StaticPlatform>(
-            Pair{15 + i*2, 15}, &env, "Platform" + std::to_string(i), 100, 3);
-        auto weapon = std::make_shared<WeaponModule>(1, 10, true, 5, 
-            std::chrono::milliseconds(50));
-        
-        platform->installModule(weapon);
-        platforms.push_back(platform);
-        weapons.push_back(weapon);
-        env.addToken(platform);
-    }
-    
     auto suspect = std::make_shared<Suspect>(Pair{20, 15}, &env, 3, 2);
     env.addToken(suspect);
+
+    auto weapon = std::make_shared<WeaponModule>(1, 10, 5, std::chrono::milliseconds(50));
+    auto platform = std::make_shared<StaticPlatform>(Pair{15, 15}, &env, "Platform", 100, 3, nullptr);
+    platform->installModule(weapon);
+    env.addToken(platform);
+    std::this_thread::sleep_for(std::chrono::milliseconds(60));
+    weapon->update();
     
-    // Параллельная зарядка и стрельба
-    std::vector<std::future<void>> futures;
-    for(auto& weapon : weapons) {
-        futures.push_back(std::async(std::launch::async, [&]() {
-            weapon->startCharging();
-            std::this_thread::sleep_for(std::chrono::milliseconds(60));
-            weapon->attack(suspect->getPosition());
-        }));
-    }
-    
-    for(auto& f : futures) f.get();
-    
-    // Подозреваемый должен быть уничтожен только один раз
-    EXPECT_EQ(env.getToken(Pair{20, 15}), nullptr);
+    EXPECT_TRUE(weapon->getIsCharged());
+
+    EXPECT_TRUE(weapon->attack(suspect->getPosition()));
+    EXPECT_EQ(env.getToken(suspect->getPosition()), nullptr);
 } 

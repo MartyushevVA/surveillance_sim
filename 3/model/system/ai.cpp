@@ -48,16 +48,15 @@ void AI::eliminateAllSuspects() {
     const size_t threadCount = std::thread::hardware_concurrency();
     std::vector<std::future<void>> futures;
     ThreadPool pool(threadCount);
-    std::mutex environmentMutex;
     
     getNetworkForest();
     auto platforms = allConnectedPlatforms_;
 
     for (auto platform : platforms) {
         if (!platform) continue;
-        
-        futures.emplace_back(pool.enqueue([platform, &environmentMutex]() {
-            std::lock_guard<std::mutex> lock(environmentMutex);
+        std::mutex& mutex = environment_->mutex_;
+        futures.emplace_back(pool.enqueue([platform, &mutex]() {
+            std::lock_guard<std::mutex> lock(mutex);
             platform->iterate();
         }));
     }

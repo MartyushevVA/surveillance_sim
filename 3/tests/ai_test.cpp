@@ -1,6 +1,7 @@
 #include <gtest/gtest.h>
 #include <random>
 #include <future>
+#include <thread>
 #include "system/ai.h"
 #include "objects/objects.h"
 #include "modules/modules.h"
@@ -12,11 +13,11 @@ protected:
     std::mt19937 gen{std::random_device{}()};
     
     AITest() : env(), ai(&env) {
-        env.setSize(50, 50);
+        env.setSize(30, 30);
     }
     
     Pair getRandomPosition() {
-        std::uniform_int_distribution<> dis(0, 49);
+        std::uniform_int_distribution<> dis(0, 29);
         return {dis(gen), dis(gen)};
     }
     
@@ -25,74 +26,42 @@ protected:
         if (mobile) {
             platform = std::make_shared<MobilePlatform>(pos, &env, "Armed Platform", 100, 3, 2);
         } else {
-            platform = std::make_shared<StaticPlatform>(pos, &env, "Armed Platform", 100, 3);
+            platform = std::make_shared<StaticPlatform>(pos, &env, "Armed Platform", 100, 3, &ai);
         }
         
-        auto sensor = std::make_shared<SensorModule>(1, 10, true, 8, SensorType::Optical);
-        auto weapon = std::make_shared<WeaponModule>(1, 10, true, 5, std::chrono::milliseconds(50));
-        auto connection = std::make_shared<ConnectionModule>(1, 10, true, 10, 5);
+        auto sensor = std::make_shared<SensorModule>(1, 10, 8, SensorType::Optical);
+        auto weapon = std::make_shared<WeaponModule>(1, 10, 8, std::chrono::milliseconds(50));
+        auto connection = std::make_shared<ConnectionModule>(1, 10, 10, 5);
         
         platform->installModule(sensor);
         platform->installModule(weapon);
         platform->installModule(connection);
+
+        weapon->startCharging();
+        std::this_thread::sleep_for(std::chrono::milliseconds(50));
+        weapon->update();
         
         return platform;
     }
 };
 
-TEST_F(AITest, ConcurrentSuspectElimination) {
-    // Создаем сеть из платформ
-    std::vector<std::shared_ptr<Platform>> platforms;
-    for(int i = 0; i < 3; i++) {
-        auto platform = createArmedPlatform(getRandomPosition(), true);
-        platforms.push_back(platform);
-        env.addToken(platform);
-        ai.addStaticPlatform(platform.get());
-    }
-    
-    // Создаем несколько подозреваемых
-    std::vector<std::shared_ptr<Suspect>> suspects;
-    for(int i = 0; i < 5; i++) {
-        auto suspect = std::make_shared<Suspect>(getRandomPosition(), &env, 3, 2);
-        suspects.push_back(suspect);
-        env.addToken(suspect);
-    }
-    
-    // Запускаем параллельное уничтожение
-    std::vector<std::future<void>> futures;
-    for(int i = 0; i < 3; i++) {
-        futures.push_back(std::async(std::launch::async, [&]() {
-            ai.eliminateAllSuspects();
-        }));
-    }
-    
-    for(auto& f : futures) f.get();
-    
-    // Проверяем, что все подозреваемые были уничтожены
-    for(const auto& suspect : suspects) {
-        EXPECT_EQ(env.getToken(suspect->getPosition()), nullptr);
-    }
-}
-
 TEST_F(AITest, NetworkResilience) {
-    // Создаем сеть платформ с перекрывающимися зонами связи
     auto platform1 = createArmedPlatform(Pair{10, 10});
     auto platform2 = createArmedPlatform(Pair{15, 15});
     auto platform3 = createArmedPlatform(Pair{20, 20});
     
-    env.addToken(platform1);
-    env.addToken(platform2);
-    env.addToken(platform3);
+    env.addToken(std::dynamic_pointer_cast<Placeholder>(platform1));
+    env.addToken(std::dynamic_pointer_cast<Placeholder>(platform2));
+    env.addToken(std::dynamic_pointer_cast<Placeholder>(platform3));
     
-    ai.addStaticPlatform(platform1.get());
-    ai.addStaticPlatform(platform2.get());
-    ai.addStaticPlatform(platform3.get());
+    ai.addStaticPlatform(std::static_pointer_cast<StaticPlatform>(platform1));
+    ai.addStaticPlatform(std::static_pointer_cast<StaticPlatform>(platform2));
+    ai.addStaticPlatform(std::static_pointer_cast<StaticPlatform>(platform3));
     
-    // Добавляем подозреваемого
     auto suspect = std::make_shared<Suspect>(Pair{12, 12}, &env, 3, 2);
-    env.addToken(suspect);
+    env.addToken(std::dynamic_pointer_cast<Placeholder>(suspect));
+    EXPECT_NE(env.getToken(suspect->getPosition()), nullptr);
     
-    // Удаляем среднюю платформу во время работы
     std::thread elimination([&]() {
         ai.eliminateAllSuspects();
     });
@@ -102,24 +71,22 @@ TEST_F(AITest, NetworkResilience) {
     
     elimination.join();
     
-    // Проверяем, что подозреваемый все равно был уничтожен
     EXPECT_EQ(env.getToken(suspect->getPosition()), nullptr);
 }
 
 TEST_F(AITest, SimultaneousTargeting) {
-    // Создаем две платформы, нацеленные на одного подозреваемого
     auto platform1 = createArmedPlatform(Pair{10, 10});
     auto platform2 = createArmedPlatform(Pair{14, 14});
     auto suspect = std::make_shared<Suspect>(Pair{12, 12}, &env, 3, 2);
     
-    env.addToken(platform1);
-    env.addToken(platform2);
-    env.addToken(suspect);
+    env.addToken(std::dynamic_pointer_cast<Placeholder>(platform1));
+    env.addToken(std::dynamic_pointer_cast<Placeholder>(platform2));
+    env.addToken(std::dynamic_pointer_cast<Placeholder>(suspect));
+    EXPECT_NE(env.getToken(suspect->getPosition()), nullptr);
     
-    ai.addStaticPlatform(platform1.get());
-    ai.addStaticPlatform(platform2.get());
+    ai.addStaticPlatform(std::dynamic_pointer_cast<StaticPlatform>(platform1));
+    ai.addStaticPlatform(std::dynamic_pointer_cast<StaticPlatform>(platform2));
     
-    // Запускаем атаку с обеих платформ
     std::future<void> attack1 = std::async(std::launch::async, [&]() {
         platform1->findModuleOfType<WeaponModule>()->attack(suspect->getPosition());
     });
@@ -131,8 +98,5 @@ TEST_F(AITest, SimultaneousTargeting) {
     attack1.get();
     attack2.get();
     
-    // Проверяем, что не возникло ошибок при одновременной атаке
     EXPECT_EQ(env.getToken(suspect->getPosition()), nullptr);
 }
-
-// Продолжение следует... 

@@ -29,7 +29,8 @@ bool WeaponModule::attack(Pair target) {
     auto targetToken = env->getToken(target);
     if (!targetToken) return false;
     
-    if (env->isInRange(host->getPosition(), target, range_) <= 1.0) {
+    if (env->isInRange(host->getPosition(), target, range_) <= 1.0 &&
+        env->hasLineOfSight(host->getPosition(), target)) {
         isCharged_ = false;
         env->removeToken(target);
         return true;

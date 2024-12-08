@@ -10,7 +10,7 @@ protected:
     std::mt19937 gen{std::random_device{}()};
     
     void SetUp() override {
-        env.setSize(50, 50);  // Больше поле для случайных тестов
+        env.setSize(50, 50);
     }
     
     Pair getRandomPosition() {
@@ -30,10 +30,8 @@ TEST_F(MovementTest, SuspectEscapesBehavior) {
     env.addToken(suspect);
     env.addToken(platform);
 
-    // Запоминаем начальную дистанцию
     double initialDistance = env.calculateDistance(suspect->getPosition(), platform->getPosition());
     
-    // Делаем несколько ходов
     for(int i = 0; i < 10; i++) {
         Pair newPos = suspect->opponentBasedMove(platform->getPosition());
         suspect->move(newPos);
@@ -57,7 +55,6 @@ TEST_F(MovementTest, SuspectEscapeFromMultiplePlatforms) {
     Pair initialPos = suspect->getPosition();
     suspect->move(suspect->opponentBasedMove(platforms[0]->getPosition()));
     
-    // Проверяем, что подозреваемый не остался на месте
     EXPECT_NE(suspect->getPosition(), initialPos);
 }
 
@@ -65,7 +62,6 @@ TEST_F(MovementTest, ConcurrentMovement) {
     std::vector<std::shared_ptr<Suspect>> suspects;
     std::vector<std::shared_ptr<MobilePlatform>> platforms;
     
-    // Создаем несколько подозреваемых и платформ
     for(int i = 0; i < 5; i++) {
         suspects.push_back(std::make_shared<Suspect>(
             getRandomPosition(), &env, 3, getRandomSpeed()));
@@ -73,11 +69,9 @@ TEST_F(MovementTest, ConcurrentMovement) {
             getRandomPosition(), &env, "Platform" + std::to_string(i), 100, 3, getRandomSpeed()));
     }
     
-    // Добавляем их в среду
     for(auto& s : suspects) env.addToken(s);
     for(auto& p : platforms) env.addToken(p);
     
-    // Запускаем параллельное движение
     std::vector<std::future<void>> futures;
     for(int i = 0; i < 5; i++) {
         futures.push_back(std::async(std::launch::async, [&, i]() {
@@ -89,10 +83,8 @@ TEST_F(MovementTest, ConcurrentMovement) {
         }));
     }
     
-    // Ждем завершения всех движений
     for(auto& f : futures) f.get();
     
-    // Проверяем, что все подозреваемые все еще существуют и находятся в валидных позициях
     for(auto& s : suspects) {
         ASSERT_NE(s, nullptr);
         auto pos = s->getPosition();
@@ -101,4 +93,28 @@ TEST_F(MovementTest, ConcurrentMovement) {
         EXPECT_LT(pos.x, 50);
         EXPECT_LT(pos.y, 50);
     }
+}
+
+TEST_F(MovementTest, PursuitMovement) {
+    auto mobilePlatform = std::make_shared<MobilePlatform>(getRandomPosition(), &env, "Hunter", 100, 3, getRandomSpeed());
+    Pair suspect = getRandomPosition();
+    while (suspect == mobilePlatform->getPosition())
+        suspect = getRandomPosition();
+    Pair newPos = mobilePlatform->opponentBasedMove(suspect);
+    int initialDistance = env.calculateDistance(mobilePlatform->getPosition(), suspect);
+    int newDistance = env.calculateDistance(newPos, suspect);
+
+    EXPECT_LE(newDistance, initialDistance);
+}
+
+TEST_F(MovementTest, AvoidancEMovement) {
+    auto suspect = std::make_shared<Suspect>(getRandomPosition(), &env, 100, getRandomSpeed());
+    Pair mobilePlatform = getRandomPosition();
+    while (mobilePlatform == suspect->getPosition())
+        mobilePlatform = getRandomPosition();
+    Pair newPos = suspect->opponentBasedMove(mobilePlatform);
+    int initialDistance = env.calculateDistance(mobilePlatform, suspect->getPosition());
+    int newDistance = env.calculateDistance(newPos, mobilePlatform);
+
+    EXPECT_GE(newDistance, initialDistance);
 }

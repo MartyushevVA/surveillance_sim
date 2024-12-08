@@ -11,10 +11,9 @@ class Environment {
 private:
     Pair size_ = {0, 0};
     std::map<Pair, std::shared_ptr<Placeholder>> tokens_ {};
-    mutable std::mutex mutex_;
     
 public:
-    mutable std::shared_mutex environmentMutex_;
+    mutable std::mutex mutex_;
 
     Environment() = default;
     Environment(int width, int height) {setSize(width, height);}

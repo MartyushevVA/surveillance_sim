@@ -8,10 +8,8 @@ std::vector<ConnectionModule*> ConnectionModule::scanForModules(Pair pos) const 
     std::vector<ConnectionModule*> result;
     auto host = host_.lock();
     if (!host) return result;
-    
     auto env = host->getEnvironment();
     if (!env) return result;
-    
     auto area = env->getArea(pos, range_);
     for (const auto& [checkPos, token] : area)
         if (auto platform = std::dynamic_pointer_cast<Platform>(token))
@@ -88,14 +86,12 @@ void ConnectionModule::recursiveDiscord(ConnectionModule* gate, std::vector<rout
             module->recursiveDiscord(this, targetList);
 }
 
-bool ConnectionModule::connectedToAI(const ConnectionModule* source) const {
-    if (auto staticPlatform = dynamic_cast<StaticPlatform*>(host_.lock().get()); staticPlatform) {
-        return true;
+bool ConnectionModule::isGateToAI(const ConnectionModule* gate) const {
+    auto aiDest = getConnectedToAIDirectly();
+    for (auto node : routeList_) {
+        if (node.destination->getHost().get() == aiDest)
+            return node.gate == gate;
     }
-    for (auto node : routeList_)
-        if (auto staticPlatform = dynamic_cast<StaticPlatform*>(node.destination->getHost().get()); staticPlatform && node.gate != source) {
-            return true;
-        }
     return false;
 }
 
@@ -109,7 +105,7 @@ bool ConnectionModule::isSafeForSystem(Pair newPosition) const {
         auto connectedPlatform = session->getHost();
         if (!connectedPlatform) continue;
         auto distance = host->getEnvironment()->calculateDistance(newPosition, connectedPlatform->getPosition());
-        if (distance > range_)
+        if ((distance > range_ || distance > session->getRange()) && (session->isGateToAI(this) || isGateToAI(session)))
             return false;
     }
     return true;

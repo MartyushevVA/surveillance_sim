@@ -7,9 +7,8 @@
 void Environment::addToken(std::shared_ptr<Placeholder> token) {
     if (token->getPosition().x >= size_.x || token->getPosition().y >= size_.y)
         throw std::invalid_argument("Token position is out of bounds");
-    if (!isEmpty(token->getPosition()))
-        throw std::invalid_argument("Cell is already occupied");
-    tokens_.insert({token->getPosition(), token});
+    if (isEmpty(token->getPosition()))
+        tokens_.insert({token->getPosition(), token});
 }
 
 void Environment::removeToken(Pair position) {
@@ -85,7 +84,7 @@ std::map<Pair, std::shared_ptr<Placeholder>> Environment::getArea(Pair position,
     for (int dx = -range; dx <= range; dx++)
         for (int dy = -sqrt(range * range - dx * dx); dy <= sqrt(range * range - dx * dx); dy++) {
             Pair checkPos{position.x + dx, position.y + dy};
-            if (checkPos == position || checkPos.x >= size_.x || checkPos.y >= size_.y)
+            if (checkPos == position || checkPos.x >= size_.x || checkPos.y >= size_.y || isEmpty(checkPos))
                 continue;
             area[checkPos] = getToken(checkPos);
         }

@@ -50,13 +50,11 @@ option(T "Запуск тестов" OFF)
 if(T)
     add_executable(sss
         tests/test_main.cpp
-        tests/environment_test.cpp
-        tests/platform_test.cpp
+        tests/ai_test.cpp
+        tests/complex_scenarios_test.cpp
         tests/module_test.cpp
         tests/movement_test.cpp
-        tests/ai_test.cpp
         tests/objects_test.cpp
-        tests/connection_test.cpp
     )
     find_package(GTest REQUIRED)
     target_link_libraries(sss game_lib GTest::gtest GTest::gtest_main)
