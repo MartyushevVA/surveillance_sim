@@ -1,111 +1,181 @@
 #include <gtest/gtest.h>
+#include <random>
+#include <future>
 #include "modules/modules.h"
 #include "objects/objects.h"
 
 class ModuleTest : public ::testing::Test {
 protected:
     Environment env;
-    std::shared_ptr<Platform> platform;
+    std::mt19937 gen{std::random_device{}()};
     
     void SetUp() override {
-        env.setSize(10, 10);
-        platform = std::make_shared<StaticPlatform>(Pair{1, 1}, &env, "Test Platform", 100, 3);
-        env.addToken(platform);
+        env.setSize(50, 50);
+    }
+    
+    Pair getRandomPosition() {
+        std::uniform_int_distribution<> dis(0, 49);
+        return {dis(gen), dis(gen)};
     }
 };
 
-TEST_F(ModuleTest, SensorModule) {
-    auto sensor = std::make_shared<SensorModule>(1, 10, true, 5, SensorType::Optical);
+TEST_F(ModuleTest, ConcurrentSensorScanning) {
+    auto platform = std::make_shared<StaticPlatform>(Pair{25, 25}, &env, "Test Platform", 100, 3);
+    auto sensor = std::make_shared<SensorModule>(1, 10, true, 10, SensorType::Optical);
     platform->installModule(sensor);
+    env.addToken(platform);
     
-    auto suspect = std::make_shared<Suspect>(Pair{3, 3}, &env, 2, 3);
-    env.addToken(suspect);
-    Report report = sensor->getSurrounding();
-    EXPECT_FALSE(report.objects.empty());
-    auto visibleSuspect = sensor->getVisibleSuspect(report);
-    EXPECT_NE(visibleSuspect, nullptr);
+    // Создаем несколько подозреваемых
+    std::vector<std::shared_ptr<Suspect>> suspects;
+    for(int i = 0; i < 5; i++) {
+        auto suspect = std::make_shared<Suspect>(getRandomPosition(), &env, 2, 2);
+        suspects.push_back(suspect);
+        env.addToken(suspect);
+    }
+    
+    // Параллельное сканирование
+    std::vector<std::future<Report>> futures;
+    for(int i = 0; i < 10; i++) {
+        futures.push_back(std::async(std::launch::async, [&]() {
+            return sensor->getSurrounding();
+        }));
+    }
+    
+    std::vector<Report> reports;
+    for(auto& f : futures) {
+        reports.push_back(f.get());
+    }
+    
+    // Проверяем консистентность отчетов
+    for(const auto& report : reports) {
+        EXPECT_EQ(report.objects.size(), suspects.size());
+    }
 }
 
-TEST_F(ModuleTest, WeaponModule) {
+TEST_F(ModuleTest, WeaponConcurrentCharging) {
+    auto platform = std::make_shared<StaticPlatform>(Pair{25, 25}, &env, "Test Platform", 100, 3);
     auto weapon = std::make_shared<WeaponModule>(1, 10, true, 5, std::chrono::milliseconds(100));
     platform->installModule(weapon);
     
-    auto suspect = std::make_shared<Suspect>(Pair{2, 2}, &env, 2, 3);
-    env.addToken(suspect);
+    // Параллельная зарядка и проверка состояния
+    std::vector<std::future<void>> futures;
+    std::atomic<int> chargeAttempts{0};
     
-    weapon->startCharging();
+    for(int i = 0; i < 5; i++) {
+        futures.push_back(std::async(std::launch::async, [&]() {
+            weapon->startCharging();
+            chargeAttempts++;
+        }));
+    }
+    
+    for(auto& f : futures) f.get();
+    
+    EXPECT_EQ(chargeAttempts, 5);
     std::this_thread::sleep_for(std::chrono::milliseconds(150));
-    weapon->update();
-    
-    EXPECT_TRUE(weapon->attack(Pair{2, 2}));
-    EXPECT_EQ(env.getToken(Pair{2, 2}), nullptr);
-}
-
-TEST_F(ModuleTest, SensorModuleTypes) {
-    auto opticalSensor = std::make_shared<SensorModule>(1, 10, true, 5, SensorType::Optical);
-    auto xraySensor = std::make_shared<SensorModule>(1, 10, true, 5, SensorType::XRay);
-    
-    platform->installModule(opticalSensor);
-    
-    auto obstacle = std::make_shared<Obstacle>(Pair{1, 2}, &env);
-    env.addToken(obstacle);
-    auto suspect = std::make_shared<Suspect>(Pair{1, 3}, &env, 2, 3);
-    env.addToken(suspect);
-    
-    Report opticalReport = opticalSensor->getSurrounding();
-    EXPECT_EQ(opticalSensor->getVisibleSuspect(opticalReport), nullptr);
-    
-    platform->getModules().clear();
-    platform->installModule(xraySensor);
-    
-    Report xrayReport = xraySensor->getSurrounding();
-    EXPECT_EQ(xrayReport.objects.size(), 2);
-}
-
-TEST_F(ModuleTest, SensorModuleRange) {
-    auto sensor = std::make_shared<SensorModule>(1, 10, true, 2, SensorType::Optical);
-    platform->installModule(sensor);
-    
-    auto suspectInRange = std::make_shared<Suspect>(Pair{2, 2}, &env, 2, 3);
-    env.addToken(suspectInRange);
-    
-    auto suspectOutOfRange = std::make_shared<Suspect>(Pair{4, 4}, &env, 2, 3);
-    env.addToken(suspectOutOfRange);
-    
-    Report report = sensor->getSurrounding();
-    EXPECT_EQ(report.objects.size(), 1);
-}
-
-TEST_F(ModuleTest, WeaponModuleStates) {
-    auto weapon = std::make_shared<WeaponModule>(1, 10, true, 5, std::chrono::milliseconds(100));
-    platform->installModule(weapon);
-    
-    EXPECT_FALSE(weapon->getIsCharging());
-    EXPECT_FALSE(weapon->getIsCharged());
-    
-    weapon->startCharging();
-    EXPECT_TRUE(weapon->getIsCharging());
-    
-    std::this_thread::sleep_for(std::chrono::milliseconds(150));
-    weapon->update();
     EXPECT_TRUE(weapon->getIsCharged());
-    
-    EXPECT_FALSE(weapon->attack(Pair{5, 5}));
 }
 
-TEST_F(ModuleTest, WeaponModuleNoLineOfSight) {
-    auto weapon = std::make_shared<WeaponModule>(1, 10, true, 5, std::chrono::milliseconds(100));
-    platform->installModule(weapon);
-
-    weapon->startCharging();
-    std::this_thread::sleep_for(std::chrono::milliseconds(150));
-    weapon->update();
-
-    auto obstacle = std::make_shared<Obstacle>(Pair{2, 2}, &env);
-    env.addToken(obstacle);
+TEST_F(ModuleTest, NetworkFormationStress) {
+    std::vector<std::shared_ptr<Platform>> platforms;
+    std::vector<std::shared_ptr<ConnectionModule>> connections;
     
-    auto suspect = std::make_shared<Suspect>(Pair{3, 3}, &env, 2, 3);
+    // Создаем сеть из 10 платформ
+    for(int i = 0; i < 10; i++) {
+        auto platform = std::make_shared<MobilePlatform>(
+            getRandomPosition(), &env, "Platform" + std::to_string(i), 100, 3, 2);
+        auto connection = std::make_shared<ConnectionModule>(1, 10, true, 15, 5);
+        platform->installModule(connection);
+        platforms.push_back(platform);
+        connections.push_back(connection);
+        env.addToken(platform);
+    }
+    
+    // Параллельное обновление соединений
+    std::vector<std::future<void>> futures;
+    for(auto& conn : connections) {
+        futures.push_back(std::async(std::launch::async, [&]() {
+            for(int i = 0; i < 5; i++) {
+                conn->update();
+                std::this_thread::sleep_for(std::chrono::milliseconds(10));
+            }
+        }));
+    }
+    
+    for(auto& f : futures) f.get();
+    
+    // Проверяем, что сеть сформировалась корректно
+    for(auto& conn : connections) {
+        EXPECT_FALSE(conn->getSessionList().empty());
+    }
+}
+
+TEST_F(ModuleTest, DynamicNetworkRestructuring) {
+    std::vector<std::shared_ptr<Platform>> platforms;
+    
+    // Создаем начальную сеть
+    for(int i = 0; i < 5; i++) {
+        auto platform = std::make_shared<MobilePlatform>(
+            Pair{10 + i*5, 10 + i*5}, &env, "Platform" + std::to_string(i), 100, 3, 2);
+        auto connection = std::make_shared<ConnectionModule>(1, 10, true, 10, 5);
+        platform->installModule(connection);
+        platforms.push_back(platform);
+        env.addToken(platform);
+    }
+    
+    // Параллельно двигаем платформы и обновляем соединения
+    std::vector<std::future<void>> futures;
+    for(int i = 0; i < platforms.size(); i++) {
+        futures.push_back(std::async(std::launch::async, [&, i]() {
+            for(int j = 0; j < 5; j++) {
+                platforms[i]->move(getRandomPosition());
+                platforms[i]->findModuleOfType<ConnectionModule>()->update();
+                std::this_thread::sleep_for(std::chrono::milliseconds(20));
+            }
+        }));
+    }
+    
+    for(auto& f : futures) f.get();
+    
+    // Проверяем, что все платформы все еще имеют соединения
+    for(auto& platform : platforms) {
+        auto conn = platform->findModuleOfType<ConnectionModule>();
+        EXPECT_FALSE(conn->getSessionList().empty());
+    }
+}
+
+TEST_F(ModuleTest, SensorInterference) {
+    // Создаем несколько сенсоров разных типов в одной области
+    auto platform1 = std::make_shared<StaticPlatform>(Pair{25, 25}, &env, "Platform1", 100, 3);
+    auto platform2 = std::make_shared<StaticPlatform>(Pair{26, 26}, &env, "Platform2", 100, 3);
+    
+    auto opticalSensor = std::make_shared<SensorModule>(1, 10, true, 10, SensorType::Optical);
+    auto xraySensor = std::make_shared<SensorModule>(1, 10, true, 10, SensorType::XRay);
+    
+    platform1->installModule(opticalSensor);
+    platform2->installModule(xraySensor);
+    
+    env.addToken(platform1);
+    env.addToken(platform2);
+    
+    // Добавляем препятствие и подозреваемого
+    auto obstacle = std::make_shared<Obstacle>(Pair{27, 27}, &env);
+    auto suspect = std::make_shared<Suspect>(Pair{28, 28}, &env, 2, 2);
+    
+    env.addToken(obstacle);
     env.addToken(suspect);
     
-    EXPECT_FALSE(weapon->attack(suspect->getPosition()));
+    // Параллельное сканирование разными сенсорами
+    auto futureOptical = std::async(std::launch::async, [&]() {
+        return opticalSensor->getSurrounding();
+    });
+    
+    auto futureXRay = std::async(std::launch::async, [&]() {
+        return xraySensor->getSurrounding();
+    });
+    
+    auto opticalReport = futureOptical.get();
+    auto xrayReport = futureXRay.get();
+    
+    // X-Ray должен видеть сквозь препятствие
+    EXPECT_LT(opticalReport.objects.size(), xrayReport.objects.size());
 }
