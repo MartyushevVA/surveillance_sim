@@ -8,19 +8,14 @@
 
 class Placeholder;
 
-class Environment {
+class Environment : public std::enable_shared_from_this<Environment> {
 private:
     Pair size_;
     std::map<Pair, std::shared_ptr<Placeholder>> tokens_;
-    mutable std::shared_mutex environmentMutex_;
     mutable std::vector<std::shared_mutex> mutexes_;
     
 public:
-    Environment() = delete;
-    Environment(Pair size) : 
-        size_{size},
-        mutexes_(size.x * size.y) {}
-    
+    Environment(SystemConfig config);
     Pair getSize() const {return size_;}
     void addToken(std::shared_ptr<Placeholder> token);
     std::shared_ptr<Placeholder> getToken(Pair position) const;
@@ -41,7 +36,7 @@ public:
     std::map<Pair, std::shared_ptr<Placeholder>> getArea(Pair position, int range) const;
 
     template <typename T>
-    std::shared_ptr<T> getClosestOfType(Pair position, std::map<Pair, std::shared_ptr<Placeholder>> area) const {
+    std::shared_ptr<T> getClosestOfType(Pair position, std::map<Pair, std::shared_ptr<T>> area) const {
         std::shared_ptr<T> closest = nullptr;
         for (auto [pos, token] : area)
             if (auto typed_token = std::dynamic_pointer_cast<T>(token))

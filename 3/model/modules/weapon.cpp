@@ -24,7 +24,7 @@ bool WeaponModule::attack(Pair target) {
         return false;
     auto host = host_.lock();
     if (!host) return false;
-    auto env = host->getEnvironment();
+    auto env = host->getEnvironment().lock();
 
     auto targetToken = env->getToken(target);
     if (!targetToken) return false;

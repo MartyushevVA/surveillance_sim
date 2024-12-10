@@ -6,13 +6,15 @@
 #include "../interfaces.h"
 
 class StaticPlatform;
+class Suspect;
 
 class ConnectionModule :
     public Module,
-    public IConnection {
+    public IConnection,
+    public std::enable_shared_from_this<ConnectionModule> {
 private:
     int maxSessions_ = 5;
-    std::vector<ConnectionModule*> sessionList_ {};
+    std::vector<std::weak_ptr<ConnectionModule>> sessionList_ {};
     std::vector<routeNode> routeList_ {};
 
 public:
@@ -21,22 +23,22 @@ public:
 
     int getMaxSessions() const {return maxSessions_;}
     void setMaxSessions(int maxSessions) {maxSessions_ = maxSessions;}
-    std::vector<ConnectionModule*> getSessionList() const {return sessionList_;}
+    std::vector<std::weak_ptr<ConnectionModule>> getSessionList() const {return sessionList_;}
     std::vector<routeNode> getRouteList() const {return routeList_;}
     
-    std::vector<ConnectionModule*> scanForModules(Pair position) const;
+    std::vector<std::weak_ptr<ConnectionModule>> scanForModules(Pair position) const;
 
-    bool establishConnection(ConnectionModule* module, bool isResponse = false) override;
-    bool closeConnection(ConnectionModule* module, bool isResponse = false) override;
+    bool establishConnection(std::weak_ptr<ConnectionModule> module, bool isResponse = false) override;
+    bool closeConnection(std::weak_ptr<ConnectionModule> module, bool isResponse = false) override;
     
-    std::vector<routeNode> requestRouteList(ConnectionModule* source) const;
+    std::vector<routeNode> requestRouteList(std::weak_ptr<ConnectionModule> source) const;
     
-    void recursiveRouteNodeImplementation(ConnectionModule* gate, std::vector<routeNode> routeList);
-    void recursiveDiscord(ConnectionModule* gate, std::vector<routeNode> targetList);
+    void recursiveRouteNodeImplementation(std::weak_ptr<ConnectionModule> gate, std::vector<routeNode> routeList);
+    void recursiveDiscord(std::weak_ptr<ConnectionModule> gate, std::vector<routeNode> targetList);
 
-    bool isGateToAI(const ConnectionModule* gate) const;
+    bool isGateToAI(std::weak_ptr<ConnectionModule> gate) const;
     bool isSafeForSystem(Pair position) const;
-    StaticPlatform* getConnectedToAIDirectly() const;
+    std::weak_ptr<const ConnectionModule> getConnectedToAIDirectly() const;
 
     void turnOn() override;
     void turnOff() override;
@@ -58,7 +60,7 @@ public:
     void setType(SensorType type) {type_ = type;}
 
     std::shared_ptr<Placeholder> getNearestVisibleOpponent() const override;
-    std::map<Pair, std::shared_ptr<Placeholder>> getSuspects() const;
+    std::map<Pair, std::shared_ptr<Suspect>> getSuspects() const;
 
     Report getSurrounding() const override;
 

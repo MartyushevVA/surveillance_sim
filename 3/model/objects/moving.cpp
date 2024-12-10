@@ -6,13 +6,15 @@
 #include <algorithm>
 
 void MovablePlaceholder::move(Pair position) {
-    environment_->moveToken(position_, position);
+    environment_.lock()->moveToken(position_, position);
 }
 
 Pair Suspect::opponentBasedMove(Pair opponent) const {
+    auto environmentPtr = environment_.lock();
+    if (!environmentPtr) return position_;
     double dx = opponent.x - position_.x;
     double dy = opponent.y - position_.y;
-    double distance = environment_->calculateDistance(position_, opponent);
+    double distance = environmentPtr->calculateDistance(position_, opponent);
     double nx = -dx / distance;
     double ny = -dy / distance;
 
@@ -32,18 +34,20 @@ Pair Suspect::opponentBasedMove(Pair opponent) const {
         position_.x + dx_move,
         position_.y + dy_move
     };
-    if (environment_->abilityToMove(position_, newPos))
+    if (environmentPtr->abilityToMove(position_, newPos))
         return newPos;
     Pair altPos1 = {position_.x + dx_move, position_.y};
-    if (environment_->abilityToMove(position_, altPos1))
+    if (environmentPtr->abilityToMove(position_, altPos1))
         return altPos1;
     Pair altPos2 = {position_.x, position_.y + dy_move};
-    if (environment_->abilityToMove(position_, altPos2))
+    if (environmentPtr->abilityToMove(position_, altPos2))
         return altPos2;
     return position_;
 }
 
 Pair MovablePlaceholder::randomMove() const {
+    auto environmentPtr = environment_.lock();
+    if (!environmentPtr) return position_;
     static std::random_device rd;
     static std::mt19937 gen(rd());
     std::uniform_real_distribution<> angle_dist(0, 2 * M_PI);
@@ -58,16 +62,18 @@ Pair MovablePlaceholder::randomMove() const {
             position_.x + dx_move,
             position_.y + dy_move
         };
-        if (environment_->abilityToMove(position_, newPos))
+        if (environmentPtr->abilityToMove(position_, newPos))
             return newPos;
     }
     return position_;
 }
 
 Pair MobilePlatform::opponentBasedMove(Pair opponent) const {
+    auto environmentPtr = environment_.lock();
+    if (!environmentPtr) return position_;
     double dx = opponent.x - position_.x;
     double dy = opponent.y - position_.y;
-    double distance = environment_->calculateDistance(position_, opponent);
+    double distance = environmentPtr->calculateDistance(position_, opponent);
     double nx = dx / distance;
     double ny = dy / distance;
 
@@ -86,13 +92,13 @@ Pair MobilePlatform::opponentBasedMove(Pair opponent) const {
         position_.x + dx_move,
         position_.y + dy_move
     };
-    if (environment_->abilityToMove(position_, newPos))
+    if (environmentPtr->abilityToMove(position_, newPos))
         return newPos;
     Pair altPos1 = {position_.x + dx_move, position_.y};
-    if (environment_->abilityToMove(position_, altPos1))
+    if (environmentPtr->abilityToMove(position_, altPos1))
         return altPos1;  
     Pair altPos2 = {position_.x, position_.y + dy_move};
-    if (environment_->abilityToMove(position_, altPos2))
+    if (environmentPtr->abilityToMove(position_, altPos2))
         return altPos2;
     return position_;
 }

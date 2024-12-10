@@ -1,10 +1,10 @@
 #pragma once
 
-#include "../system/environment.h"
-
-#include <iostream>
+#include "../common_types.h"
 
 class Module;
+class Environment;
+class AI;
 
 /**
  * @class Platform
@@ -68,7 +68,7 @@ public:
      * This method is virtual and must be overridden in derived classes.
      * @virtual
      */
-    virtual Environment* getEnvironment() const = 0;
+    virtual std::weak_ptr<Environment> getEnvironment() const = 0;
 
     /**
      * @brief Gets the current position of the platform.
@@ -87,6 +87,12 @@ public:
      * @virtual
      */
     virtual void iterate() = 0;
+
+    /**
+     * @brief Gets the AI associated with the platform.
+     * @return std::shared_ptr<AI> Pointer to the AI.
+     */
+    virtual std::weak_ptr<AI> getAI() const = 0;
 
     /**
      * @brief Gets the list of modules attached to the platform.
@@ -113,10 +119,10 @@ public:
      * @return T* Pointer to the found module, or nullptr if not found.
      */
     template<typename T>
-    T* findModuleOfType() const {
+    std::shared_ptr<T> findModuleOfType() const {
         auto modules = getModules();
         for (const auto& module : modules)
-            if (T* typed_module = dynamic_cast<T*>(module.get()))
+            if (auto typed_module = std::dynamic_pointer_cast<T>(module))
                 return typed_module;
         return nullptr;
     }

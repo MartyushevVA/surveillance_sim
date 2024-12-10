@@ -8,7 +8,7 @@ Report SensorModule::getSurrounding() const {
     std::map<Pair, std::shared_ptr<Placeholder>> tokensInRange;
     auto hostPtr = host_.lock();
     if (!hostPtr) return {{}, {}};
-    auto env = hostPtr->getEnvironment();
+    auto env = hostPtr->getEnvironment().lock();
     auto position = hostPtr->getPosition();
     auto area = env->getArea(position, range_);
     for (auto& [checkPos, token] : area)
@@ -24,8 +24,8 @@ std::shared_ptr<Placeholder> SensorModule::getNearestVisibleOpponent() const {
     double minDistance = std::numeric_limits<double>::max();
     for (auto [pos, placeholder] : report.objects)
         if (dynamic_cast<Suspect*>(placeholder.get())) {
-            if (host_.lock()->getEnvironment()->hasLineOfSight(report.position, pos)) {
-                double distance = host_.lock()->getEnvironment()->calculateDistance(report.position, pos);
+            if (host_.lock()->getEnvironment().lock()->hasLineOfSight(report.position, pos)) {
+                double distance = host_.lock()->getEnvironment().lock()->calculateDistance(report.position, pos);
                 if (minDistance > distance) {
                     minDistance = distance;
                     nearestThreat = placeholder;
@@ -35,12 +35,12 @@ std::shared_ptr<Placeholder> SensorModule::getNearestVisibleOpponent() const {
     return nearestThreat;
 }
 
-std::map<Pair, std::shared_ptr<Placeholder>> SensorModule::getSuspects() const {
+std::map<Pair, std::shared_ptr<Suspect>> SensorModule::getSuspects() const {
     auto report = getSurrounding();
-    std::map<Pair, std::shared_ptr<Placeholder>> suspects;
+    std::map<Pair, std::shared_ptr<Suspect>> suspects;
     for (auto [pos, placeholder] : report.objects)
-        if (dynamic_cast<Suspect*>(placeholder.get()))
-            suspects[pos] = placeholder;
+        if (auto suspect = std::dynamic_pointer_cast<Suspect>(placeholder))
+            suspects[pos] = suspect;
     return suspects;
 }
 

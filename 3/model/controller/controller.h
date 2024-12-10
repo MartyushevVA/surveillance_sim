@@ -1,8 +1,9 @@
 #pragma once
 
 #include <memory>
+
 #include "../game/game.h"
-#include "../view/graphics.h"
+#include "../../view/graphics.h"
 
 class Controller {
 private:

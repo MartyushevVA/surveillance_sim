@@ -4,6 +4,9 @@
 #include <string>
 #include <vector>
 #include <map>
+#include <chrono>
+
+#include <SFML/Graphics.hpp>
 
 class ConnectionModule;
 class Placeholder;
@@ -32,18 +35,93 @@ enum SensorType {
 };
 
 struct routeNode {
-    ConnectionModule* destination;
-    ConnectionModule* gate;
+    std::weak_ptr<ConnectionModule> destination;
+    std::weak_ptr<ConnectionModule> gate;
 
     bool operator==(const routeNode& other) const {
-        return destination == other.destination;
+        return destination.lock() == other.destination.lock();
     }
-    routeNode(ConnectionModule* gate, ConnectionModule* destination) : destination(destination), gate(gate) {}
+    routeNode(std::weak_ptr<ConnectionModule> gate, std::weak_ptr<ConnectionModule> destination) : destination(destination), gate(gate) {}
 };
 
-enum class CellType {
-    Empty,
-    Obstacle,
-    Platform,
-    Suspect
+enum class PlatformType {
+    STATIC,
+    MOBILE
+};
+
+enum class ModuleType {
+    CONNECTION,
+    SENSOR,
+    WEAPON
+};
+
+struct ModuleConfig {
+    ModuleType type;
+    int slotsOccupied;
+    int energyConsumption;
+    int range;
+    struct {
+        int maxSessions;
+        SensorType sensorType;
+        std::chrono::milliseconds chargingDuration;
+    } specific;
+};
+
+struct PlatformConfig {
+    PlatformType type;
+    Pair position;
+    std::string description;
+    int maxEnergyLevel;
+    int slotCount;
+    int speed;
+    std::vector<ModuleConfig> modules;
+};
+
+struct SuspectConfig {
+    Pair position;
+    int sensorRange;
+    int speed;
+};
+
+struct ObstacleConfig {
+    Pair position;
+};
+
+struct SystemConfig {
+    std::chrono::milliseconds updateInterval;
+    Pair size;
+    std::vector<PlatformConfig> platforms;
+    std::vector<SuspectConfig> suspects;
+    std::vector<ObstacleConfig> obstacles;
+};
+
+struct GraphicsConfig {
+    struct {
+        int width;
+        int height;
+        std::string title;
+        int frameRateLimit;
+        int objectSize;
+    } window;
+
+    struct Color {
+        uint8_t r, g, b;
+        sf::Color toSFMLColor() const { return sf::Color(r, g, b); }
+    };
+
+    Color background;
+
+    struct {
+        sf::Texture suspect;
+        sf::Texture staticPlatform;
+        sf::Texture mobilePlatform;
+        sf::Texture obstacle;
+    } textures;
+
+    struct {
+        sf::Sprite suspect;
+        sf::Sprite staticPlatform;
+        sf::Sprite mobilePlatform;
+        sf::Sprite obstacle;
+    } sprites;
 };

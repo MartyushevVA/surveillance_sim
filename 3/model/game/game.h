@@ -9,6 +9,8 @@
 #include "../system/environment.h"
 #include "../../import/import.h"
 
+#include <iostream>
+
 class Game {
 private:
     std::shared_ptr<Environment> environment_;
@@ -23,5 +25,8 @@ public:
         updateInterval_ = config.updateInterval;
     }
     void iterate();
+
+    std::shared_ptr<Environment> getEnvironment() const { return environment_; }
+    std::shared_ptr<AI> getAI() const { return ai_; }
     std::chrono::milliseconds getUpdateInterval() const { return updateInterval_; }
 };

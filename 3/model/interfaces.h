@@ -6,8 +6,8 @@ class IConnection {
 public:
     virtual ~IConnection() = default;
 
-    virtual bool establishConnection(ConnectionModule* module, bool isResponse = false) = 0;
-    virtual bool closeConnection(ConnectionModule* module, bool isResponse = false) = 0;
+    virtual bool establishConnection(std::weak_ptr<ConnectionModule> module, bool isResponse = false) = 0;
+    virtual bool closeConnection(std::weak_ptr<ConnectionModule> module, bool isResponse = false) = 0;
 };
 
 class IWeapon {

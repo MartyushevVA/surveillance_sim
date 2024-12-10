@@ -30,6 +30,10 @@ add_library(import_lib
     import/import.cpp
 )
 
+add_library(controller_lib
+    model/controller/controller.cpp
+)
+
 target_include_directories(game_lib PUBLIC
     ${CMAKE_CURRENT_SOURCE_DIR}
     ${CMAKE_CURRENT_SOURCE_DIR}/import
@@ -40,10 +44,12 @@ target_include_directories(game_lib PUBLIC
     ${CMAKE_CURRENT_SOURCE_DIR}/model/system
     ${CMAKE_CURRENT_SOURCE_DIR}/model/objects
     ${CMAKE_CURRENT_SOURCE_DIR}/tests
+    ${CMAKE_CURRENT_SOURCE_DIR}/controller
 )
 
 target_link_libraries(import_lib nlohmann_json::nlohmann_json)
 target_link_libraries(view_lib nlohmann_json::nlohmann_json sfml-graphics sfml-window sfml-system)
+target_link_libraries(controller_lib game_lib view_lib import_lib)
 
 #add_compile_options(-fsanitize=thread -g -O0 -fno-inline -fno-omit-frame-pointer -fsanitize=undefined)
 #add_link_options(-fsanitize=thread -fsanitize=undefined)
@@ -64,7 +70,7 @@ if(T)
 else()
     add_executable(sss main.cpp)
     find_package(SFML 2.6.1 COMPONENTS graphics window system REQUIRED)
-    target_link_libraries(sss game_lib import_lib view_lib)
+    target_link_libraries(sss controller_lib)
 endif()
 
 

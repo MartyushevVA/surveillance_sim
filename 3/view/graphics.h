@@ -2,26 +2,8 @@
 
 #include <fstream>
 #include <nlohmann/json.hpp>
-#include <SFML/Graphics.hpp>
 
-#include "../model/objects/objects.h"
-
-struct GraphicsConfig {
-    struct {
-        int width;
-        int height;
-        std::string title;
-        int frameRateLimit;
-        int objectSize;
-    } window;
-
-    struct Color {
-        uint8_t r, g, b;
-        sf::Color toSFMLColor() const { return sf::Color(r, g, b); }
-    };
-
-    Color background;
-};
+#include "../model/game/game.h"
 
 class Graphics {
 private:
@@ -44,11 +26,15 @@ private:
         sf::Sprite obstacle;
     } sprites_;
 
-    void loadConfig(const std::string& configPath);
     void drawObject(sf::Sprite& sprite, const Placeholder* object);
 
 public:
-    Graphics(const std::string& configPath);
+    Graphics(const std::string& configPath, std::shared_ptr<Game> game) : game_(game) {
+        auto config = Import::loadGraphicsConfig(configPath);
+        window_.create(sf::VideoMode(config.window.width, config.window.height), config.window.title);
+        window_.setFramerateLimit(config.window.frameRateLimit);
+        config_ = config;
+    };
     bool isWindowOpen() const { return window_.isOpen(); }
     void handleEvents();
     void render();

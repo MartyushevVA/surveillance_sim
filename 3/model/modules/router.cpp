@@ -4,11 +4,11 @@
 
 #include "../objects/objects.h"
 
-std::vector<ConnectionModule*> ConnectionModule::scanForModules(Pair pos) const {
-    std::vector<ConnectionModule*> result;
+std::vector<std::weak_ptr<ConnectionModule>> ConnectionModule::scanForModules(Pair pos) const {
+    std::vector<std::weak_ptr<ConnectionModule>> result;
     auto host = host_.lock();
     if (!host) return result;
-    auto env = host->getEnvironment();
+    auto env = host->getEnvironment().lock();
     if (!env) return result;
     auto area = env->getArea(pos, range_);
     for (const auto& [checkPos, token] : area)
@@ -19,62 +19,74 @@ std::vector<ConnectionModule*> ConnectionModule::scanForModules(Pair pos) const 
     return result;
 }
 
-bool ConnectionModule::establishConnection(ConnectionModule* target, bool isResponse) {
+bool ConnectionModule::establishConnection(std::weak_ptr<ConnectionModule> target, bool isResponse) {
+    auto targetPtr = target.lock();
+    if (!targetPtr) return false;
     if ((int)sessionList_.size() < maxSessions_ && std::find_if(routeList_.begin(), routeList_.end(),
-    [target](const routeNode& a) {return a.destination == target;}) == routeList_.end()) {
+    [targetPtr](const routeNode& a) {return a.destination.lock() == targetPtr;}) == routeList_.end()) {
         if (!isResponse)
-            if (!target->establishConnection(this, true))
+            if (!targetPtr->establishConnection(shared_from_this(), true))
                 return false;
         sessionList_.push_back(target);
-        routeList_.push_back({target, target});
-        std::vector<routeNode> partnersTargets = target->requestRouteList(this);
+        routeList_.push_back(routeNode{target, target});
+        std::vector<routeNode> partnersTargets = targetPtr->requestRouteList(shared_from_this());
         for (auto& route : partnersTargets)
-            routeList_.push_back({target, route.destination});
-        for (auto session : sessionList_) 
-            if (session != target) 
-                session->recursiveRouteNodeImplementation(this, routeList_);
+            routeList_.push_back(routeNode{target, route.destination});
+        for (auto session : sessionList_) {
+            auto sessionPtr = session.lock();
+            if (!sessionPtr) continue;
+            if (sessionPtr != targetPtr) 
+                sessionPtr->recursiveRouteNodeImplementation(shared_from_this(), routeList_);
+        }
         return true;
     }
     return false;
 }
 
-bool ConnectionModule::closeConnection(ConnectionModule* target, bool isResponse) {
+bool ConnectionModule::closeConnection(std::weak_ptr<ConnectionModule> target, bool isResponse) {
+    auto targetPtr = target.lock();
+    if (!targetPtr) return false;
     if (!isResponse)
-        target->closeConnection(this, true);
-    sessionList_.erase(std::find(sessionList_.begin(), sessionList_.end(), target));
+        targetPtr->closeConnection(shared_from_this(), true);
+    sessionList_.erase(std::remove_if(sessionList_.begin(), sessionList_.end(),
+        [&targetPtr](std::weak_ptr<ConnectionModule>& session) { return session.lock() == targetPtr; }),
+        sessionList_.end());
 
     routeList_.erase(std::remove_if(routeList_.begin(), routeList_.end(),
-        [target](const routeNode& node) { return node.destination == target; }), routeList_.end());
+        [targetPtr](const routeNode& node) { return node.destination.lock() == targetPtr; }),
+        routeList_.end());
     
-    target->recursiveDiscord(this, routeList_);
+    targetPtr->recursiveDiscord(shared_from_this(), routeList_);
     return true;
 }
 
-std::vector<routeNode> ConnectionModule::requestRouteList(ConnectionModule* source) const {
+std::vector<routeNode> ConnectionModule::requestRouteList(std::weak_ptr<ConnectionModule> source) const {
     std::vector<routeNode> routeList {};
+    auto sourcePtr = source.lock();
+    if (!sourcePtr) return routeList;
     for (auto node : routeList_) {
-        if (node.destination != source)
+        if (node.destination.lock() != sourcePtr)
             routeList.push_back(node);
     }
     return routeList;
 }
 
-void ConnectionModule::recursiveRouteNodeImplementation(ConnectionModule* gate, std::vector<routeNode> routeList) {
+void ConnectionModule::recursiveRouteNodeImplementation(std::weak_ptr<ConnectionModule> gate, std::vector<routeNode> routeList) {
     bool isEntered = false;
     for (auto& node : routeList)
         if (std::find_if(routeList_.begin(), routeList_.end(),
-        [&node](const routeNode& a) {return a == node;}) == routeList_.end() && node.destination != this) {
+        [&node](const routeNode& a) {return a == node;}) == routeList_.end() && node.destination.lock() != shared_from_this()) {
             isEntered = true;
             routeList_.push_back(routeNode{gate, node.destination});
         }
     if (isEntered) {
         for (auto session : sessionList_)
-            if (session != gate)
-                session->recursiveRouteNodeImplementation(this, routeList);
+            if (session.lock() != gate.lock())
+                session.lock()->recursiveRouteNodeImplementation(gate, routeList);
     }
 }
 
-void ConnectionModule::recursiveDiscord(ConnectionModule* gate, std::vector<routeNode> targetList) {
+void ConnectionModule::recursiveDiscord(std::weak_ptr<ConnectionModule> gate, std::vector<routeNode> targetList) {
     bool isEntered = false;
     for (auto node : targetList)
         if (auto it = std::find(routeList_.begin(), routeList_.end(), routeNode{gate, node.destination}); it != routeList_.end()) {
@@ -83,41 +95,40 @@ void ConnectionModule::recursiveDiscord(ConnectionModule* gate, std::vector<rout
         }
     if (isEntered)
         for (auto module : sessionList_)
-            module->recursiveDiscord(this, targetList);
+            module.lock()->recursiveDiscord(gate, targetList);
 }
 
-bool ConnectionModule::isGateToAI(const ConnectionModule* gate) const {
-    auto aiDest = getConnectedToAIDirectly();
+bool ConnectionModule::isGateToAI(std::weak_ptr<ConnectionModule> gate) const {
+    auto aiDest = getConnectedToAIDirectly().lock();
     for (auto node : routeList_) {
-        if (node.destination->getHost().get() == aiDest)
-            return node.gate == gate;
+        if (node.destination.lock() == aiDest)
+            return node.gate.lock() == gate.lock();
     }
     return false;
 }
 
 bool ConnectionModule::isSafeForSystem(Pair newPosition) const {
     auto host = host_.lock();
-    if (!host) return false;    
-    auto staticPlatform = getConnectedToAIDirectly();
-    if (!staticPlatform) return false;    
+    if (!host) return false;
+    auto staticPlatform = getConnectedToAIDirectly().lock();
+    if (!staticPlatform) return false;
     for (const auto& session : sessionList_) {
-        if (!session) continue;
-        auto connectedPlatform = session->getHost();
-        if (!connectedPlatform) continue;
-        auto distance = host->getEnvironment()->calculateDistance(newPosition, connectedPlatform->getPosition());
-        if ((distance > range_ || distance > session->getRange()) && (session->isGateToAI(this) || isGateToAI(session)))
+        auto sessionPtr = session.lock();
+        if (!sessionPtr) continue;
+        auto distance = host->getEnvironment().lock()->calculateDistance(newPosition, sessionPtr->getHost()->getPosition());
+        if ((distance > range_ || distance > sessionPtr->getRange()) && (sessionPtr->isGateToAI(host->findModuleOfType<ConnectionModule>()) || isGateToAI(session)))
             return false;
     }
     return true;
 }
 
-StaticPlatform* ConnectionModule::getConnectedToAIDirectly() const {
+std::weak_ptr<const ConnectionModule> ConnectionModule::getConnectedToAIDirectly() const {
     if (auto staticPlatform = dynamic_cast<StaticPlatform*>(host_.lock().get()); staticPlatform)
-        return staticPlatform;
+        return weak_from_this();
     for (auto node : routeList_)
-        if (auto staticPlatform = dynamic_cast<StaticPlatform*>(node.destination->getHost().get()); staticPlatform)
-            return staticPlatform;
-    return nullptr;
+        if (auto staticPlatform = dynamic_cast<StaticPlatform*>(node.destination.lock()->getHost().get()); staticPlatform)
+            return node.destination;
+    return {};
 }
 
 void ConnectionModule::update() {
@@ -125,18 +136,18 @@ void ConnectionModule::update() {
     if (!host) return;
     
     auto newNeighbors = scanForModules(host->getPosition());
-    for (auto* neighbor : newNeighbors) {
-        if (!neighbor) continue;
-        auto neighborHost = neighbor->getHost();
-        if (!neighborHost) continue;
-        if (std::find(sessionList_.begin(), sessionList_.end(), neighbor) == sessionList_.end())
+    for (auto neighbor : newNeighbors) {
+        if (!neighbor.lock()) continue;
+        if (std::find_if(sessionList_.begin(), sessionList_.end(),
+        [&neighbor](const std::weak_ptr<ConnectionModule>& session) {return session.lock() == neighbor.lock();}) == sessionList_.end()) {
             establishConnection(neighbor);
+        }
     }
-    
     auto it = sessionList_.begin();
     while (it != sessionList_.end()) {
-        auto* session = *it;
-        if (!session || std::find(newNeighbors.begin(), newNeighbors.end(), session) == newNeighbors.end())
+        const auto session = *it;
+        if (!session.lock() || std::find_if(newNeighbors.begin(), newNeighbors.end(),
+        [&session](const std::weak_ptr<ConnectionModule>& neighbor) {return neighbor.lock() == session.lock();}) == newNeighbors.end())
             it = sessionList_.erase(it);
         else
             ++it;

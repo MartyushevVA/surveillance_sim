@@ -1,25 +1,32 @@
 #pragma once
 
-#include "../system/ai.h"
-#include "placeholder.h"
+#include <memory>
+#include "../common_types.h"
 #include "base_platform.h"
+#include "placeholder.h"
+
+class Environment;
+class AI;
+
+#include "../system/ai.h"
+#include "../system/environment.h"
 
 class StaticPlatform :
     public Placeholder,
     public Platform {
 
 private:
-    std::weak_ptr<AI> ai_;
+    std::weak_ptr<AI> ai_ {};
 
 public:
-    StaticPlatform(Pair position, Environment* environment, std::string description, int maxEnergyLevel, int slotCount, std::shared_ptr<AI> ai)
-        : Placeholder(position, environment), Platform(description, maxEnergyLevel, slotCount), ai_(ai) {}
+    StaticPlatform(Pair position, std::weak_ptr<Environment> environment, std::string description, int maxEnergyLevel, int slotCount)
+        : Placeholder(position, environment), Platform(description, maxEnergyLevel, slotCount) {}
 
-    Environment* getEnvironment() const override {return environment_;}
+    std::weak_ptr<Environment> getEnvironment() const override {return Placeholder::getEnvironment();}
     Pair getPosition() const override {return position_;}
 
-    void setAI(std::shared_ptr<AI> ai) {ai_ = ai;}
-    std::shared_ptr<AI> getAI() const {return ai_.lock();}
+    void setAI(std::weak_ptr<AI> ai) {ai_ = ai;}
+    std::weak_ptr<AI> getAI() const override {return ai_;}
 
     void iterate() override;
 };
@@ -28,13 +35,15 @@ class MobilePlatform :
     public MovablePlaceholder,
     public Platform {
 public:
-    MobilePlatform(Pair position, Environment* environment, std::string description, int maxEnergyLevel, int slotCount, int speed)
+    MobilePlatform(Pair position, std::weak_ptr<Environment> environment, std::string description, int maxEnergyLevel, int slotCount, int speed)
         : MovablePlaceholder(position, environment, speed), Platform(description, maxEnergyLevel, slotCount) {}
 
-    Environment* getEnvironment() const override {return environment_;}
+    std::weak_ptr<Environment> getEnvironment() const override {return Placeholder::getEnvironment();}
     Pair getPosition() const override {return position_;}
 
     Pair opponentBasedMove(Pair opponent) const override;
+
+    std::weak_ptr<AI> getAI() const override {return {};}
 
     void iterate() override;
 };
@@ -47,7 +56,7 @@ private:
     Report getSurrounding() const override;
 
 public:
-    Suspect(Pair position, Environment* environment, int speed, int visionRange)
+    Suspect(Pair position, std::weak_ptr<Environment> environment, int speed, int visionRange)
         : MovablePlaceholder(position, environment, speed), visionRange_(visionRange) {}
 
     Pair opponentBasedMove(Pair opponent) const override;
@@ -59,6 +68,6 @@ public:
 
 class Obstacle : public Placeholder {
 public:
-    Obstacle(Pair position, Environment* environment) 
+    Obstacle(Pair position, std::weak_ptr<Environment> environment) 
         : Placeholder(position, environment) {}
 };

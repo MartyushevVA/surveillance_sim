@@ -1,7 +1,7 @@
-#include "model/game/game.h"
+#include "model/controller/controller.h"
 
 int main() {
-    Game game("configs/config2.json", "configs/graphics.json");
-    game.start();
+    Controller controller("configs/config2.json", "configs/graphics.json");
+    controller.start();
     return 0;
 }

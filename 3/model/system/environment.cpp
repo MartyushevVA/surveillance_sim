@@ -3,35 +3,31 @@
 #include <cmath>
 #include <mutex>
 
-#include "../objects/objects.h"
+#include <iostream>
 
-/*void Game::initializeField(const GameConfig& config) {
-    updateInterval_ = config.updateInterval;
-    environment_.setSize(config.field.size.x, config.field.size.y);
-    std::cout << "Setting field size" << std::endl;
-    for (const auto& position : config.field.obstacles) {
-        auto obstacle = std::make_shared<Obstacle>(position, &environment_);
-        environment_.addToken(obstacle);
+#include "../objects/objects.h"
+#include "../modules/modules.h"
+
+Environment::Environment(SystemConfig config) : size_{config.size}, mutexes_(config.size.x * config.size.y) {
+    for (const auto& position : config.obstacles) {
+        auto obstacle = std::make_shared<Obstacle>(position.position, weak_from_this());
+        addToken(obstacle);
     }
-    for (const auto& suspectConfig : config.field.suspects) {
-        std::cout << "Adding suspect to environment" << std::endl;
+    for (const auto& suspectConfig : config.suspects) {
         auto suspect = std::make_shared<Suspect>(
             suspectConfig.position,
-            &environment_,
+            weak_from_this(),
             suspectConfig.speed,
             suspectConfig.sensorRange
         );
-        std::cout << "Adding suspect to AI" << std::endl;
-        environment_.addToken(suspect);
-        std::cout << "Adding suspect to AI" << std::endl;
+        addToken(suspect);
     }
-    for (const auto& platformConfig : config.field.platforms) {
+    for (const auto& platformConfig : config.platforms) {
         std::shared_ptr<Platform> platform;
-        std::cout << "Creating platform" << std::endl;
-        if (platformConfig.type == "MobilePlatform") {
+        if (platformConfig.type == PlatformType::MOBILE) {
             platform = std::make_shared<MobilePlatform>(
                 platformConfig.position,
-                &environment_,
+                weak_from_this(),
                 platformConfig.description,
                 platformConfig.maxEnergyLevel,
                 platformConfig.slotCount,
@@ -40,16 +36,15 @@
         } else {
             platform = std::make_shared<StaticPlatform>(
                 platformConfig.position,
-                &environment_,
+                weak_from_this(),
                 platformConfig.description,
                 platformConfig.maxEnergyLevel,
-                platformConfig.slotCount,
-                &ai_
+                platformConfig.slotCount
             );
         }
         for (const auto& moduleConfig : platformConfig.modules) {
             std::shared_ptr<Module> module;
-            if (moduleConfig.type == "ConnectionModule") {
+            if (moduleConfig.type == ModuleType::CONNECTION) {
                 module = std::make_shared<ConnectionModule>(
                     moduleConfig.slotsOccupied,
                     moduleConfig.energyConsumption,
@@ -57,7 +52,7 @@
                     moduleConfig.specific.maxSessions
                 );
             }
-            else if (moduleConfig.type == "SensorModule") {
+            else if (moduleConfig.type == ModuleType::SENSOR) {
                 module = std::make_shared<SensorModule>(
                     moduleConfig.slotsOccupied,
                     moduleConfig.energyConsumption,
@@ -65,7 +60,7 @@
                     moduleConfig.specific.sensorType
                 );
             }
-            else if (moduleConfig.type == "WeaponModule") {
+            else if (moduleConfig.type == ModuleType::WEAPON) {
                 module = std::make_shared<WeaponModule>(
                     moduleConfig.slotsOccupied,
                     moduleConfig.energyConsumption,
@@ -73,29 +68,19 @@
                     moduleConfig.specific.chargingDuration
                 );
             }
-            std::cout << "Installing module" << std::endl;
             platform->installModule(module);
 
         }
-        std::cout << "Adding platform to environment" << std::endl;
-        environment_.addToken(std::dynamic_pointer_cast<Placeholder>(platform));
-        std::cout << "Adding platform to AI" << std::endl;
-        ai_.addStaticPlatform(std::dynamic_pointer_cast<StaticPlatform>(platform));
+        addToken(std::dynamic_pointer_cast<Placeholder>(platform));
     }
-}*/
-
-
-
+}
 
 void Environment::addToken(std::shared_ptr<Placeholder> token) {
     if (!token)
         return;
-    std::cout << "Adding token to envddddaironment" << std::endl;
     if (token->getPosition().x >= size_.x || token->getPosition().y >= size_.y ||
         token->getPosition().x < 0 || token->getPosition().y < 0)
         throw std::invalid_argument("Token position is out of bounds");
-    std::cout << "Adddddding token to envddddaironment" << std::endl;
-    std::cout << "Token position: " << token->getPosition().x << ", " << token->getPosition().y << std::endl;
     if (isEmpty(token->getPosition()))
         tokens_.insert({token->getPosition(), token});
 }
@@ -109,9 +94,7 @@ void Environment::removeToken(Pair position) {
 }
 
 std::shared_ptr<Placeholder> Environment::getToken(Pair position) const {
-    std::cout<< "gettin token"<<std::endl;
     std::shared_lock<std::shared_mutex> lock(mutexes_[position.x + position.y * size_.x]);
-    std::cout<< "gettin tddddoken"<<std::endl;
     auto token = tokens_.find(position);
     return token != tokens_.end() ? token->second : nullptr;
 }
@@ -139,8 +122,6 @@ void Environment::moveToken(Pair from, Pair to) {
 }
 
 bool Environment::isEmpty(Pair position) const {
-    std::cout << "Checking if position is empty" << std::endl;
-    std::cout << "Position: " << position.x << ", " << position.y << std::endl;
     return getToken(position) == nullptr;
 }
 
@@ -161,11 +142,9 @@ std::vector<Pair> Environment::getLine(Pair from, Pair to) const {
 
 bool Environment::hasLineOfSight(Pair from, Pair to) const {
     auto line = getLine(from, to);
-    std::shared_lock<std::shared_mutex> lock(environmentMutex_);
     std::vector<std::shared_lock<std::shared_mutex>> locks;
     for (auto pos : line)
         locks.emplace_back(mutexes_[pos.x + pos.y * size_.x]);
-    //lock.unlock();
     for (auto pos : line) {
         if (!isEmpty(pos))
             return false;
@@ -182,9 +161,11 @@ double Environment::calculateDistance(Pair from, Pair to) const {
 }
 
 std::vector<Pair> Environment::representArea(Pair position, int range) const {
+    std::cout << "Environment::representArea position at " << position.x << ", " << position.y << std::endl;
     std::vector<Pair> area;
     for (int dx = -range; dx <= range; dx++)
         for (int dy = -sqrt(range * range - dx * dx); dy <= sqrt(range * range - dx * dx); dy++) {
+            std::cout << "Environment::representArea dx: " << dx << ", dy: " << dy << std::endl;
             Pair checkPos{position.x + dx, position.y + dy};
             if (checkPos.x >= size_.x || checkPos.y >= size_.y)
                 continue;
@@ -194,13 +175,15 @@ std::vector<Pair> Environment::representArea(Pair position, int range) const {
 }
 
 std::map<Pair, std::shared_ptr<Placeholder>> Environment::getArea(Pair position, int range) const {
+    std::cout << "Environment::getArea position at " << position.x << ", " << position.y << std::endl;
     std::map<Pair, std::shared_ptr<Placeholder>> area;
-    std::shared_lock<std::shared_mutex> lock(environmentMutex_);
+    std::cout << "Environment::getArea before lock" << std::endl;
     std::vector<std::shared_lock<std::shared_mutex>> locks;
+    std::cout << "Environment::getArea after lock" << std::endl;
     auto rArea = representArea(position, range);
+    std::cout << "Environment::getArea rArea size: " << rArea.size() << std::endl;
     for (auto pos : rArea)
         locks.emplace_back(mutexes_[pos.x + pos.y * size_.x]);
-    lock.unlock();
     for (auto pos : rArea) {
         if (pos == position || isEmpty(pos))
             continue;

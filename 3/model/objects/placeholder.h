@@ -1,20 +1,22 @@
 #pragma once
 
+#include <memory>
+
 #include "../interfaces.h"
 #include "../system/environment.h"
 
 class Placeholder {
 protected:
     Pair position_ = {0, 0};
-    Environment* environment_ = nullptr;
+    std::weak_ptr<Environment> environment_ {};
     
-    Placeholder(Pair position, Environment* environment)
+    Placeholder(Pair position, std::weak_ptr<Environment> environment)
         : position_(position), environment_(environment) {}
 
 public:
     virtual ~Placeholder() = default;
     
-    Environment* getEnvironment() const {return environment_;}
+    std::weak_ptr<Environment> getEnvironment() const {return environment_;}
     Pair getPosition() const {return position_;}
     void setPosition(Pair position) {position_ = position;}
 };
@@ -25,7 +27,7 @@ class MovablePlaceholder :
 protected:
     int speed_ = 0;
 
-    MovablePlaceholder(Pair position, Environment* environment, int speed)
+    MovablePlaceholder(Pair position, std::weak_ptr<Environment> environment, int speed)
         : Placeholder(position, environment), speed_(speed) {}
 public:
     virtual ~MovablePlaceholder() = default;

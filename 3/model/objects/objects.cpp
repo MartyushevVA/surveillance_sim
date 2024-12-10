@@ -6,6 +6,8 @@
 #include <limits>
 #include <map>
 
+#include <iostream>
+
 void MobilePlatform::iterate() {
     auto connection = findModuleOfType<ConnectionModule>();
     if (!connection) return;
@@ -13,16 +15,16 @@ void MobilePlatform::iterate() {
     connection->update();
 
     auto staticPlatform = connection->getConnectedToAIDirectly();
-    if (!staticPlatform) return;
+    if (!staticPlatform.lock()) return;
     
-    auto ai = staticPlatform->getAI();
+    auto ai = staticPlatform.lock()->getHost()->getAI().lock();
     if (!ai) return;
-    
+    auto environmentPtr = staticPlatform.lock()->getHost()->getEnvironment().lock();
     std::shared_ptr<Suspect> target = nullptr;
     {
         auto suspects = ai->getSuspects();
         if (!suspects.empty())
-            target = environment_->getClosestOfType<Suspect>(getPosition(), suspects);
+            target = environmentPtr->getClosestOfType<Suspect>(getPosition(), suspects);
     }
     
     auto nextPos = randomMove();
@@ -51,7 +53,7 @@ void StaticPlatform::iterate() {
     auto sensor = findModuleOfType<SensorModule>();
     if (!sensor) return;
     
-    auto ai = getAI();
+    auto ai = getAI().lock();
     if (!ai) return;
     
     ai->addSuspects(sensor->getSuspects());
@@ -60,7 +62,7 @@ void StaticPlatform::iterate() {
     {
         auto suspects = ai->getSuspects();
         if (!suspects.empty())
-            target = environment_->getClosestOfType<Suspect>(getPosition(), suspects);
+            target = getEnvironment().lock()->getClosestOfType<Suspect>(getPosition(), suspects);
     }
     if (target)
         if (auto weapon = findModuleOfType<WeaponModule>()) {
@@ -73,21 +75,32 @@ void StaticPlatform::iterate() {
 }
 
 void Suspect::iterate() {
+    std::cout << "Suspect::iterate at " << getPosition().x << ", " << getPosition().y << std::endl;
     auto predator = getNearestVisibleOpponent();
+    std::cout << "Suspect::iterate predator at " << predator->getPosition().x << ", " << predator->getPosition().y << std::endl;
     Pair nextPos;
-    if (predator)
+    if (predator) {
+        std::cout << "Suspect::iterate predator found" << std::endl;
         nextPos = opponentBasedMove(predator->getPosition());
-    else
+    }
+    else {
+        std::cout << "Suspect::iterate predator not found" << std::endl;
         nextPos = randomMove();
+    }
+    std::cout << "Suspect::iterate nextPos at " << nextPos.x << ", " << nextPos.y << std::endl;
     if (nextPos != getPosition())
         move(nextPos);
 }
 
 Report Suspect::getSurrounding() const {
     std::map<Pair, std::shared_ptr<Placeholder>> tokensInRange;
-    auto env = getEnvironment();
+    std::cout << "Suspect::getSurrounding" << std::endl;
+    auto env = getEnvironment().lock();
+    std::cout << "Suspect::getSurrounding env" << std::endl;
     auto position = getPosition();
+    std::cout << "Suspect::getSurrounding position" << std::endl;
     auto area = env->getArea(position, visionRange_);
+    std::cout << "Suspect::getSurrounding area" << std::endl;
     for (auto& [checkPos, token] : area)
         if (checkPos != getPosition())
             if (env->hasLineOfSight(position, checkPos))
@@ -96,12 +109,16 @@ Report Suspect::getSurrounding() const {
 }
 
 std::shared_ptr<Placeholder> Suspect::getNearestVisibleOpponent() const {
+    std::cout << "Suspect::getNearestVisibleOpponent" << std::endl;
     auto report = getSurrounding();
+    std::cout << "Suspect::getNearestVisibleOpponent report size: " << report.objects.size() << std::endl;
+    auto environmentPtr = getEnvironment().lock();
+    std::cout << "Suspect::getNearestVisibleOpponent environmentPtr" << std::endl;
     std::shared_ptr<Placeholder> nearestPredator = nullptr;
     double minDistance = std::numeric_limits<double>::max();
     for (auto [pos, placeholder] : report.objects)
         if (dynamic_cast<Platform*>(placeholder.get())) {
-            double distance = environment_->calculateDistance(position_, pos);
+            double distance = environmentPtr->calculateDistance(position_, pos);
             if (minDistance > distance) {
                 minDistance = distance;
                 nearestPredator = placeholder;
