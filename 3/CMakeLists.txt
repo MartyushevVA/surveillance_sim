@@ -45,6 +45,9 @@ target_include_directories(game_lib PUBLIC
 target_link_libraries(import_lib nlohmann_json::nlohmann_json)
 target_link_libraries(view_lib nlohmann_json::nlohmann_json sfml-graphics sfml-window sfml-system)
 
+#add_compile_options(-fsanitize=thread -g -O0 -fno-inline -fno-omit-frame-pointer -fsanitize=undefined)
+#add_link_options(-fsanitize=thread -fsanitize=undefined)
+
 option(T "Запуск тестов" OFF)
 
 if(T)

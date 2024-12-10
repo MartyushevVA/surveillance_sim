@@ -13,17 +13,22 @@ class MobilePlatform;
 class Suspect;
 class Placeholder;
 
-class AI {
+class AI : public std::enable_shared_from_this<AI> {
 private:
-    Environment* environment_;
+    std::weak_ptr<Environment> environment_;
     std::vector<std::shared_ptr<StaticPlatform>> staticPlatforms_ {};
     std::vector<Platform*> allConnectedPlatforms_ {};
     std::map<Pair, std::shared_ptr<Placeholder>> spottedSuspects_ {};  
 
 public:
-    AI(Environment* environment) : environment_(environment) {};
+    AI(std::shared_ptr<Environment> environment) : environment_(environment) {};
 
-    void addStaticPlatform(std::shared_ptr<StaticPlatform> platform) {if (platform) staticPlatforms_.push_back(platform);}
+    void addStaticPlatform(std::shared_ptr<StaticPlatform> platform) {
+        if (platform) {
+            staticPlatforms_.push_back(platform);
+            platform->setAI(getSharedPtr());
+        }
+    }
     void eliminateAllSuspects();
     void getNetworkForest();
     const std::vector<Platform*>& getAllConnectedPlatforms() const {return allConnectedPlatforms_;}
@@ -31,4 +36,6 @@ public:
     void addSuspects(std::map<Pair, std::shared_ptr<Placeholder>> suspects);
     void removeSuspect(std::shared_ptr<Placeholder> suspect);
     const std::map<Pair, std::shared_ptr<Placeholder>>& getSuspects() const {return spottedSuspects_;}
+
+    std::shared_ptr<AI> getSharedPtr() { return shared_from_this(); }
 };

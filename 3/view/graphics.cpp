@@ -74,10 +74,9 @@ void Graphics::handleEvents() {
     }
 }
 
-void Graphics::render(const Environment& environment) {
+void Graphics::render() {
     window_.clear(config_.background.toSFMLColor());
-    
-    for (const auto& token : environment.getTokens()) {
+    for (const auto& token : game_->getEnvironment()->getTokens()) {
         if (const Suspect* suspect = dynamic_cast<const Suspect*>(token.second.get()))
             drawObject(sprites_.suspect, suspect);
         else if (const StaticPlatform* platform = dynamic_cast<const StaticPlatform*>(token.second.get()))

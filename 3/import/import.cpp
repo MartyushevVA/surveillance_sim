@@ -22,6 +22,25 @@ GameConfig Import::importGameConfig(const std::string& configPath) {
     return config;
 }
 
+EnvironmentConfig Import::importEnvironmentConfig(const std::string& configPath) {
+    std::ifstream file(configPath);
+    if (!file.is_open()) {
+        throw std::runtime_error("Could not open file: " + configPath);
+    }
+    nlohmann::json j;
+    file >> j;
+
+    EnvironmentConfig config;
+    config.size = parseSize(j["size"]);
+    for (const auto& tokenJson : j["tokens"]) {
+        config.tokens.insert({parsePosition(tokenJson["position"]), parsePlaceholder(tokenJson["placeholder"])});
+    }
+    return config;
+}
+
+Placeholder Import::parsePlaceholder(const nlohmann::json& placeholderJson) {
+}
+
 ModuleConfig Import::parseModule(const nlohmann::json& moduleJson) {
     const std::vector<std::string> requiredFields = {
         "type", "slotsOccupied", "energyConsumption", "range"

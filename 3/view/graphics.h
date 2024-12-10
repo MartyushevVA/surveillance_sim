@@ -25,6 +25,8 @@ struct GraphicsConfig {
 
 class Graphics {
 private:
+    std::shared_ptr<Game> game_;
+
     sf::RenderWindow window_;
     GraphicsConfig config_;
 
@@ -49,5 +51,5 @@ public:
     Graphics(const std::string& configPath);
     bool isWindowOpen() const { return window_.isOpen(); }
     void handleEvents();
-    void render(const Environment& environment);
+    void render();
 };

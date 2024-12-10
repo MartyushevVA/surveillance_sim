@@ -100,3 +100,33 @@ TEST_F(AITest, SimultaneousTargeting) {
     
     EXPECT_EQ(env.getToken(suspect->getPosition()), nullptr);
 }
+
+TEST_F(AITest, EliminateAllSuspects_Multithreading) {
+    auto platform1 = createArmedPlatform(Pair{10, 10}, false);
+    auto platform2 = createArmedPlatform(Pair{15, 15}, false);
+    auto suspect1 = std::make_shared<Suspect>(Pair{12, 12}, &env, 3, 2);
+    auto suspect2 = std::make_shared<Suspect>(Pair{18, 18}, &env, 3, 2);
+    
+    env.addToken(std::dynamic_pointer_cast<Placeholder>(platform1));
+    env.addToken(std::dynamic_pointer_cast<Placeholder>(platform2));
+    env.addToken(std::dynamic_pointer_cast<Placeholder>(suspect1));
+    env.addToken(std::dynamic_pointer_cast<Placeholder>(suspect2));
+    
+    ai.addStaticPlatform(std::dynamic_pointer_cast<StaticPlatform>(platform1));
+    ai.addStaticPlatform(std::dynamic_pointer_cast<StaticPlatform>(platform2));
+    
+    EXPECT_NE(env.getToken(suspect1->getPosition()), nullptr);
+    EXPECT_NE(env.getToken(suspect2->getPosition()), nullptr);
+
+    std::thread eliminationThread([&]() {
+        ai.eliminateAllSuspects();
+    });
+
+    std::this_thread::sleep_for(std::chrono::milliseconds(50));
+    env.removeToken(suspect1->getPosition());
+
+    eliminationThread.join();
+
+    EXPECT_EQ(env.getToken(suspect1->getPosition()), nullptr);
+    EXPECT_EQ(env.getToken(suspect2->getPosition()), nullptr);
+}

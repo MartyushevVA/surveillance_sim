@@ -9,16 +9,17 @@ class StaticPlatform :
     public Platform {
 
 private:
-    AI* ai_;
+    std::weak_ptr<AI> ai_;
 
 public:
-    StaticPlatform(Pair position, Environment* environment, std::string description, int maxEnergyLevel, int slotCount, AI* ai)
+    StaticPlatform(Pair position, Environment* environment, std::string description, int maxEnergyLevel, int slotCount, std::shared_ptr<AI> ai)
         : Placeholder(position, environment), Platform(description, maxEnergyLevel, slotCount), ai_(ai) {}
 
     Environment* getEnvironment() const override {return environment_;}
     Pair getPosition() const override {return position_;}
 
-    AI* getAI() const {return ai_;}
+    void setAI(std::shared_ptr<AI> ai) {ai_ = ai;}
+    std::shared_ptr<AI> getAI() const {return ai_.lock();}
 
     void iterate() override;
 };

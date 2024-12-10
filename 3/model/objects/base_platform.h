@@ -10,7 +10,7 @@ class Module;
  * @class Platform
  * @brief Class representing a platform that can hold modules and interact with the environment.
  */
-class Platform : public std::enable_shared_from_this<Platform> {
+class Platform : public std::enable_shared_from_this<Platform> { // это для shared_from_this
 protected:
     std::string description_ {};
     int energyLevel_ = 0;
@@ -19,7 +19,6 @@ protected:
     std::vector<std::shared_ptr<Module>> modules_ {};
     /**
      * @brief Constructs a Platform object.
-     * @param position The position of the platform in the environment.
      * @param environment Pointer to the environment the platform belongs to.
      * @param description Description of the platform.
      * @param maxEnergyLevel Maximum energy level of the platform.
@@ -65,18 +64,27 @@ public:
     /**
      * @brief Gets the environment the platform is in.
      * @return Environment* Pointer to the environment.
+     * 
+     * This method is virtual and must be overridden in derived classes.
+     * @virtual
      */
     virtual Environment* getEnvironment() const = 0;
 
     /**
      * @brief Gets the current position of the platform.
      * @return Pair The current position coordinates.
+     * 
+     * This method is virtual and must be overridden in derived classes.
+     * @virtual
      */
     virtual Pair getPosition() const = 0;
 
     /**
      * @brief Updates the platform's state based on spotted suspects.
      * @param spottedSuspects Vector of pointers to spotted suspects.
+     * 
+     * This method is virtual and must be overridden in derived classes.
+     * @virtual
      */
     virtual void iterate() = 0;
 
@@ -92,6 +100,12 @@ public:
      * @throws std::runtime_error if the module is not attachable to the platform.
      */
     void installModule(std::shared_ptr<Module> module);
+
+    /**
+     * @brief Gets a shared pointer to the platform.
+     * @return std::shared_ptr<Platform> A shared pointer to the platform.
+     */
+    std::shared_ptr<Platform> getSharedPtr() { return shared_from_this(); }
 
     /**
      * @brief Finds a module of a specific type attached to the platform.

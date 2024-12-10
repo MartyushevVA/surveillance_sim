@@ -4,7 +4,7 @@
 
 void Platform::installModule(std::shared_ptr<Module> module) {
     if (modules_.size() + module->getSlotsOccupied() <= slotCount_) {
-        module->setHost(shared_from_this());
+        module->setHost(getSharedPtr());
         modules_.push_back(module);
         if (energyLevel_ + module->getEnergyConsumption() <= maxEnergyLevel_)
             module->turnOn();

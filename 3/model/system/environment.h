@@ -2,6 +2,7 @@
 
 #include <map>
 #include <shared_mutex>
+#include <memory>
 
 #include "../common_types.h"
 
@@ -9,18 +10,18 @@ class Placeholder;
 
 class Environment {
 private:
-    Pair size_ = {0, 0};
-    std::map<Pair, std::shared_ptr<Placeholder>> tokens_ {};
+    Pair size_;
+    std::map<Pair, std::shared_ptr<Placeholder>> tokens_;
+    mutable std::shared_mutex environmentMutex_;
+    mutable std::vector<std::shared_mutex> mutexes_;
     
 public:
-    mutable std::mutex mutex_;
-
-    Environment() = default;
-    Environment(int width, int height) {setSize(width, height);}
-
-    Pair getSize() const {return size_;}
-    void setSize(int width, int height) {size_ = {width, height};}
+    Environment() = delete;
+    Environment(Pair size) : 
+        size_{size},
+        mutexes_(size.x * size.y) {}
     
+    Pair getSize() const {return size_;}
     void addToken(std::shared_ptr<Placeholder> token);
     std::shared_ptr<Placeholder> getToken(Pair position) const;
     void removeToken(Pair position);
@@ -32,9 +33,11 @@ public:
     bool isEmpty(Pair position) const;
 
     bool hasLineOfSight(Pair from, Pair to) const;
+    std::vector<Pair> getLine(Pair from, Pair to) const;
     double isInRange(Pair from, Pair to, int range) const;
     double calculateDistance(Pair from, Pair to) const;
 
+    std::vector<Pair> representArea(Pair position, int range) const;
     std::map<Pair, std::shared_ptr<Placeholder>> getArea(Pair position, int range) const;
 
     template <typename T>

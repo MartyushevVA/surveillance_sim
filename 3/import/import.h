@@ -4,6 +4,7 @@
 #include <nlohmann/json.hpp>
 
 #include "../model/common_types.h"
+#include "../model/system/environment.h"
 
 struct ModuleConfig {
     std::string type;
@@ -33,21 +34,21 @@ struct SuspectConfig {
     int speed;
 };
 
-struct FieldConfig {
-    Pair size;
-    std::vector<Pair> obstacles;
-    std::vector<SuspectConfig> suspects;
-    std::vector<PlatformConfig> platforms;
+struct ObstacleConfig {
+    Pair position;
 };
 
-struct GameConfig {
+struct SystemConfig {
     std::chrono::milliseconds updateInterval;
-    FieldConfig field;
+    Pair size;
+    std::vector<PlatformConfig> platforms;
+    std::vector<SuspectConfig> suspects;
+    std::vector<ObstacleConfig> obstacles;
 };
 
 class Import {
 public:
-    static GameConfig importGameConfig(const std::string& configPath);
+    static SystemConfig loadSystemConfig(const std::string& configPath);
 
 private:
     static ModuleConfig parseModule(const nlohmann::json& moduleJson);
