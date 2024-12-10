@@ -3,12 +3,13 @@
 #include <cmath>
 #include <mutex>
 
-#include <iostream>
-
 #include "../objects/objects.h"
 #include "../modules/modules.h"
 
-Environment::Environment(SystemConfig config) : size_{config.size}, mutexes_(config.size.x * config.size.y) {
+void Environment::initialize(SystemConfig config) {
+    if (initialized_)
+        throw std::runtime_error("Environment is already initialized");
+    initialized_ = true;
     for (const auto& position : config.obstacles) {
         auto obstacle = std::make_shared<Obstacle>(position.position, weak_from_this());
         addToken(obstacle);
@@ -76,6 +77,7 @@ Environment::Environment(SystemConfig config) : size_{config.size}, mutexes_(con
 }
 
 void Environment::addToken(std::shared_ptr<Placeholder> token) {
+    checkInitialized();
     if (!token)
         return;
     if (token->getPosition().x >= size_.x || token->getPosition().y >= size_.y ||
@@ -87,6 +89,7 @@ void Environment::addToken(std::shared_ptr<Placeholder> token) {
 
 
 void Environment::removeToken(Pair position) {
+    checkInitialized();
     std::unique_lock<std::shared_mutex> lock(mutexes_[position.x + position.y * size_.x]);
     if (isEmpty(position))
         return;
@@ -94,12 +97,14 @@ void Environment::removeToken(Pair position) {
 }
 
 std::shared_ptr<Placeholder> Environment::getToken(Pair position) const {
+    checkInitialized();
     std::shared_lock<std::shared_mutex> lock(mutexes_[position.x + position.y * size_.x]);
     auto token = tokens_.find(position);
     return token != tokens_.end() ? token->second : nullptr;
 }
 
 bool Environment::abilityToMove(Pair from, Pair to) const {
+    checkInitialized();
     if (to.x >= size_.x || to.y >= size_.y || to.x < 0 || to.y < 0)
         return false;
     if (!hasLineOfSight(from, to))
@@ -108,6 +113,7 @@ bool Environment::abilityToMove(Pair from, Pair to) const {
 }
 
 void Environment::moveToken(Pair from, Pair to) {
+    checkInitialized();
     if (to.x >= size_.x || to.y >= size_.y || to.x < 0 || to.y < 0 || from == to)
         return;
     
@@ -122,10 +128,12 @@ void Environment::moveToken(Pair from, Pair to) {
 }
 
 bool Environment::isEmpty(Pair position) const {
+    checkInitialized();
     return getToken(position) == nullptr;
 }
 
 std::vector<Pair> Environment::getLine(Pair from, Pair to) const {
+    checkInitialized();
     std::vector<Pair> line;
     double distance = calculateDistance(from, to);
     double stepX = (to.x - from.x) / distance;
@@ -141,6 +149,7 @@ std::vector<Pair> Environment::getLine(Pair from, Pair to) const {
 }
 
 bool Environment::hasLineOfSight(Pair from, Pair to) const {
+    checkInitialized();
     auto line = getLine(from, to);
     std::vector<std::shared_lock<std::shared_mutex>> locks;
     for (auto pos : line)
@@ -153,21 +162,22 @@ bool Environment::hasLineOfSight(Pair from, Pair to) const {
 }
 
 double Environment::isInRange(Pair from, Pair to, int range) const {
+    checkInitialized();
     return calculateDistance(from, to) / range;
 }
 
 double Environment::calculateDistance(Pair from, Pair to) const {
+    checkInitialized();
     return sqrt((from.x - to.x) * (from.x - to.x) + (from.y - to.y) * (from.y - to.y));
 }
 
 std::vector<Pair> Environment::representArea(Pair position, int range) const {
-    std::cout << "Environment::representArea position at " << position.x << ", " << position.y << std::endl;
+    checkInitialized();
     std::vector<Pair> area;
     for (int dx = -range; dx <= range; dx++)
         for (int dy = -sqrt(range * range - dx * dx); dy <= sqrt(range * range - dx * dx); dy++) {
-            std::cout << "Environment::representArea dx: " << dx << ", dy: " << dy << std::endl;
             Pair checkPos{position.x + dx, position.y + dy};
-            if (checkPos.x >= size_.x || checkPos.y >= size_.y)
+            if (checkPos.x >= size_.x || checkPos.y >= size_.y || checkPos.x < 0 || checkPos.y < 0)
                 continue;
             area.push_back(checkPos);
         }
@@ -175,15 +185,12 @@ std::vector<Pair> Environment::representArea(Pair position, int range) const {
 }
 
 std::map<Pair, std::shared_ptr<Placeholder>> Environment::getArea(Pair position, int range) const {
-    std::cout << "Environment::getArea position at " << position.x << ", " << position.y << std::endl;
     std::map<Pair, std::shared_ptr<Placeholder>> area;
-    std::cout << "Environment::getArea before lock" << std::endl;
     std::vector<std::shared_lock<std::shared_mutex>> locks;
-    std::cout << "Environment::getArea after lock" << std::endl;
     auto rArea = representArea(position, range);
-    std::cout << "Environment::getArea rArea size: " << rArea.size() << std::endl;
-    for (auto pos : rArea)
+    for (auto pos : rArea){
         locks.emplace_back(mutexes_[pos.x + pos.y * size_.x]);
+    }
     for (auto pos : rArea) {
         if (pos == position || isEmpty(pos))
             continue;

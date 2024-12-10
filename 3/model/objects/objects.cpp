@@ -77,7 +77,7 @@ void StaticPlatform::iterate() {
 void Suspect::iterate() {
     std::cout << "Suspect::iterate at " << getPosition().x << ", " << getPosition().y << std::endl;
     auto predator = getNearestVisibleOpponent();
-    std::cout << "Suspect::iterate predator at " << predator->getPosition().x << ", " << predator->getPosition().y << std::endl;
+    std::cout << "Suspect::iterate predator at " << std::endl;
     Pair nextPos;
     if (predator) {
         std::cout << "Suspect::iterate predator found" << std::endl;
@@ -94,13 +94,9 @@ void Suspect::iterate() {
 
 Report Suspect::getSurrounding() const {
     std::map<Pair, std::shared_ptr<Placeholder>> tokensInRange;
-    std::cout << "Suspect::getSurrounding" << std::endl;
     auto env = getEnvironment().lock();
-    std::cout << "Suspect::getSurrounding env" << std::endl;
     auto position = getPosition();
-    std::cout << "Suspect::getSurrounding position" << std::endl;
     auto area = env->getArea(position, visionRange_);
-    std::cout << "Suspect::getSurrounding area" << std::endl;
     for (auto& [checkPos, token] : area)
         if (checkPos != getPosition())
             if (env->hasLineOfSight(position, checkPos))

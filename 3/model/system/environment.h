@@ -13,10 +13,27 @@ private:
     Pair size_;
     std::map<Pair, std::shared_ptr<Placeholder>> tokens_;
     mutable std::vector<std::shared_mutex> mutexes_;
+    bool initialized_ = false;
+
+    void checkInitialized() const {
+        if (!initialized_)
+            throw std::runtime_error("Environment is not initialized");
+    }
     
 public:
-    Environment(SystemConfig config);
-    Pair getSize() const {return size_;}
+    Environment() = delete;
+    explicit Environment(Pair size) :
+    size_{size},
+    mutexes_(size.x * size.y) {}
+    
+    Environment(const Environment&) = delete;
+    Environment& operator=(const Environment&) = delete;
+    
+    void initialize(SystemConfig config);
+    Pair getSize() const {
+        checkInitialized();
+        return size_;
+    }
     void addToken(std::shared_ptr<Placeholder> token);
     std::shared_ptr<Placeholder> getToken(Pair position) const;
     void removeToken(Pair position);
@@ -43,5 +60,5 @@ public:
                 if (!closest || calculateDistance(position, pos) < calculateDistance(position, closest->getPosition()))
                     closest = typed_token;
         return closest;
-    }
+    };
 };

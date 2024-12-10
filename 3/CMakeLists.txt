@@ -47,8 +47,8 @@ target_include_directories(game_lib PUBLIC
     ${CMAKE_CURRENT_SOURCE_DIR}/controller
 )
 
-target_link_libraries(import_lib nlohmann_json::nlohmann_json)
 target_link_libraries(view_lib nlohmann_json::nlohmann_json sfml-graphics sfml-window sfml-system)
+target_link_libraries(import_lib nlohmann_json::nlohmann_json sfml-graphics sfml-window sfml-system)
 target_link_libraries(controller_lib game_lib view_lib import_lib)
 
 #add_compile_options(-fsanitize=thread -g -O0 -fno-inline -fno-omit-frame-pointer -fsanitize=undefined)
