@@ -141,36 +141,10 @@ GraphicsConfig Import::parseGraphicsConfig(const nlohmann::json& graphicsJson) {
     };
     config.background = loadColor(graphicsJson["background_color"]);
 
-    auto loadTexture = [](const std::string& path) -> sf::Texture {
-        sf::Texture texture;
-        if (!texture.loadFromFile(path)) {
-            throw std::runtime_error("Failed to load texture: " + path);
-        }
-        return texture;
-    };
-
-    config.textures.suspect = loadTexture(graphicsJson["textures"]["suspect"]);
-    config.textures.staticPlatform = loadTexture(graphicsJson["textures"]["static_platform"]);
-    config.textures.mobilePlatform = loadTexture(graphicsJson["textures"]["mobile_platform"]);
-    config.textures.obstacle = loadTexture(graphicsJson["textures"]["obstacle"]);
-
-    config.sprites.suspect.setTexture(config.textures.suspect);
-    config.sprites.staticPlatform.setTexture(config.textures.staticPlatform);
-    config.sprites.mobilePlatform.setTexture(config.textures.mobilePlatform);
-    config.sprites.obstacle.setTexture(config.textures.obstacle);
-
-    float scale = static_cast<float>(config.window.objectSize) / 
-            static_cast<float>(config.textures.suspect.getSize().x);
-    config.sprites.suspect.setScale(scale, scale);
-    scale = static_cast<float>(config.window.objectSize) / 
-            static_cast<float>(config.textures.staticPlatform.getSize().x);
-    config.sprites.staticPlatform.setScale(scale, scale);
-    scale = static_cast<float>(config.window.objectSize) / 
-            static_cast<float>(config.textures.mobilePlatform.getSize().x);
-    config.sprites.mobilePlatform.setScale(scale, scale);
-    scale = static_cast<float>(config.window.objectSize) / 
-            static_cast<float>(config.textures.obstacle.getSize().x);
-    config.sprites.obstacle.setScale(scale, scale);
+    config.sources.suspectNameOfFile = graphicsJson["textures"]["suspect"];
+    config.sources.staticPlatformNameOfFile = graphicsJson["textures"]["static_platform"];
+    config.sources.mobilePlatformNameOfFile = graphicsJson["textures"]["mobile_platform"];
+    config.sources.obstacleNameOfFile = graphicsJson["textures"]["obstacle"];
     return config;
 }
 

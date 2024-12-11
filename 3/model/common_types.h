@@ -112,16 +112,23 @@ struct GraphicsConfig {
     Color background;
 
     struct {
-        sf::Texture suspect;
-        sf::Texture staticPlatform;
-        sf::Texture mobilePlatform;
-        sf::Texture obstacle;
+        sf::Texture suspect {};
+        sf::Texture staticPlatform {};
+        sf::Texture mobilePlatform {};
+        sf::Texture obstacle {};
     } textures;
 
     struct {
-        sf::Sprite suspect;
-        sf::Sprite staticPlatform;
-        sf::Sprite mobilePlatform;
-        sf::Sprite obstacle;
+        sf::Sprite suspect {};
+        sf::Sprite staticPlatform {};
+        sf::Sprite mobilePlatform {};
+        sf::Sprite obstacle {};
     } sprites;
+
+    struct {
+        std::string suspectNameOfFile {};
+        std::string staticPlatformNameOfFile {};
+        std::string mobilePlatformNameOfFile {};
+        std::string obstacleNameOfFile {};
+    } sources;
 };

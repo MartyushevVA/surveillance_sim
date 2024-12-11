@@ -75,19 +75,12 @@ void StaticPlatform::iterate() {
 }
 
 void Suspect::iterate() {
-    std::cout << "Suspect::iterate at " << getPosition().x << ", " << getPosition().y << std::endl;
     auto predator = getNearestVisibleOpponent();
-    std::cout << "Suspect::iterate predator at " << std::endl;
     Pair nextPos;
-    if (predator) {
-        std::cout << "Suspect::iterate predator found" << std::endl;
+    if (predator)
         nextPos = opponentBasedMove(predator->getPosition());
-    }
-    else {
-        std::cout << "Suspect::iterate predator not found" << std::endl;
+    else
         nextPos = randomMove();
-    }
-    std::cout << "Suspect::iterate nextPos at " << nextPos.x << ", " << nextPos.y << std::endl;
     if (nextPos != getPosition())
         move(nextPos);
 }
@@ -105,11 +98,8 @@ Report Suspect::getSurrounding() const {
 }
 
 std::shared_ptr<Placeholder> Suspect::getNearestVisibleOpponent() const {
-    std::cout << "Suspect::getNearestVisibleOpponent" << std::endl;
     auto report = getSurrounding();
-    std::cout << "Suspect::getNearestVisibleOpponent report size: " << report.objects.size() << std::endl;
     auto environmentPtr = getEnvironment().lock();
-    std::cout << "Suspect::getNearestVisibleOpponent environmentPtr" << std::endl;
     std::shared_ptr<Placeholder> nearestPredator = nullptr;
     double minDistance = std::numeric_limits<double>::max();
     for (auto [pos, placeholder] : report.objects)
