@@ -2,6 +2,7 @@
 
 #include <map>
 #include <shared_mutex>
+
 #include <memory>
 
 #include "../common_types.h"
@@ -12,8 +13,8 @@ class Environment : public std::enable_shared_from_this<Environment> {
 private:
     Pair size_;
     std::map<Pair, std::shared_ptr<Placeholder>> tokens_;
-    mutable std::vector<std::shared_mutex> mutexes_;
     bool initialized_ = false;
+    mutable std::shared_mutex mutex_;
 
     void checkInitialized() const {
         if (!initialized_)
@@ -22,9 +23,7 @@ private:
     
 public:
     Environment() = delete;
-    explicit Environment(Pair size) :
-    size_{size},
-    mutexes_(size.x * size.y) {}
+    explicit Environment(Pair size) : size_{size} {}
     
     Environment(const Environment&) = delete;
     Environment& operator=(const Environment&) = delete;
@@ -40,8 +39,10 @@ public:
     void moveToken(Pair from, Pair to);
     bool abilityToMove(Pair from, Pair to) const;
 
-    std::map<Pair, std::shared_ptr<Placeholder>> getTokens() const {return tokens_;}
-    
+    std::map<Pair, std::shared_ptr<Placeholder>> getTokens() const {
+        //std::shared_lock<std::shared_mutex> lock(mutex_);
+        return tokens_;
+    }
     bool isEmpty(Pair position) const;
 
     bool hasLineOfSight(Pair from, Pair to) const;

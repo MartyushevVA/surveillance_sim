@@ -24,11 +24,12 @@ private:
 
 public:
     AI(std::shared_ptr<Environment> environment);
+    void syncHosts();
 
-    void addMainHost(std::shared_ptr<ConnectionModule> host);
     void eliminateAllSuspects();
-    void getNetworkForest();
     const std::vector<std::shared_ptr<ConnectionModule>>& getAllConnectedPlatforms() const {return allConnectedPlatforms_;}
+
+    void addConnectedPlatform(std::shared_ptr<ConnectionModule> platform);
     
     void addSuspects(std::map<Pair, std::shared_ptr<Suspect>> suspects);
     void removeSuspect(std::shared_ptr<Suspect> suspect);

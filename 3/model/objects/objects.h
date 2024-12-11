@@ -27,6 +27,7 @@ public:
 
     void setAI(std::weak_ptr<AI> ai) {ai_ = ai;}
     std::weak_ptr<AI> getAI() const override {return ai_;}
+    std::shared_mutex& getMutex() override {return Placeholder::getMutex();}
 
     void iterate() override;
 };
@@ -44,6 +45,7 @@ public:
     Pair opponentBasedMove(Pair opponent) const override;
 
     std::weak_ptr<AI> getAI() const override {return {};}
+    std::shared_mutex& getMutex() override {return MovablePlaceholder::getMutex();}
 
     void iterate() override;
 };

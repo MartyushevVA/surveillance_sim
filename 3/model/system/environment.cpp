@@ -90,17 +90,20 @@ void Environment::addToken(std::shared_ptr<Placeholder> token) {
 
 void Environment::removeToken(Pair position) {
     checkInitialized();
-    std::unique_lock<std::shared_mutex> lock(mutexes_[position.x + position.y * size_.x]);
-    if (isEmpty(position))
-        return;
+    auto token = getToken(position);
+    if (!token) return;
+    std::unique_lock<std::shared_mutex> lock(token->getMutex());
     tokens_.erase(position);
 }
 
 std::shared_ptr<Placeholder> Environment::getToken(Pair position) const {
     checkInitialized();
-    std::shared_lock<std::shared_mutex> lock(mutexes_[position.x + position.y * size_.x]);
+    std::shared_lock<std::shared_mutex> lock(mutex_);
     auto token = tokens_.find(position);
-    return token != tokens_.end() ? token->second : nullptr;
+    if (token != tokens_.end()) {
+        return token->second;
+    }
+    return nullptr;
 }
 
 bool Environment::abilityToMove(Pair from, Pair to) const {
@@ -114,16 +117,13 @@ bool Environment::abilityToMove(Pair from, Pair to) const {
 
 void Environment::moveToken(Pair from, Pair to) {
     checkInitialized();
+    auto token = getToken(from);
     if (to.x >= size_.x || to.y >= size_.y || to.x < 0 || to.y < 0 || from == to)
         return;
-    
-    auto token = getToken(from);
     if (token && isEmpty(to)) {
-        std::unique_lock<std::shared_mutex> lock1(mutexes_[from.x + from.y * size_.x]);
-        std::unique_lock<std::shared_mutex> lock2(mutexes_[to.x + to.y * size_.x]);
         tokens_.erase(from);
-        tokens_.insert({to, token});
         token->setPosition(to);
+        tokens_.insert({to, token});
     }
 }
 
@@ -151,12 +151,12 @@ std::vector<Pair> Environment::getLine(Pair from, Pair to) const {
 bool Environment::hasLineOfSight(Pair from, Pair to) const {
     checkInitialized();
     auto line = getLine(from, to);
-    std::vector<std::shared_lock<std::shared_mutex>> locks;
-    for (auto pos : line)
-        locks.emplace_back(mutexes_[pos.x + pos.y * size_.x]);
     for (auto pos : line) {
-        if (!isEmpty(pos))
+        
+        auto token = getToken(pos);
+        if (token && !isEmpty(token->getPosition())) {
             return false;
+        }
     }
     return true;
 }
@@ -186,11 +186,8 @@ std::vector<Pair> Environment::representArea(Pair position, int range) const {
 
 std::map<Pair, std::shared_ptr<Placeholder>> Environment::getArea(Pair position, int range) const {
     std::map<Pair, std::shared_ptr<Placeholder>> area;
-    std::vector<std::shared_lock<std::shared_mutex>> locks;
     auto rArea = representArea(position, range);
-    for (auto pos : rArea){
-        locks.emplace_back(mutexes_[pos.x + pos.y * size_.x]);
-    }
+    //std::shared_lock<std::shared_mutex> lock(mutex_);
     for (auto pos : rArea) {
         if (pos == position || isEmpty(pos))
             continue;

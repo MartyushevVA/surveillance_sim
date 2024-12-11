@@ -11,7 +11,6 @@
 void MobilePlatform::iterate() {
     auto connection = findModuleOfType<ConnectionModule>();
     if (!connection) return;
-    
     connection->update();
 
     auto staticPlatform = connection->getConnectedToAIDirectly();
@@ -49,7 +48,7 @@ void StaticPlatform::iterate() {
     auto connection = findModuleOfType<ConnectionModule>();
     if (!connection) return;
     connection->update();
-    
+
     auto sensor = findModuleOfType<SensorModule>();
     if (!sensor) return;
     

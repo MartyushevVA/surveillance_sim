@@ -2,6 +2,8 @@
 
 #include "../common_types.h"
 
+#include <shared_mutex>
+
 class Module;
 class Environment;
 class AI;
@@ -63,7 +65,7 @@ public:
 
     /**
      * @brief Gets the environment the platform is in.
-     * @return Environment* Pointer to the environment.
+     * @return std::weak_ptr<Environment> Pointer to the environment.
      * 
      * This method is virtual and must be overridden in derived classes.
      * @virtual
@@ -81,7 +83,6 @@ public:
 
     /**
      * @brief Updates the platform's state based on spotted suspects.
-     * @param spottedSuspects Vector of pointers to spotted suspects.
      * 
      * This method is virtual and must be overridden in derived classes.
      * @virtual
@@ -90,9 +91,21 @@ public:
 
     /**
      * @brief Gets the AI associated with the platform.
-     * @return std::shared_ptr<AI> Pointer to the AI.
+     * @return std::weak_ptr<AI> Pointer to the AI.
+     * 
+     * This method is virtual and must be overridden in derived classes.
+     * @virtual
      */
     virtual std::weak_ptr<AI> getAI() const = 0;
+    
+    /**
+     * @brief Gets the mutex of the platform.
+     * @return std::shared_mutex& Reference to the mutex.
+     * 
+     * This method is virtual and must be overridden in derived classes.
+     * @virtual
+     */
+    virtual std::shared_mutex& getMutex() = 0;
 
     /**
      * @brief Gets the list of modules attached to the platform.

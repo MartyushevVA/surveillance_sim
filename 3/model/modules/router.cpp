@@ -1,8 +1,13 @@
 #include "modules.h"
 
 #include <cmath>
+#include <thread>
+#include <shared_mutex>
+#include <mutex>
+#include <iostream>
 
 #include "../objects/objects.h"
+#include "../system/ai.h"
 
 std::vector<std::weak_ptr<ConnectionModule>> ConnectionModule::scanForModules(Pair pos) const {
     std::vector<std::weak_ptr<ConnectionModule>> result;
@@ -134,13 +139,21 @@ std::weak_ptr<const ConnectionModule> ConnectionModule::getConnectedToAIDirectly
 void ConnectionModule::update() {
     auto host = host_.lock();
     if (!host) return;
-    
+    auto environment = host->getEnvironment().lock();
+    if (!environment) return;
+
     auto newNeighbors = scanForModules(host->getPosition());
-    for (auto neighbor : newNeighbors) {
-        if (!neighbor.lock()) continue;
+
+    for (const auto& neighborWeak : newNeighbors) {
+        auto neighbor = neighborWeak.lock();
+        if (!neighbor) continue;
         if (std::find_if(sessionList_.begin(), sessionList_.end(),
-        [&neighbor](const std::weak_ptr<ConnectionModule>& session) {return session.lock() == neighbor.lock();}) == sessionList_.end()) {
-            establishConnection(neighbor);
+        [&neighbor](const std::weak_ptr<ConnectionModule>& session) {return session.lock() == neighbor;}) == sessionList_.end()) {
+            if (establishConnection(neighbor)) {
+                auto ai = getConnectedToAIDirectly().lock()->getHost()->getAI().lock();
+                if (ai)
+                    ai->addConnectedPlatform(neighbor);
+            }
         }
     }
     auto it = sessionList_.begin();

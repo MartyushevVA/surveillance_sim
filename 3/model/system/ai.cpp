@@ -6,6 +6,8 @@
 #include <future>
 #include "thread_pool.h"
 
+#include <iostream>
+
 #include "../modules/modules.h"
 
 AI::AI(std::shared_ptr<Environment> environment) : environment_(environment) {
@@ -14,50 +16,30 @@ AI::AI(std::shared_ptr<Environment> environment) : environment_(environment) {
         if (auto provider = std::dynamic_pointer_cast<StaticPlatform>(token)) {
             auto host = provider->findModuleOfType<ConnectionModule>();
             if (!host) continue;
-            addMainHost(host);
+            mainHosts_.push_back(host);
+            allConnectedPlatforms_.push_back(host);
         }
 }
 
-void AI::addMainHost(std::shared_ptr<ConnectionModule> host) {
-    if (!host)
-        return;
-    mainHosts_.push_back(host);
-}
-
-void AI::getNetworkForest() {
-    allConnectedPlatforms_.clear();
-
-    std::set<std::shared_ptr<ConnectionModule>> visited;
-    std::queue<std::shared_ptr<ConnectionModule>> wip;
-    for (const auto& host : mainHosts_) {
-        if (!host) continue;
-        wip.push(host);
-        visited.insert(host);
-        allConnectedPlatforms_.push_back(host);
-        
-        while (!wip.empty()) {
-            auto current = wip.front();
-            wip.pop();
-            auto sessions = current->getSessionList();
-            
-            for (const auto& session : sessions) {
-                if (visited.insert(session.lock()).second) {
-                    allConnectedPlatforms_.push_back(session.lock());
-                    wip.push(session.lock());
-                }
-            }
-        }
+void AI::syncHosts() {
+    for (auto host : mainHosts_) {
+        auto staticPlatform = std::dynamic_pointer_cast<StaticPlatform>(host->getHost());
+        if (!staticPlatform) continue;
+        staticPlatform->setAI(shared_from_this());
     }
+}
+
+void AI::addConnectedPlatform(std::shared_ptr<ConnectionModule> platform) {
+    if (std::find_if(allConnectedPlatforms_.begin(), allConnectedPlatforms_.end(), [platform](std::shared_ptr<ConnectionModule> host) {
+        return host->getHost() == platform->getHost();}) == allConnectedPlatforms_.end())
+        allConnectedPlatforms_.push_back(platform);
 }
 
 void AI::eliminateAllSuspects() {
     const size_t threadCount = std::thread::hardware_concurrency();
     std::vector<std::future<void>> futures;
     ThreadPool pool(threadCount);
-    getNetworkForest();
-    auto routers = allConnectedPlatforms_;
-
-    for (auto router : routers) {
+    for (auto router : allConnectedPlatforms_) {
         if (!router) continue;
         auto platform = router->getHost();
         futures.emplace_back(pool.enqueue([platform]() {

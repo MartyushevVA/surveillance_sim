@@ -23,6 +23,7 @@ public:
         environment_ = std::make_shared<Environment>(Pair{config.size.x, config.size.y});
         environment_->initialize(config);
         ai_ = std::make_shared<AI>(environment_);
+        ai_->syncHosts();
         updateInterval_ = config.updateInterval;
     }
     void iterate();
