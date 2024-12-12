@@ -98,7 +98,6 @@ void StaticPlatform::iterate() {
             }
         }
     }
-    
     connection->update();
 }
 

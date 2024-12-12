@@ -57,28 +57,16 @@ void Graphics::adjustGraphicsConfig(GraphicsConfig config) {
 }
 
 void Graphics::render() {
-    auto env = game_->getEnvironment();
-    if (!env) return;
-
     window_.clear(config_.background.toSFMLColor());
-    
-    std::map<Pair, std::shared_ptr<Placeholder>> tokens;
-    {
-        std::shared_lock<std::shared_mutex> lock(env->getMutex());
-        tokens = env->getTokens();
-    }
-    
-    for (const auto& [pos, token] : tokens) {
-        if (!token) continue;
-        
-        if (auto suspect = std::dynamic_pointer_cast<Suspect>(token))
-            drawObject(config_.sprites.suspect, suspect.get());
-        else if (auto staticPlatform = std::dynamic_pointer_cast<StaticPlatform>(token))
-            drawObject(config_.sprites.staticPlatform, staticPlatform.get());
-        else if (auto mobilePlatform = std::dynamic_pointer_cast<MobilePlatform>(token))
-            drawObject(config_.sprites.mobilePlatform, mobilePlatform.get());
-        else if (auto obstacle = std::dynamic_pointer_cast<Obstacle>(token))
-            drawObject(config_.sprites.obstacle, obstacle.get());
+    for (const auto& token : game_->getEnvironment()->getTokens()) {
+        if (const Suspect* suspect = dynamic_cast<const Suspect*>(token.second.get()))
+            drawObject(config_.sprites.suspect, suspect);
+        else if (const StaticPlatform* platform = dynamic_cast<const StaticPlatform*>(token.second.get()))
+            drawObject(config_.sprites.staticPlatform, platform);
+        else if (const MobilePlatform* platform = dynamic_cast<const MobilePlatform*>(token.second.get()))
+            drawObject(config_.sprites.mobilePlatform, platform);
+        else if (const Obstacle* obstacle = dynamic_cast<const Obstacle*>(token.second.get()))
+            drawObject(config_.sprites.obstacle, obstacle);
     }
     window_.display();
 }

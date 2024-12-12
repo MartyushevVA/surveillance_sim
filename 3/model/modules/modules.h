@@ -4,7 +4,7 @@
 
 #include "base_module.h"
 #include "../interfaces.h"
-
+#include "myvector/myvector.h"
 class StaticPlatform;
 class Suspect;
 
@@ -14,8 +14,8 @@ class ConnectionModule :
     public std::enable_shared_from_this<ConnectionModule> {
 private:
     int maxSessions_ = 5;
-    std::vector<std::weak_ptr<ConnectionModule>> sessionList_ {};
-    std::vector<routeNode> routeList_ {};
+    Vector<std::weak_ptr<ConnectionModule>> sessionList_ {};
+    Vector<routeNode> routeList_ {};
     std::shared_mutex mutex_;
 
 public:
@@ -24,18 +24,18 @@ public:
 
     int getMaxSessions() const {return maxSessions_;}
     void setMaxSessions(int maxSessions) {maxSessions_ = maxSessions;}
-    std::vector<std::weak_ptr<ConnectionModule>> getSessionList() const {return sessionList_;}
-    std::vector<routeNode> getRouteList() const {return routeList_;}
+    Vector<std::weak_ptr<ConnectionModule>> getSessionList() const {return sessionList_;}
+    Vector<routeNode> getRouteList() const {return routeList_;}
     
-    std::vector<std::weak_ptr<ConnectionModule>> scanForModules(Pair position) const;
+    Vector<std::weak_ptr<ConnectionModule>> scanForModules(Pair position) const;
 
     bool establishConnection(std::weak_ptr<ConnectionModule> module, bool isResponse = false) override;
     bool closeConnection(std::weak_ptr<ConnectionModule> module, bool isResponse = false) override;
     
-    std::vector<routeNode> requestRouteList(std::weak_ptr<ConnectionModule> source) const;
-    
-    void recursiveRouteNodeImplementation(std::weak_ptr<ConnectionModule> gate, std::vector<routeNode> routeList);
-    void recursiveDiscord(std::weak_ptr<ConnectionModule> gate, std::vector<routeNode> targetList);
+    Vector<routeNode> requestRouteList(std::weak_ptr<ConnectionModule> source) const;
+
+    void recursiveRouteNodeImplementation(std::weak_ptr<ConnectionModule> gate, Vector<routeNode> routeList);
+    void recursiveDiscord(std::weak_ptr<ConnectionModule> gate, Vector<routeNode> targetList);
 
     bool isGateToAI(std::weak_ptr<ConnectionModule> gate) const;
     bool isSafeForSystem(Pair position) const;

@@ -9,8 +9,8 @@
 #include "../objects/objects.h"
 #include "../system/ai.h"
 
-std::vector<std::weak_ptr<ConnectionModule>> ConnectionModule::scanForModules(Pair pos) const {
-    std::vector<std::weak_ptr<ConnectionModule>> result;
+Vector<std::weak_ptr<ConnectionModule>> ConnectionModule::scanForModules(Pair pos) const {
+    Vector<std::weak_ptr<ConnectionModule>> result;
     auto host = host_.lock();
     if (!host) return result;
     auto env = host->getEnvironment().lock();
@@ -35,7 +35,7 @@ bool ConnectionModule::establishConnection(std::weak_ptr<ConnectionModule> targe
                 return false;
         sessionList_.push_back(target);
         routeList_.push_back(routeNode{target, target});
-        std::vector<routeNode> partnersTargets = targetPtr->requestRouteList(shared_from_this());
+        Vector<routeNode> partnersTargets = targetPtr->requestRouteList(shared_from_this());
         for (auto& route : partnersTargets)
             routeList_.push_back(routeNode{target, route.destination});
         for (auto session : sessionList_) {
@@ -66,8 +66,8 @@ bool ConnectionModule::closeConnection(std::weak_ptr<ConnectionModule> target, b
     return true;
 }
 
-std::vector<routeNode> ConnectionModule::requestRouteList(std::weak_ptr<ConnectionModule> source) const {
-    std::vector<routeNode> routeList {};
+Vector<routeNode> ConnectionModule::requestRouteList(std::weak_ptr<ConnectionModule> source) const {
+    Vector<routeNode> routeList {};
     auto sourcePtr = source.lock();
     if (!sourcePtr) return routeList;
     for (auto node : routeList_) {
@@ -77,7 +77,7 @@ std::vector<routeNode> ConnectionModule::requestRouteList(std::weak_ptr<Connecti
     return routeList;
 }
 
-void ConnectionModule::recursiveRouteNodeImplementation(std::weak_ptr<ConnectionModule> gate, std::vector<routeNode> routeList) {
+void ConnectionModule::recursiveRouteNodeImplementation(std::weak_ptr<ConnectionModule> gate, Vector<routeNode> routeList) {
     bool isEntered = false;
     for (auto& node : routeList)
         if (std::find_if(routeList_.begin(), routeList_.end(),
@@ -92,7 +92,7 @@ void ConnectionModule::recursiveRouteNodeImplementation(std::weak_ptr<Connection
     }
 }
 
-void ConnectionModule::recursiveDiscord(std::weak_ptr<ConnectionModule> gate, std::vector<routeNode> targetList) {
+void ConnectionModule::recursiveDiscord(std::weak_ptr<ConnectionModule> gate, Vector<routeNode> targetList) {
     bool isEntered = false;
     for (auto node : targetList)
         if (auto it = std::find(routeList_.begin(), routeList_.end(), routeNode{gate, node.destination}); it != routeList_.end()) {
@@ -146,7 +146,6 @@ void ConnectionModule::update() {
     auto environment = host->getEnvironment().lock();
 
     auto newNeighbors = scanForModules(host->getPosition());
-
     for (const auto& neighborWeak : newNeighbors) {
         auto neighbor = neighborWeak.lock();
         if (!neighbor) continue;

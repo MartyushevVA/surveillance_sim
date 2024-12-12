@@ -35,12 +35,13 @@ enum SensorType {
 };
 
 struct routeNode {
-    std::weak_ptr<ConnectionModule> destination;
-    std::weak_ptr<ConnectionModule> gate;
+    std::weak_ptr<ConnectionModule> destination = {};
+    std::weak_ptr<ConnectionModule> gate = {};
 
     bool operator==(const routeNode& other) const {
         return destination.lock() == other.destination.lock();
     }
+    routeNode() = default;
     routeNode(std::weak_ptr<ConnectionModule> gate, std::weak_ptr<ConnectionModule> destination) : destination(destination), gate(gate) {}
 };
 
