@@ -4,7 +4,6 @@
 #include <set>
 #include <thread>
 #include <future>
-#include "thread_pool.h"
 
 #include <iostream>
 
@@ -30,28 +29,36 @@ void AI::syncHosts() {
 }
 
 void AI::addConnectedPlatform(std::shared_ptr<ConnectionModule> platform) {
-    if (std::find_if(allConnectedPlatforms_.begin(), allConnectedPlatforms_.end(), [platform](std::shared_ptr<ConnectionModule> host) {
-        return host->getHost() == platform->getHost();}) == allConnectedPlatforms_.end())
+    std::unique_lock<std::shared_mutex> lock(platformsMutex_);
+    if (std::find(allConnectedPlatforms_.begin(), allConnectedPlatforms_.end(), platform) 
+        == allConnectedPlatforms_.end()) {
         allConnectedPlatforms_.push_back(platform);
+    }
 }
 
 void AI::eliminateAllSuspects() {
-    const size_t threadCount = std::thread::hardware_concurrency();
     std::vector<std::future<void>> futures;
-    ThreadPool pool(threadCount);
-    for (auto router : allConnectedPlatforms_) {
-        if (!router) continue;
-        auto platform = router->getHost();
-        futures.emplace_back(pool.enqueue([platform]() {
-            platform->iterate();
-        }));
+    
+    {
+        std::shared_lock<std::shared_mutex> lock(platformsMutex_);
+        futures.reserve(allConnectedPlatforms_.size());
+        for (auto& router : allConnectedPlatforms_) {
+            if (!router) continue;
+            auto platform = router->getHost();
+            if (!platform) continue;
+            futures.emplace_back(std::async(std::launch::async, [platform]() {
+                platform->iterate();
+            }));
+        }
     }
 
-    for (auto& future : futures)
+    for (auto& future : futures) {
         future.get();
+    }
 }
 
 void AI::addSuspects(std::map<Pair, std::shared_ptr<Suspect>> suspects) {
+    std::unique_lock<std::shared_mutex> lock(suspectsMutex_);
     for (auto [pos, suspect] : suspects) {
         for (auto it = spottedSuspects_.begin(); it != spottedSuspects_.end();)
             if (it->second == suspect)
@@ -63,8 +70,7 @@ void AI::addSuspects(std::map<Pair, std::shared_ptr<Suspect>> suspects) {
 }
 
 void AI::removeSuspect(std::shared_ptr<Suspect> suspect) {
-    if (!suspect)
-        return;
+    std::unique_lock<std::shared_mutex> lock(suspectsMutex_);
     for (auto it = spottedSuspects_.begin(); it != spottedSuspects_.end();)
         if (it->second == suspect)
             it = spottedSuspects_.erase(it);

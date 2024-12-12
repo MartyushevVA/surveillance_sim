@@ -17,12 +17,9 @@ public:
 };
 
 class ISensor {
-protected:
-    virtual Report getSurrounding() const = 0;
-
 public:
     virtual ~ISensor() = default;
-    virtual std::shared_ptr<Placeholder> getNearestVisibleOpponent() const = 0;
+    virtual Report getSurrounding() const = 0;
 };
 
 class IMoving {

@@ -44,6 +44,13 @@ struct routeNode {
     routeNode(std::weak_ptr<ConnectionModule> gate, std::weak_ptr<ConnectionModule> destination) : destination(destination), gate(gate) {}
 };
 
+enum class PlaceholderType {
+    Suspect,
+    MobilePlatform,
+    StaticPlatform,
+    Obstacle
+};
+
 enum class PlatformType {
     STATIC,
     MOBILE

@@ -15,6 +15,7 @@ std::vector<std::weak_ptr<ConnectionModule>> ConnectionModule::scanForModules(Pa
     if (!host) return result;
     auto env = host->getEnvironment().lock();
     if (!env) return result;
+    std::shared_lock<std::shared_mutex> lock(env->getMutex());
     auto area = env->getArea(pos, range_);
     for (const auto& [checkPos, token] : area)
         if (auto platform = std::dynamic_pointer_cast<Platform>(token))
@@ -115,11 +116,15 @@ bool ConnectionModule::isGateToAI(std::weak_ptr<ConnectionModule> gate) const {
 bool ConnectionModule::isSafeForSystem(Pair newPosition) const {
     auto host = host_.lock();
     if (!host) return false;
+    auto env = host->getEnvironment().lock();
+    if (!env) return false;
     auto staticPlatform = getConnectedToAIDirectly().lock();
     if (!staticPlatform) return false;
+
     for (const auto& session : sessionList_) {
         auto sessionPtr = session.lock();
         if (!sessionPtr) continue;
+
         auto distance = host->getEnvironment().lock()->calculateDistance(newPosition, sessionPtr->getHost()->getPosition());
         if ((distance > range_ || distance > sessionPtr->getRange()) && (sessionPtr->isGateToAI(host->findModuleOfType<ConnectionModule>()) || isGateToAI(session)))
             return false;
@@ -138,9 +143,7 @@ std::weak_ptr<const ConnectionModule> ConnectionModule::getConnectedToAIDirectly
 
 void ConnectionModule::update() {
     auto host = host_.lock();
-    if (!host) return;
     auto environment = host->getEnvironment().lock();
-    if (!environment) return;
 
     auto newNeighbors = scanForModules(host->getPosition());
 

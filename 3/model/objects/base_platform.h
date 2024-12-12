@@ -97,15 +97,6 @@ public:
      * @virtual
      */
     virtual std::weak_ptr<AI> getAI() const = 0;
-    
-    /**
-     * @brief Gets the mutex of the platform.
-     * @return std::shared_mutex& Reference to the mutex.
-     * 
-     * This method is virtual and must be overridden in derived classes.
-     * @virtual
-     */
-    virtual std::shared_mutex& getMutex() = 0;
 
     /**
      * @brief Gets the list of modules attached to the platform.

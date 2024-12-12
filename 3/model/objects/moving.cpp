@@ -34,13 +34,13 @@ Pair Suspect::opponentBasedMove(Pair opponent) const {
         position_.x + dx_move,
         position_.y + dy_move
     };
-    if (environmentPtr->abilityToMove(position_, newPos))
+    if (environmentPtr->isValidCoords(newPos))
         return newPos;
     Pair altPos1 = {position_.x + dx_move, position_.y};
-    if (environmentPtr->abilityToMove(position_, altPos1))
+    if (environmentPtr->isValidCoords(altPos1))
         return altPos1;
     Pair altPos2 = {position_.x, position_.y + dy_move};
-    if (environmentPtr->abilityToMove(position_, altPos2))
+    if (environmentPtr->isValidCoords(altPos2))
         return altPos2;
     return position_;
 }
@@ -51,20 +51,18 @@ Pair MovablePlaceholder::randomMove() const {
     static std::random_device rd;
     static std::mt19937 gen(rd());
     std::uniform_real_distribution<> angle_dist(0, 2 * M_PI);
-    
-    for (int i = 0; i < 8; i++) {
-        double angle = angle_dist(gen);
-        double nx = cos(angle);
-        double ny = sin(angle);
-        int dx_move = std::clamp(static_cast<int>(nx * speed_), -speed_, speed_);
-        int dy_move = std::clamp(static_cast<int>(ny * speed_), -speed_, speed_);   
-        Pair newPos = {
-            position_.x + dx_move,
-            position_.y + dy_move
-        };
-        if (environmentPtr->abilityToMove(position_, newPos))
-            return newPos;
-    }
+
+    double angle = angle_dist(gen);
+    double nx = cos(angle);
+    double ny = sin(angle);
+    int dx_move = std::clamp(static_cast<int>(nx * speed_), -speed_, speed_);
+    int dy_move = std::clamp(static_cast<int>(ny * speed_), -speed_, speed_);   
+    Pair newPos = {
+        position_.x + dx_move,
+        position_.y + dy_move
+    };
+    if (environmentPtr->isValidCoords(newPos))
+        return newPos;
     return position_;
 }
 
@@ -92,13 +90,13 @@ Pair MobilePlatform::opponentBasedMove(Pair opponent) const {
         position_.x + dx_move,
         position_.y + dy_move
     };
-    if (environmentPtr->abilityToMove(position_, newPos))
+    if (environmentPtr->isValidCoords(newPos))
         return newPos;
     Pair altPos1 = {position_.x + dx_move, position_.y};
-    if (environmentPtr->abilityToMove(position_, altPos1))
+    if (environmentPtr->isValidCoords(altPos1))
         return altPos1;  
     Pair altPos2 = {position_.x, position_.y + dy_move};
-    if (environmentPtr->abilityToMove(position_, altPos2))
+    if (environmentPtr->isValidCoords(altPos2))
         return altPos2;
     return position_;
 }

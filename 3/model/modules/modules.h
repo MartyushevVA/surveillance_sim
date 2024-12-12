@@ -16,6 +16,7 @@ private:
     int maxSessions_ = 5;
     std::vector<std::weak_ptr<ConnectionModule>> sessionList_ {};
     std::vector<routeNode> routeList_ {};
+    std::shared_mutex mutex_;
 
 public:
     ConnectionModule(int slotsOccupied, int energyConsumption, int range, int maxSessions)
@@ -40,6 +41,8 @@ public:
     bool isSafeForSystem(Pair position) const;
     std::weak_ptr<const ConnectionModule> getConnectedToAIDirectly() const;
 
+    std::shared_mutex& getMutex() {return mutex_;}
+
     void turnOn() override;
     void turnOff() override;
 
@@ -58,9 +61,6 @@ public:
 
     SensorType getType() const {return type_;}
     void setType(SensorType type) {type_ = type;}
-
-    std::shared_ptr<Placeholder> getNearestVisibleOpponent() const override;
-    std::map<Pair, std::shared_ptr<Suspect>> getSuspects() const;
 
     Report getSurrounding() const override;
 
