@@ -5,6 +5,8 @@
 #include <concepts>
 #include <iterator>
 #include <algorithm>
+#include <stdexcept>
+#include <limits>
 
 /**
  * @class Vector
@@ -25,9 +27,7 @@ class Vector {
      */
     void reallocate(size_t new_capacity) {
         T* new_data = new T[new_capacity];
-        for (size_t i = 0; i < size_; ++i) {
-            new_data[i] = std::move(data_[i]);
-        }
+        for (size_t i = 0; i < size_; ++i) new_data[i] = std::move(data_[i]);
         delete[] data_;
         data_ = new_data;
         capacity_ = new_capacity;
@@ -69,8 +69,9 @@ public:
          * @param o The other iterator to copy from.
          */
         template<bool other_const>
-        VectorIterator(const VectorIterator<other_const>& o) noexcept
-        requires (is_const >= other_const) : node(o.node) {}
+        VectorIterator(const VectorIterator<other_const>& o) noexcept {
+            node = o.node;
+        }
 
         /**
          * @brief Copy assignment operator for VectorIterator.
@@ -80,8 +81,7 @@ public:
          * @return VectorIterator& Reference to the assigned iterator.
          */
         template<bool other_const>
-        VectorIterator& operator=(const VectorIterator<other_const>& o) noexcept
-        requires (is_const >= other_const) {
+        VectorIterator& operator=(const VectorIterator<other_const>& o) noexcept {
             node = o.node;
             return *this;
         }
@@ -158,7 +158,7 @@ public:
          * @param n Offset to add.
          * @return VectorIterator New iterator at the offset position.
          */
-        VectorIterator operator+(difference_type n) const noexcept { VectorIterator temp = *this; return temp += n; }
+        VectorIterator operator+(difference_type n) const noexcept { return VectorIterator(node + n); }
 
         /**
          * @brief Subtraction operator.
@@ -166,7 +166,7 @@ public:
          * @param n Offset to subtract.
          * @return VectorIterator New iterator at the offset position.
          */
-        VectorIterator operator-(difference_type n) const noexcept { VectorIterator temp = *this; return temp -= n; }
+        VectorIterator operator-(difference_type n) const noexcept { return VectorIterator(node - n); }
 
         /**
          * @brief Subtraction operator for iterators.
@@ -194,7 +194,8 @@ public:
          * @param other The other iterator to compare with.
          * @return bool True if the iterators are equal, false otherwise.
          */
-        bool operator==(const VectorIterator& other) const noexcept { return node == other.node; }
+        template<bool other_const>
+        bool operator==(const VectorIterator<other_const>& other) const {return node == other.node;}
 
         /**
          * @brief Inequality operator.
@@ -202,9 +203,8 @@ public:
          * @param other The other iterator to compare with.
          * @return bool True if the iterators are not equal, false otherwise.
          */
-        bool operator!=(const VectorIterator& other) const noexcept { return node != other.node; }
-
-        // ... other comparison operators ...
+        template<bool other_const>
+        bool operator!=(const VectorIterator<other_const>& other) const {return node != other.node;}
 
         /**
          * @brief Friend addition operator for offset and iterator.
@@ -552,12 +552,13 @@ public:
      */
     iterator insert(const_iterator pos, const T& value) noexcept
     requires std::is_copy_constructible_v<T> {
+        if (pos < begin() || pos > end()) throw std::out_of_range("Iterator out of range");
+        size_t index = pos - begin();
         if (size_ == capacity_) reallocate(capacity_ == 0 ? 1 : capacity_ * 2);
-        iterator it = iterator(data_ + (pos - begin()));
-        std::move_backward(it, end(), end() + 1);
-        new (data_ + (pos - begin())) T(value);
+        std::move_backward(data_ + index, data_ + size_, data_ + size_ + 1);
+        new (data_ + index) T(value);
         ++size_;
-        return it;
+        return data_ + index;
     }
 
     /**
@@ -607,4 +608,7 @@ public:
         size_ -= last - first;
         return it;
     }
+
+    friend class VectorIterator<false>;
+    friend class VectorIterator<true>;
 };

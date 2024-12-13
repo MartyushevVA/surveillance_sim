@@ -133,12 +133,10 @@ bool ConnectionModule::isSafeForSystem(Pair newPosition) const {
 }
 
 std::weak_ptr<const ConnectionModule> ConnectionModule::getConnectedToAIDirectly() const {
-    if (auto staticPlatform = dynamic_cast<StaticPlatform*>(host_.lock().get()); staticPlatform)
-        return weak_from_this();
     for (auto node : routeList_)
         if (auto staticPlatform = dynamic_cast<StaticPlatform*>(node.destination.lock()->getHost().get()); staticPlatform)
             return node.destination;
-    return {};
+    return weak_from_this();
 }
 
 void ConnectionModule::update() {

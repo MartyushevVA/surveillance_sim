@@ -112,15 +112,12 @@ bool Environment::abilityToMove(Pair from, Pair to) const {
 }
 
 void Environment::moveToken(Pair from, Pair to) {
-    std::unique_lock<std::shared_mutex> lock(mutex_, std::try_to_lock);
-    if (!lock.owns_lock()) return;
-
+    std::unique_lock<std::shared_mutex> lock(mutex_);
     if (!abilityToMove(from, to))
         return;
     
     auto token = getToken(from);
     if (!token) return;
-    
     tokens_.erase(token->getPosition());
     tokens_[to] = token;
     token->setPosition(to);

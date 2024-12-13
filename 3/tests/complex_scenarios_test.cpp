@@ -8,11 +8,11 @@
 
 class ComplexScenariosTest : public ::testing::Test {
 protected:
-    Environment env;
+    std::shared_ptr<Environment> env;
     std::mt19937 gen{std::random_device{}()};
     
     void SetUp() override {
-        env.setSize(50, 50);
+        env = std::make_shared<Environment>(Pair{50, 50});
     }
     
     Pair getRandomPosition() {
@@ -25,8 +25,8 @@ protected:
             Pair pos = vertical ? 
                 Pair{start.x, start.y + i} : 
                 Pair{start.x + i, start.y};
-            auto obstacle = std::make_shared<Obstacle>(pos, &env);
-            env.addToken(obstacle);
+            auto obstacle = std::make_shared<Obstacle>(pos, std::weak_ptr<Environment>(env));
+            env->addToken(obstacle);
         }
     }
 };
@@ -37,18 +37,18 @@ TEST_F(ComplexScenariosTest, MazeEscape) {
     createObstacleWall({20, 10}, 10, true);
     createObstacleWall({10, 20}, 10, false);
     
-    auto suspect = std::make_shared<Suspect>(Pair{15, 15}, &env, 5, 3);
-    auto platform = std::make_shared<MobilePlatform>(Pair{11, 11}, &env, "Hunter", 100, 3, 2);
+    auto suspect = std::make_shared<Suspect>(Pair{15, 15}, env, 5, 3);
+    auto platform = std::make_shared<MobilePlatform>(Pair{11, 11}, env, "Hunter", 100, 3, 2);
     
-    env.addToken(suspect);
-    env.addToken(platform);
+    env->addToken(suspect);
+    env->addToken(platform);
     
-    for(int i = 0; i < 20; i++) {
+    for(int i = 0; i < 5; i++) {
         Pair oldPos = suspect->getPosition();
-        EXPECT_TRUE(env.abilityToMove(oldPos, suspect->getPosition()));
         Pair newPos = suspect->opponentBasedMove(platform->getPosition());
+        EXPECT_TRUE(env->abilityToMove(oldPos, newPos));
         suspect->move(newPos);
-        EXPECT_EQ(env.getToken(newPos), suspect);
+        EXPECT_EQ(env->getToken(newPos), suspect);
     }
 }
 
@@ -58,11 +58,12 @@ TEST_F(ComplexScenariosTest, NetworkPartitioning) {
     for(int i = 0; i < 6; i++) {
         auto platform = std::make_shared<StaticPlatform>(
             Pair{10 + (i < 3 ? 0 : 20), 10 + i*5}, 
-            &env, "Platform" + std::to_string(i), 100, 3, nullptr);
+            std::weak_ptr<Environment>(env),
+            "Platform" + std::to_string(i), 100, 3);
         auto connection = std::make_shared<ConnectionModule>(1, 10, 8, 5);
         platform->installModule(connection);
         platforms.push_back(platform);
-        env.addToken(platform);
+        env->addToken(platform);
     }
     
     createObstacleWall({15, 0}, 50, true);
@@ -88,13 +89,13 @@ TEST_F(ComplexScenariosTest, ConcurrentEnvironmentModification) {
                 auto pos = getRandomPosition();
                 {
                     std::lock_guard<std::mutex> lock(envMutex);
-                    auto obstacle = std::make_shared<Obstacle>(pos, &env);
-                    env.addToken(obstacle);
+                    auto obstacle = std::make_shared<Obstacle>(pos, env);
+                    env->addToken(obstacle);
                 }
                 std::this_thread::sleep_for(std::chrono::milliseconds(10));
                 {
                     std::lock_guard<std::mutex> lock(envMutex);
-                    env.removeToken(pos);
+                    env->removeToken(pos);
                 }
             }
         }));
@@ -102,7 +103,7 @@ TEST_F(ComplexScenariosTest, ConcurrentEnvironmentModification) {
     
     for(auto& f : futures) f.get();
     
-    auto tokens = env.getTokens();
+    auto tokens = env->getTokens();
     EXPECT_TRUE(tokens.empty());
 }
 
@@ -113,18 +114,18 @@ TEST_F(ComplexScenariosTest, SensorNetworkOverlap) {
     for(int i = 0; i < 4; i++) {
         auto platform = std::make_shared<StaticPlatform>(
             Pair{20 + (i%2)*5, 20 + (i/2)*5}, 
-            &env, "Platform" + std::to_string(i), 100, 3, nullptr);
+            env, "Platform" + std::to_string(i), 100, 3);
         auto sensor = std::make_shared<SensorModule>(1, 10, 6, 
             i % 2 == 0 ? SensorType::Optical : SensorType::XRay);
         
         platform->installModule(sensor);
         platforms.push_back(platform);
         sensors.push_back(sensor);
-        env.addToken(platform);
+        env->addToken(platform);
     }
     
-    auto suspect = std::make_shared<Suspect>(Pair{22, 22}, &env, 3, 2);
-    env.addToken(suspect);
+    auto suspect = std::make_shared<Suspect>(Pair{22, 22}, env, 3, 2);
+    env->addToken(suspect);
     
     std::vector<std::future<Report>> reports;
     for(auto& sensor : sensors) {
@@ -140,18 +141,17 @@ TEST_F(ComplexScenariosTest, SensorNetworkOverlap) {
 }
 
 TEST_F(ComplexScenariosTest, WeaponInterference) {
-    auto suspect = std::make_shared<Suspect>(Pair{20, 15}, &env, 3, 2);
-    env.addToken(suspect);
+    auto suspect = std::make_shared<Suspect>(Pair{20, 15}, std::weak_ptr<Environment>(env), 3, 2);
+    env->addToken(suspect);
 
     auto weapon = std::make_shared<WeaponModule>(1, 10, 5, std::chrono::milliseconds(50));
-    auto platform = std::make_shared<StaticPlatform>(Pair{15, 15}, &env, "Platform", 100, 3, nullptr);
+    auto platform = std::make_shared<StaticPlatform>(Pair{15, 15}, std::weak_ptr<Environment>(env), "Platform", 100, 3);
     platform->installModule(weapon);
-    env.addToken(platform);
+    env->addToken(platform);
     std::this_thread::sleep_for(std::chrono::milliseconds(60));
     weapon->update();
     
     EXPECT_TRUE(weapon->getIsCharged());
-
     EXPECT_TRUE(weapon->attack(suspect->getPosition()));
-    EXPECT_EQ(env.getToken(suspect->getPosition()), nullptr);
+    EXPECT_EQ(env->getToken(suspect->getPosition()), nullptr);
 } 

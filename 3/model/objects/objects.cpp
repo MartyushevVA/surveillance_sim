@@ -51,7 +51,6 @@ void MobilePlatform::iterate() {
     }
 
     Pair nextPos = target.second ? opponentBasedMove(target.first) : randomMove();
-
     if (attackResult.valid() && attackResult.get()) {
         ai->removeSuspect(target.second);
         return;
@@ -59,9 +58,9 @@ void MobilePlatform::iterate() {
 
     if (connection->isSafeForSystem(nextPos)) {
         move(nextPos);
+        connection->update();
     }
     
-    connection->update();
 }
 
 void StaticPlatform::iterate() {

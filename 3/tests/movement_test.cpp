@@ -6,11 +6,11 @@
 
 class MovementTest : public ::testing::Test {
 protected:
-    Environment env;
+    std::shared_ptr<Environment> env;
     std::mt19937 gen{std::random_device{}()};
     
     void SetUp() override {
-        env.setSize(50, 50);
+        env = std::make_shared<Environment>(Pair{50, 50});
     }
     
     Pair getRandomPosition() {
@@ -25,31 +25,31 @@ protected:
 };
 
 TEST_F(MovementTest, SuspectEscapesBehavior) {
-    auto suspect = std::make_shared<Suspect>(Pair{25, 25}, &env, 3, getRandomSpeed());
-    auto platform = std::make_shared<MobilePlatform>(Pair{20, 20}, &env, "Hunter", 100, 3, getRandomSpeed());
-    env.addToken(suspect);
-    env.addToken(platform);
+    auto suspect = std::make_shared<Suspect>(Pair{25, 25}, std::weak_ptr<Environment>(env), 3, getRandomSpeed());
+    auto platform = std::make_shared<MobilePlatform>(Pair{20, 20}, std::weak_ptr<Environment>(env), "Hunter", 100, 3, getRandomSpeed());
+    env->addToken(suspect);
+    env->addToken(platform);
 
-    double initialDistance = env.calculateDistance(suspect->getPosition(), platform->getPosition());
+    double initialDistance = env->calculateDistance(suspect->getPosition(), platform->getPosition());
     
     for(int i = 0; i < 10; i++) {
         Pair newPos = suspect->opponentBasedMove(platform->getPosition());
         suspect->move(newPos);
-        double newDistance = env.calculateDistance(suspect->getPosition(), platform->getPosition());
+        double newDistance = env->calculateDistance(suspect->getPosition(), platform->getPosition());
         EXPECT_GE(newDistance, initialDistance) << "Suspect should try to maintain or increase distance";
     }
 }
 
 TEST_F(MovementTest, SuspectEscapeFromMultiplePlatforms) {
-    auto suspect = std::make_shared<Suspect>(Pair{25, 25}, &env, 3, getRandomSpeed());
-    env.addToken(suspect);
+    auto suspect = std::make_shared<Suspect>(Pair{25, 25}, std::weak_ptr<Environment>(env), 3, getRandomSpeed());
+    env->addToken(suspect);
     
     std::vector<std::shared_ptr<MobilePlatform>> platforms;
     for(int i = 0; i < 3; i++) {
         auto platform = std::make_shared<MobilePlatform>(
-            getRandomPosition(), &env, "Hunter" + std::to_string(i), 100, 3, getRandomSpeed());
+            getRandomPosition(), std::weak_ptr<Environment>(env), "Hunter" + std::to_string(i), 100, 3, getRandomSpeed());
         platforms.push_back(platform);
-        env.addToken(platform);
+        env->addToken(platform);
     }
 
     Pair initialPos = suspect->getPosition();
@@ -64,13 +64,13 @@ TEST_F(MovementTest, ConcurrentMovement) {
     
     for(int i = 0; i < 5; i++) {
         suspects.push_back(std::make_shared<Suspect>(
-            getRandomPosition(), &env, 3, getRandomSpeed()));
+            getRandomPosition(), std::weak_ptr<Environment>(env), 3, getRandomSpeed()));
         platforms.push_back(std::make_shared<MobilePlatform>(
-            getRandomPosition(), &env, "Platform" + std::to_string(i), 100, 3, getRandomSpeed()));
+            getRandomPosition(), std::weak_ptr<Environment>(env), "Platform" + std::to_string(i), 100, 3, getRandomSpeed()));
     }
     
-    for(auto& s : suspects) env.addToken(s);
-    for(auto& p : platforms) env.addToken(p);
+    for(auto& s : suspects) env->addToken(s);
+    for(auto& p : platforms) env->addToken(p);
     
     std::vector<std::future<void>> futures;
     for(int i = 0; i < 5; i++) {
@@ -96,25 +96,25 @@ TEST_F(MovementTest, ConcurrentMovement) {
 }
 
 TEST_F(MovementTest, PursuitMovement) {
-    auto mobilePlatform = std::make_shared<MobilePlatform>(getRandomPosition(), &env, "Hunter", 100, 3, getRandomSpeed());
+    auto mobilePlatform = std::make_shared<MobilePlatform>(getRandomPosition(), std::weak_ptr<Environment>(env), "Hunter", 100, 3, getRandomSpeed());
     Pair suspect = getRandomPosition();
     while (suspect == mobilePlatform->getPosition())
         suspect = getRandomPosition();
     Pair newPos = mobilePlatform->opponentBasedMove(suspect);
-    int initialDistance = env.calculateDistance(mobilePlatform->getPosition(), suspect);
-    int newDistance = env.calculateDistance(newPos, suspect);
+    int initialDistance = env->calculateDistance(mobilePlatform->getPosition(), suspect);
+    int newDistance = env->calculateDistance(newPos, suspect);
 
     EXPECT_LE(newDistance, initialDistance);
 }
 
-TEST_F(MovementTest, AvoidancEMovement) {
-    auto suspect = std::make_shared<Suspect>(getRandomPosition(), &env, 100, getRandomSpeed());
+TEST_F(MovementTest, AvoidanceMovement) {
+    auto suspect = std::make_shared<Suspect>(getRandomPosition(), std::weak_ptr<Environment>(env), 100, getRandomSpeed());
     Pair mobilePlatform = getRandomPosition();
     while (mobilePlatform == suspect->getPosition())
         mobilePlatform = getRandomPosition();
     Pair newPos = suspect->opponentBasedMove(mobilePlatform);
-    int initialDistance = env.calculateDistance(mobilePlatform, suspect->getPosition());
-    int newDistance = env.calculateDistance(newPos, mobilePlatform);
+    int initialDistance = env->calculateDistance(mobilePlatform, suspect->getPosition());
+    int newDistance = env->calculateDistance(newPos, mobilePlatform);
 
     EXPECT_GE(newDistance, initialDistance);
 }

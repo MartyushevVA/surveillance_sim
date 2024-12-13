@@ -3,8 +3,8 @@ project(SecuritySystemSimulation)
 
 set(CMAKE_CXX_STANDARD 20)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
-set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -fprofile-arcs -ftest-coverage -Wall -Wextra")
-set(CMAKE_EXE_LINKER_FLAGS "${CMAKE_EXE_LINKER_FLAGS} -fprofile-arcs -ftest-coverage")
+set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -fprofile-arcs --coverage -Wall -Wextra -fprofile-update=atomic")
+set(CMAKE_EXE_LINKER_FLAGS "${CMAKE_EXE_LINKER_FLAGS} -fprofile-arcs --coverage")
 
 enable_testing()
 
@@ -71,6 +71,7 @@ if(T)
         tests/module_test.cpp
         tests/movement_test.cpp
         tests/objects_test.cpp
+        tests/vector_test.cpp
     )
     find_package(GTest REQUIRED)
     target_link_libraries(sss game_lib GTest::gtest GTest::gtest_main)

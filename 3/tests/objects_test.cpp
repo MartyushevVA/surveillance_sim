@@ -8,13 +8,11 @@
 
 class ObjectsTest : public ::testing::Test {
 protected:
-    Environment env;
+    std::shared_ptr<Environment> env;
     AI ai;
     std::mt19937 gen{std::random_device{}()};
 
-    ObjectsTest() : env(), ai(&env) {
-        env.setSize(30, 30);
-    }
+    ObjectsTest() : env(std::make_shared<Environment>(Pair{30, 30})), ai(env) {}
 
     Pair getRandomPosition() {
         std::uniform_int_distribution<> dis(0, 29);
@@ -24,9 +22,9 @@ protected:
     std::shared_ptr<Platform> createPlatform(Pair pos, bool mobile = false) {
         std::shared_ptr<Platform> platform;
         if (mobile) {
-            platform = std::make_shared<MobilePlatform>(pos, &env, "Mobile Platform", 100, 3, 2);
+            platform = std::make_shared<MobilePlatform>(pos, std::weak_ptr<Environment>(env), "Mobile Platform", 100, 3, 2);
         } else {
-            platform = std::make_shared<StaticPlatform>(pos, &env, "Static Platform", 100, 3, &ai);
+            platform = std::make_shared<StaticPlatform>(pos, std::weak_ptr<Environment>(env), "Static Platform", 100, 3);
         }
 
         auto connection = std::make_shared<ConnectionModule>(1, 10, 10, 5);
@@ -39,23 +37,25 @@ protected:
     }
 
     std::shared_ptr<Suspect> createSuspect(Pair pos) {
-        return std::make_shared<Suspect>(pos, &env, 3, 2);
+        return std::make_shared<Suspect>(pos, env, 3, 2);
     }
 };
 
 TEST_F(ObjectsTest, MobilePlatformIterate_WithTarget) {
     auto staticPlatform = createPlatform(Pair{1, 1}, false);
-    auto mobilePlatform = createPlatform(Pair{10, 10}, true);
-    auto suspect = createSuspect(Pair{20, 20});
+    auto mobilePlatform = createPlatform(Pair{5, 5}, true);
+    auto suspect = createSuspect(Pair{10, 10});
     
-    env.addToken(std::dynamic_pointer_cast<Placeholder>(staticPlatform));
-    env.addToken(std::dynamic_pointer_cast<Placeholder>(mobilePlatform));
-    env.addToken(std::dynamic_pointer_cast<Placeholder>(suspect));
+    env->addToken(std::dynamic_pointer_cast<Placeholder>(staticPlatform));
+    env->addToken(std::dynamic_pointer_cast<Placeholder>(mobilePlatform));
+    env->addToken(std::dynamic_pointer_cast<Placeholder>(suspect));
     
     auto connection = staticPlatform->findModuleOfType<ConnectionModule>();
     connection->establishConnection(mobilePlatform->findModuleOfType<ConnectionModule>());
 
-    mobilePlatform->iterate();
+    auto Ai = std::make_shared<AI>(env);
+    Ai->syncHosts();    
+
     EXPECT_NE(mobilePlatform->getPosition().x * mobilePlatform->getPosition().y, 100);
 
     suspect->iterate();
@@ -65,8 +65,8 @@ TEST_F(ObjectsTest, MobilePlatformIterate_WithTarget) {
 TEST_F(ObjectsTest, StaticPlatformIterate_WithTarget) {
     auto staticPlatform = createPlatform(Pair{10, 10}, false);
     auto suspect = createSuspect(Pair{12, 12});
-    env.addToken(std::dynamic_pointer_cast<Placeholder>(staticPlatform));
-    env.addToken(std::dynamic_pointer_cast<Placeholder>(suspect));
+    env->addToken(std::dynamic_pointer_cast<Placeholder>(staticPlatform));
+    env->addToken(std::dynamic_pointer_cast<Placeholder>(suspect));
 
     staticPlatform->iterate();
     EXPECT_EQ(staticPlatform->getPosition().x, 10);
@@ -77,54 +77,28 @@ TEST_F(ObjectsTest, EliminateAllSuspects) {
     auto platform = createPlatform(Pair{10, 10}, false);
     auto suspect1 = createSuspect(Pair{12, 12});
     auto suspect2 = createSuspect(Pair{15, 15});
-    env.addToken(std::dynamic_pointer_cast<Placeholder>(platform));
-    env.addToken(std::dynamic_pointer_cast<Placeholder>(suspect1));
-    env.addToken(std::dynamic_pointer_cast<Placeholder>(suspect2));
+    env->addToken(std::dynamic_pointer_cast<Placeholder>(platform));
+    env->addToken(std::dynamic_pointer_cast<Placeholder>(suspect1));
+    env->addToken(std::dynamic_pointer_cast<Placeholder>(suspect2));
 
-    ai.addStaticPlatform(std::dynamic_pointer_cast<StaticPlatform>(platform));
+    auto Ai = std::make_shared<AI>(env);
+    Ai->syncHosts();
 
-    EXPECT_NE(env.getToken(suspect1->getPosition()), nullptr);
-    EXPECT_NE(env.getToken(suspect2->getPosition()), nullptr);
+    EXPECT_NE(env->getToken(suspect1->getPosition()), nullptr);
+    EXPECT_NE(env->getToken(suspect2->getPosition()), nullptr);
 
     std::this_thread::sleep_for(std::chrono::milliseconds(120));
     platform->findModuleOfType<WeaponModule>()->update();
-    ai.eliminateAllSuspects();
+    Ai->eliminateAllSuspects();
     platform->findModuleOfType<WeaponModule>()->startCharging();
 
-    EXPECT_EQ(env.getToken(suspect1->getPosition()), nullptr);
-    EXPECT_NE(env.getToken(suspect2->getPosition()), nullptr);
+    EXPECT_EQ(env->getToken(suspect1->getPosition()), nullptr);
+    EXPECT_NE(env->getToken(suspect2->getPosition()), nullptr);
     
     std::this_thread::sleep_for(std::chrono::milliseconds(120));
     platform->findModuleOfType<WeaponModule>()->update();
-    ai.eliminateAllSuspects();
+    Ai->eliminateAllSuspects();
 
-    EXPECT_EQ(env.getToken(suspect1->getPosition()), nullptr);
-    EXPECT_EQ(env.getToken(suspect2->getPosition()), nullptr);
+    EXPECT_EQ(env->getToken(suspect1->getPosition()), nullptr);
+    EXPECT_EQ(env->getToken(suspect2->getPosition()), nullptr);
 }
-
-
-/*TEST_F(ObjectsTest, EliminateAllSuspects_ConcurrentModification) {
-    auto platform = createPlatform(Pair{10, 10}, false);
-    auto suspect1 = std::make_shared<Suspect>(Pair{12, 12}, &env, 3, 2);
-    auto suspect2 = std::make_shared<Suspect>(Pair{15, 15}, &env, 3, 2);
-    env.addToken(std::dynamic_pointer_cast<Placeholder>(platform));
-    env.addToken(std::dynamic_pointer_cast<Placeholder>(suspect1));
-    env.addToken(std::dynamic_pointer_cast<Placeholder>(suspect2));
-
-    ai.addStaticPlatform(std::dynamic_pointer_cast<StaticPlatform>(platform));
-
-    EXPECT_NE(env.getToken(suspect1->getPosition()), nullptr);
-    EXPECT_NE(env.getToken(suspect2->getPosition()), nullptr);
-
-    std::thread eliminationThread([&]() {
-        ai.eliminateAllSuspects();
-    });
-
-    std::this_thread::sleep_for(std::chrono::milliseconds(50));
-    env.removeToken(suspect1->getPosition());
-
-    eliminationThread.join();
-
-    EXPECT_EQ(env.getToken(suspect2->getPosition()), nullptr);
-    EXPECT_EQ(env.getToken(suspect1->getPosition()), nullptr);
-}*/

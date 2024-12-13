@@ -39,7 +39,7 @@
                     "type": "WeaponModule",
                     "slotsOccupied": 1,
                     "energyConsumption": 10,
-                    "range": 20,
+                    "range": 8,
                     "chargingDuration": "00:00:01:000"
                 }
             ]
@@ -63,14 +63,14 @@
                     "type": "SensorModule",
                     "slotsOccupied": 1,
                     "energyConsumption": 6,
-                    "range": 5,
+                    "range": 8,
                     "sensorType": "Optical"
                 },
                 {
                     "type": "WeaponModule",
                     "slotsOccupied": 1,
                     "energyConsumption": 10,
-                    "range": 20,
+                    "range": 8,
                     "chargingDuration": "00:00:00:700"
                 }
             ]
