@@ -10,7 +10,6 @@ SystemConfig Import::loadSystemConfig(const std::string& configPath) {
     return parseSystemConfig(j);
 }
 
-
 SystemConfig Import::parseSystemConfig(const nlohmann::json& configJson) {
     SystemConfig config;
     config.updateInterval = parseChargingDuration(configJson["update_interval"]);

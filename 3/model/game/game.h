@@ -18,8 +18,7 @@ private:
     std::chrono::milliseconds updateInterval_;
 
 public:
-    Game(const std::string& gameConfigFile) {
-        auto config = Import::loadSystemConfig(gameConfigFile);
+    Game(const SystemConfig& config) {
         environment_ = std::make_shared<Environment>(Pair{config.size.x, config.size.y});
         environment_->initialize(config);
         ai_ = std::make_shared<AI>(environment_);

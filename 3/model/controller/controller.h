@@ -10,11 +10,11 @@ private:
     std::shared_ptr<Game> game_;
     std::unique_ptr<Graphics> graphics_;
 
+    SystemConfig config_;
+
+    void startSimulation();
+
 public:
-    Controller(const std::string& gameConfigFile, const std::string& graphicsConfigFile) :
-        game_(std::make_shared<Game>(gameConfigFile)),
-        graphics_(std::make_unique<Graphics>(graphicsConfigFile, game_)) {}
-
+    Controller();
     void start();
-
 };
