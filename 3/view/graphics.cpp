@@ -2,7 +2,7 @@
 
 Graphics::Graphics(const std::string& graphicsConfigPath)
     : game_(nullptr), currentMode(Mode::CONFIGURATION), isSimulationPaused(false), isGameTyping(false) {
-    graphicsConfig_ = Import::loadGraphicsConfig(graphicsConfigPath);
+    adjustGraphicsConfig(Import::loadGraphicsConfig(graphicsConfigPath));
     window_.create(sf::VideoMode(graphicsConfig_.window.width, graphicsConfig_.window.height), graphicsConfig_.window.title);
     window_.setFramerateLimit(graphicsConfig_.window.frameRateLimit);
 
@@ -34,22 +34,22 @@ void Graphics::adjustGraphicsConfig(GraphicsConfig config) {
     graphicsConfig_.sprites.obstacle.setTexture(graphicsConfig_.textures.obstacle);
 
     float vscale = static_cast<float>(graphicsConfig_.window.objectSize) / 
-            static_cast<float>(graphicsConfig_.textures.suspect.getSize().x);
-    float hscale = static_cast<float>(graphicsConfig_.window.objectSize) / 
             static_cast<float>(graphicsConfig_.textures.suspect.getSize().y);
+    float hscale = static_cast<float>(graphicsConfig_.window.objectSize) / 
+            static_cast<float>(graphicsConfig_.textures.suspect.getSize().x);
     graphicsConfig_.sprites.suspect.setScale(vscale, hscale);
     vscale = static_cast<float>(graphicsConfig_.window.objectSize) / 
-            static_cast<float>(graphicsConfig_.textures.staticPlatform.getSize().x);
+            static_cast<float>(graphicsConfig_.textures.staticPlatform.getSize().y);
     graphicsConfig_.sprites.staticPlatform.setScale(vscale, hscale);
     vscale = static_cast<float>(graphicsConfig_.window.objectSize) / 
-            static_cast<float>(graphicsConfig_.textures.mobilePlatform.getSize().x);
-    hscale = static_cast<float>(graphicsConfig_.window.objectSize) / 
             static_cast<float>(graphicsConfig_.textures.mobilePlatform.getSize().y);
+    hscale = static_cast<float>(graphicsConfig_.window.objectSize) / 
+            static_cast<float>(graphicsConfig_.textures.mobilePlatform.getSize().x);
     graphicsConfig_.sprites.mobilePlatform.setScale(vscale, hscale);
     vscale = static_cast<float>(graphicsConfig_.window.objectSize) / 
-            static_cast<float>(graphicsConfig_.textures.obstacle.getSize().x);
-    hscale = static_cast<float>(graphicsConfig_.window.objectSize) / 
             static_cast<float>(graphicsConfig_.textures.obstacle.getSize().y);
+    hscale = static_cast<float>(graphicsConfig_.window.objectSize) / 
+            static_cast<float>(graphicsConfig_.textures.obstacle.getSize().x);
     graphicsConfig_.sprites.obstacle.setScale(vscale, hscale);
 }
 

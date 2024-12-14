@@ -26,7 +26,6 @@ void Controller::start() {
             auto currentTime = std::chrono::steady_clock::now();
             auto deltaTime = currentTime - lastUpdate;
             game_->iterate();
-            std::cout << "DDD" << std::endl;
             graphics_->renderSimulationScreen();
             lastUpdate = currentTime;
             if (deltaTime < game_->getUpdateInterval())
