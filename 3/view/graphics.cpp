@@ -33,22 +33,22 @@ void Graphics::adjustGraphicsConfig(GraphicsConfig config) {
     graphicsConfig_.sprites.mobilePlatform.setTexture(graphicsConfig_.textures.mobilePlatform);
     graphicsConfig_.sprites.obstacle.setTexture(graphicsConfig_.textures.obstacle);
 
-    float vscale = static_cast<float>(graphicsConfig_.window.objectSize) / 
+    float vscale = 2 * static_cast<float>(graphicsConfig_.window.objectSize) / 
             static_cast<float>(graphicsConfig_.textures.suspect.getSize().y);
-    float hscale = static_cast<float>(graphicsConfig_.window.objectSize) / 
+    float hscale = 2 * static_cast<float>(graphicsConfig_.window.objectSize) / 
             static_cast<float>(graphicsConfig_.textures.suspect.getSize().x);
     graphicsConfig_.sprites.suspect.setScale(vscale, hscale);
-    vscale = static_cast<float>(graphicsConfig_.window.objectSize) / 
+    vscale = 2 * static_cast<float>(graphicsConfig_.window.objectSize) / 
             static_cast<float>(graphicsConfig_.textures.staticPlatform.getSize().y);
     graphicsConfig_.sprites.staticPlatform.setScale(vscale, hscale);
-    vscale = static_cast<float>(graphicsConfig_.window.objectSize) / 
+    vscale = 2 * static_cast<float>(graphicsConfig_.window.objectSize) / 
             static_cast<float>(graphicsConfig_.textures.mobilePlatform.getSize().y);
-    hscale = static_cast<float>(graphicsConfig_.window.objectSize) / 
+    hscale = 2 * static_cast<float>(graphicsConfig_.window.objectSize) / 
             static_cast<float>(graphicsConfig_.textures.mobilePlatform.getSize().x);
     graphicsConfig_.sprites.mobilePlatform.setScale(vscale, hscale);
-    vscale = static_cast<float>(graphicsConfig_.window.objectSize) / 
+    vscale = 2 * static_cast<float>(graphicsConfig_.window.objectSize) / 
             static_cast<float>(graphicsConfig_.textures.obstacle.getSize().y);
-    hscale = static_cast<float>(graphicsConfig_.window.objectSize) / 
+    hscale = 2 * static_cast<float>(graphicsConfig_.window.objectSize) / 
             static_cast<float>(graphicsConfig_.textures.obstacle.getSize().x);
     graphicsConfig_.sprites.obstacle.setScale(vscale, hscale);
 }
@@ -109,6 +109,7 @@ void Graphics::renderConfigurationUI() {
 }
 
 void Graphics::renderPreviewScreen() {
+    drawGrid();
     if (currentMode != Mode::CONFIGURATION) {
         return;
     }
@@ -122,7 +123,7 @@ void Graphics::renderPreviewScreen() {
 }
 
 void Graphics::drawObject(sf::Sprite& sprite, Pair object) {
-    sprite.setPosition(object.x * graphicsConfig_.window.objectSize, object.y * graphicsConfig_.window.objectSize);
+    sprite.setPosition(object.x * graphicsConfig_.window.objectSize - 10, object.y * graphicsConfig_.window.objectSize);
     window_.draw(sprite);
 }
 
@@ -143,6 +144,7 @@ void Graphics::handleSimulationEvents() {
 }
 
 void Graphics::renderSimulationScreen() {
+    drawGrid();
     for (const auto& token : game_->getEnvironment()->getTokens()) {
         if (const Suspect* suspect = dynamic_cast<const Suspect*>(token.second.get()))
             drawObject(graphicsConfig_.sprites.suspect, suspect->getPosition());
@@ -224,4 +226,17 @@ void Graphics::handleMouseClickInConfigWindow(const sf::Vector2i& mousePos) {
 void Graphics::handleObjectSelection(const sf::Vector2i& mousePos) {
     // Logic to add or remove objects based on the mouse position in the preview area
     // For example, check if the click is within the bounds of an object and toggle its state
+}
+
+void Graphics::drawGrid() {
+    sf::VertexArray lines(sf::Lines);
+    for (int i = 0; i <= gridWidth; ++i) {
+        lines.append(sf::Vertex(sf::Vector2f(i * cellSize, 0), sf::Color::Black));
+        lines.append(sf::Vertex(sf::Vector2f(i * cellSize, gridHeight * cellSize), sf::Color::Black));
+    }
+    for (int j = 0; j <= gridHeight; ++j) {
+        lines.append(sf::Vertex(sf::Vector2f(0, j * cellSize), sf::Color::Black));
+        lines.append(sf::Vertex(sf::Vector2f(gridWidth * cellSize, j * cellSize), sf::Color::Black));
+    }
+    window_.draw(lines);
 }

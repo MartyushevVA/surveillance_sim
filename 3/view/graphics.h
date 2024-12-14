@@ -33,6 +33,10 @@ private:
     sf::RectangleShape manualButton;
     sf::Text manualButtonText;
 
+    const int cellSize = 50;
+    const int gridWidth = 20;
+    const int gridHeight = 20;
+
     void adjustGraphicsConfig(GraphicsConfig config);
 
     void drawObject(sf::Sprite& sprite, Pair object);
@@ -45,6 +49,8 @@ private:
 
     void handleObjectSelection(const sf::Vector2i& mousePos);
     void handleMouseClickInConfigWindow(const sf::Vector2i& mousePos);
+
+    void drawGrid();
 
 public:
     Graphics(const std::string& graphicsConfigPath);
