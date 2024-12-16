@@ -3,7 +3,7 @@
 Graphics::Graphics(const std::string& graphicsConfigPath)
     : game_(nullptr), currentMode(Mode::CONFIGURATION), isSimulationPaused(false), isGameTyping(false) {
     adjustGraphicsConfig(Import::loadGraphicsConfig(graphicsConfigPath));
-    window_.create(sf::VideoMode(graphicsConfig_.window.width, graphicsConfig_.window.height), graphicsConfig_.window.title);
+    window_.create(sf::VideoMode(graphicsConfig_.window.width + 200, graphicsConfig_.window.height), graphicsConfig_.window.title);
     window_.setFramerateLimit(graphicsConfig_.window.frameRateLimit);
 
     if (!font_.loadFromFile("Arial.ttf")) {
@@ -54,35 +54,30 @@ void Graphics::adjustGraphicsConfig(GraphicsConfig config) {
 }
 
 void Graphics::setupConfigurationUI() {
-    gameInputLabel.setFont(font_);
-    gameInputLabel.setString("Enter Game Config File Path:");
-    gameInputLabel.setCharacterSize(20);
-    gameInputLabel.setPosition(50, 130);
-
-    gameInputBox.setSize(sf::Vector2f(400, 30));
-    gameInputBox.setPosition(50, 160);
+    gameInputBox.setSize(sf::Vector2f(200, 30));
+    gameInputBox.setPosition(1000, 160);
     gameInputBox.setFillColor(sf::Color::White);
     gameInputBox.setOutlineThickness(1);
     gameInputBox.setOutlineColor(sf::Color::Black);
 
-    loadButton.setSize(sf::Vector2f(200, 50));
-    loadButton.setPosition(50, 210);
+    loadButton.setSize(sf::Vector2f(200, 30));
+    loadButton.setPosition(1000, 210);
     loadButton.setFillColor(sf::Color::Green);
     
     loadButtonText.setFont(font_);
     loadButtonText.setString("Load Configs");
-    loadButtonText.setCharacterSize(20);
-    loadButtonText.setPosition(75, 225);
+    loadButtonText.setCharacterSize(15);
+    loadButtonText.setPosition(1025, 215);
     loadButtonText.setFillColor(sf::Color::White);
 
-    manualButton.setSize(sf::Vector2f(200, 50));
-    manualButton.setPosition(300, 210);
+    manualButton.setSize(sf::Vector2f(200, 30));
+    manualButton.setPosition(1000, 260);
     manualButton.setFillColor(sf::Color::Blue);
     
     manualButtonText.setFont(font_);
     manualButtonText.setString("Manual Config");
-    manualButtonText.setCharacterSize(20);
-    manualButtonText.setPosition(325, 225);
+    manualButtonText.setCharacterSize(15);
+    manualButtonText.setPosition(1025, 265);
     manualButtonText.setFillColor(sf::Color::White);
 }
 
@@ -97,8 +92,8 @@ void Graphics::renderConfigurationUI() {
     window_.draw(gameInputLabel);
     window_.draw(gameInputBox);
     
-    sf::Text gameUserInputText(gameUserInput, font_, 20);
-    gameUserInputText.setPosition(55, 165);
+    sf::Text gameUserInputText(gameUserInput, font_, 15);
+    gameUserInputText.setPosition(1000, 165);
     gameUserInputText.setFillColor(sf::Color::Black);
     window_.draw(gameUserInputText);
 
@@ -160,10 +155,6 @@ void Graphics::renderSimulationScreen() {
 }
 
 SystemConfig Graphics::runConfigurationWindow() {
-    window_.setTitle("Configuration");
-    window_.setFramerateLimit(60);
-    window_.setVerticalSyncEnabled(true);
-
     while (window_.isOpen()) {
         sf::Event event;
         while (window_.pollEvent(event)) {
@@ -206,7 +197,7 @@ SystemConfig Graphics::runConfigurationWindow() {
 }
 
 void Graphics::handleMouseClickInConfigWindow(const sf::Vector2i& mousePos) {
-    if (gameInputBox.getGlobalBounds().contains(static_cast<float>(mousePos.x), static_cast<float>(mousePos.y))) {
+    if (gameInputBox.getGlobalBounds().contains(mousePos.x, mousePos.y)) {
         isGameTyping = true;
     } else {
         isGameTyping = false;
@@ -223,10 +214,7 @@ void Graphics::handleMouseClickInConfigWindow(const sf::Vector2i& mousePos) {
     }
 }
 
-void Graphics::handleObjectSelection(const sf::Vector2i& mousePos) {
-    // Logic to add or remove objects based on the mouse position in the preview area
-    // For example, check if the click is within the bounds of an object and toggle its state
-}
+void Graphics::handleObjectSelection(const sf::Vector2i& mousePos) {}
 
 void Graphics::drawGrid() {
     sf::VertexArray lines(sf::Lines);
