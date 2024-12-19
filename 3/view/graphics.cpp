@@ -70,15 +70,15 @@ void Graphics::setupConfigurationUI() {
     loadButtonText.setPosition(1025, 215);
     loadButtonText.setFillColor(sf::Color::White);
 
-    manualButton.setSize(sf::Vector2f(200, 30));
-    manualButton.setPosition(1000, 260);
-    manualButton.setFillColor(sf::Color::Blue);
+    infoButton.setSize(sf::Vector2f(200, 30));
+    infoButton.setPosition(1000, 260);
+    infoButton.setFillColor(sf::Color::Blue);
     
-    manualButtonText.setFont(font_);
-    manualButtonText.setString("Manual Config");
-    manualButtonText.setCharacterSize(15);
-    manualButtonText.setPosition(1025, 265);
-    manualButtonText.setFillColor(sf::Color::White);
+    infoButtonText.setFont(font_);
+    infoButtonText.setString("Show Info");
+    infoButtonText.setCharacterSize(15);
+    infoButtonText.setPosition(1025, 265);
+    infoButtonText.setFillColor(sf::Color::White);
 }
 
 void Graphics::togglePause() {
@@ -99,8 +99,8 @@ void Graphics::renderConfigurationUI() {
 
     window_.draw(loadButton);
     window_.draw(loadButtonText);
-    window_.draw(manualButton);
-    window_.draw(manualButtonText);
+    window_.draw(infoButton);
+    window_.draw(infoButtonText);
 }
 
 void Graphics::renderPreviewScreen() {
@@ -204,7 +204,7 @@ void Graphics::toggleEditMode() {
 }
 
 void Graphics::handleMouseClickInConfigWindow(const sf::Vector2i& mousePos) {
-    if (manualButton.getGlobalBounds().contains(static_cast<float>(mousePos.x), static_cast<float>(mousePos.y))) {
+    if (infoButton.getGlobalBounds().contains(static_cast<float>(mousePos.x), static_cast<float>(mousePos.y))) {
         toggleEditMode();
         return;
     }   
@@ -222,7 +222,13 @@ void Graphics::handleMouseClickInConfigWindow(const sf::Vector2i& mousePos) {
 
     if (loadButton.getGlobalBounds().contains(static_cast<float>(mousePos.x), static_cast<float>(mousePos.y))) {
         std::string gameConfigPath = gameUserInput;
-        config_ = Import::loadSystemConfig(gameConfigPath);
+        try {
+            config_ = Import::loadSystemConfig(gameConfigPath);
+        } catch (const std::exception& e) {
+            std::cerr << "Error loading config: " << e.what() << std::endl;
+            gameUserInput.clear();
+            return;
+        }
         adjustGraphicsConfig();
         gameUserInput.clear();
     } 
@@ -257,23 +263,42 @@ void Graphics::handleObjectSelection(const sf::Vector2i& mousePos) {
 
     if (isEmpty) return;
     
-    sf::RenderWindow popup;
-    popup.create(sf::VideoMode(200, 100), "Objects Info");
-    popup.clear(sf::Color::White);
-
     std::string objectInfo;
     if (placeholderPlatform.position.x == cellX && placeholderPlatform.position.y == cellY) {
         objectInfo = "Platform\nType: " + std::string(placeholderPlatform.type == PlatformType::STATIC ? "Static" : "Mobile") +
                             "\nPosition: (" + std::to_string(placeholderPlatform.position.x) + ", " + std::to_string(placeholderPlatform.position.y) + ")" +
+                            "\nDescription: " + std::string(placeholderPlatform.description.empty() ? "None" : placeholderPlatform.description) +
                             "\nSpeed: " + std::to_string(placeholderPlatform.speed) +
                             "\nMax Energy: " + std::to_string(placeholderPlatform.maxEnergyLevel) +
                             "\nSlot Count: " + std::to_string(placeholderPlatform.slotCount);
+        if (!placeholderPlatform.modules.empty()) {
+            objectInfo += "\nModules:";
+            for (const auto& module : placeholderPlatform.modules) {
+                objectInfo += "\n  - Type: " + std::string(module.type == ModuleType::CONNECTION ? "Connection" : module.type == ModuleType::SENSOR ? "Sensor" : "Weapon") +
+                            "\n    Energy Consumption: " + std::to_string(module.energyConsumption) +
+                            "\n    Range: " + std::to_string(module.range);
+                if (module.type == ModuleType::SENSOR)
+                    objectInfo += "\n    Sensor Type: " + std::string(module.specific.sensorType == SensorType::Optical ? "Optical" : "XRay");
+                if (module.type == ModuleType::WEAPON)
+                    objectInfo += "\n    Charging Duration: " + std::to_string(module.specific.chargingDuration.count()) + "ms";
+                if (module.type == ModuleType::CONNECTION)
+                    objectInfo += "\n    Max Sessions: " + std::to_string(module.specific.maxSessions);
+            }
+        }
     }
     if (placeholderSuspect.position.x == cellX && placeholderSuspect.position.y == cellY) {
         objectInfo = "Suspect\nPosition: (" + std::to_string(placeholderSuspect.position.x) + ", " + std::to_string(placeholderSuspect.position.y) + ")" +
                             "\nSensor Range: " + std::to_string(placeholderSuspect.sensorRange) +
                             "\nSpeed: " + std::to_string(placeholderSuspect.speed);
     }
+
+    int lineCount = std::count(objectInfo.begin(), objectInfo.end(), '\n') + 1;
+    int lineHeight = 17;
+    int windowHeight = lineCount * lineHeight + 20;
+
+    sf::RenderWindow popup;
+    popup.create(sf::VideoMode(250, windowHeight), "Objects Info");
+    popup.clear(sf::Color::White);
 
     sf::Text infoText(objectInfo, font_, 15);
     infoText.setFillColor(sf::Color::Black);

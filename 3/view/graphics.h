@@ -31,8 +31,8 @@ private:
     sf::RectangleShape loadButton;
     sf::Text loadButtonText;
 
-    sf::RectangleShape manualButton;
-    sf::Text manualButtonText;
+    sf::RectangleShape infoButton;
+    sf::Text infoButtonText;
 
     void adjustGraphicsConfig();
 
@@ -42,7 +42,6 @@ private:
     void renderConfigurationUI();
     void renderPreviewScreen();
 
-    void togglePause();
     void toggleEditMode();
 
     void handleObjectSelection(const sf::Vector2i& mousePos);
@@ -61,6 +60,7 @@ public:
     bool isPaused() const { return isSimulationPaused; }
 
     void startSimulation();
+    void togglePause();
     
     void renderSimulationScreen();
     sf::Event handleSimulationEvents();

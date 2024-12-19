@@ -1,5 +1,5 @@
 {
-    "update_interval": "00:00:00:050",
+    "update_interval": "00:00:00:750",
     "size": {
         "width": 50,
         "height": 50
@@ -37,7 +37,7 @@
                     "type": "ConnectionModule",
                     "slotsOccupied": 1,
                     "energyConsumption": 4,
-                    "range": 10,
+                    "range": 100,
                     "maxSessions": 4
                 },
                 {
@@ -67,7 +67,7 @@
                     "type": "ConnectionModule",
                     "slotsOccupied": 1,
                     "energyConsumption": 6,
-                    "range": 15,
+                    "range": 150,
                     "maxSessions": 6
                 },
                 {
@@ -98,7 +98,7 @@
                     "type": "ConnectionModule",
                     "slotsOccupied": 1,
                     "energyConsumption": 5,
-                    "range": 8,
+                    "range": 80,
                     "maxSessions": 3
                 },
                 {
@@ -121,7 +121,7 @@
                     "type": "ConnectionModule",
                     "slotsOccupied": 1,
                     "energyConsumption": 7,
-                    "range": 12,
+                    "range": 120,
                     "maxSessions": 5
                 },
                 {
