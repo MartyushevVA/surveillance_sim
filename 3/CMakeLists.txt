@@ -62,6 +62,7 @@ add_compile_options(-fsanitize=thread -g)
 add_link_options(-fsanitize=thread)
 
 option(T "Запуск тестов" OFF)
+option(TIMING "Запуск тестов на скорость" OFF)
 
 if(T)
     add_executable(sss
@@ -76,6 +77,10 @@ if(T)
     )
     find_package(GTest REQUIRED)
     target_link_libraries(sss game_lib GTest::gtest GTest::gtest_main)
+elseif(TIMING)
+    add_executable(sss tests/timing.cpp)
+    find_package(SFML 2.6.1 COMPONENTS graphics window system REQUIRED)
+    target_link_libraries(sss game_lib)
 else()
     add_executable(sss main.cpp)
     find_package(SFML 2.6.1 COMPONENTS graphics window system REQUIRED)

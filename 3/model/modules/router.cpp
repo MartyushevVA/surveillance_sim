@@ -27,8 +27,7 @@ Vector<std::weak_ptr<ConnectionModule>> ConnectionModule::scanForModules(Pair po
 bool ConnectionModule::establishConnection(std::weak_ptr<ConnectionModule> target, bool isResponse) {
     auto targetPtr = target.lock();
     if (!targetPtr) return false;
-    if ((int)sessionList_.size() < maxSessions_) {//&& std::find_if(routeList_.begin(), routeList_.end(),
-    //[targetPtr](const routeNode& a) {return a.destination.lock() == targetPtr;}) == routeList_.end()) {
+    if ((int)sessionList_.size() < maxSessions_) {
         if (!isResponse)
             if (!targetPtr->establishConnection(shared_from_this(), true))
                 return false;
@@ -103,12 +102,20 @@ void ConnectionModule::recursiveDiscord(std::weak_ptr<ConnectionModule> gate, Ve
             module.lock()->recursiveDiscord(gate, targetList);
 }
 
+bool ConnectionModule::isGateToAI(std::weak_ptr<ConnectionModule> gate) const {
+    auto aiDest = getConnectedToAIDirectly().lock();
+    for (auto node : routeList_) {
+        if (node.destination.lock() == aiDest)
+            return node.gate.lock() == gate.lock();
+    }
+    return false;
+}
+
 bool ConnectionModule::isSafeForSystem(Pair newPosition) const {
     auto host = host_.lock();
     if (!host) return false;
     auto env = host->getEnvironment().lock();
     if (!env) return false;
-
     auto criticalConnection = getCriticalConnection();
     if (criticalConnection) {
         auto distance = host->getEnvironment().lock()->calculateDistance(newPosition, criticalConnection->getHost()->getPosition());
@@ -119,14 +126,22 @@ bool ConnectionModule::isSafeForSystem(Pair newPosition) const {
     for (const auto& session : sessionList_) {
         auto sessionPtr = session.lock();
         if (!sessionPtr) continue;
-
         auto itsCritical = sessionPtr->getCriticalConnection();
-        if (itsCritical.get() == this) {
-            auto distance = host->getEnvironment().lock()->calculateDistance(newPosition, sessionPtr->getHost()->getPosition());
-            if (distance > range_ || distance > sessionPtr->getRange())
-                return false;
+
+        /*if (itsCritical)
+            if (itsCritical->getHost() == host) {
+                auto distance = host->getEnvironment().lock()->calculateDistance(newPosition, sessionPtr->getHost()->getPosition());
+                if ((distance > range_) || (distance > sessionPtr->getRange()))
+                    return false;
+            }*/
+
+    
+        auto distance = host->getEnvironment().lock()->calculateDistance(newPosition, sessionPtr->getHost()->getPosition());
+        if ((distance > range_ || distance > sessionPtr->getRange()) && (sessionPtr->isGateToAI(host->findModuleOfType<ConnectionModule>()) || isGateToAI(session))){
+            return false;
         }
     }
+
     return true;
 }
 

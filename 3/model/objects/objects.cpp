@@ -10,6 +10,7 @@
 #include <iostream>
 
 void MobilePlatform::iterate() {
+    //std::cout << "Currently " << getDescription() << std::endl;
     auto connection = findModuleOfType<ConnectionModule>();
     if (!connection) return;
     
@@ -51,13 +52,20 @@ void MobilePlatform::iterate() {
         }
     }
 
-    if (connection->isSafeForSystem(nextPos)) {
+    auto currPos = getPosition();
+    if (connection->isSafeForSystem(nextPos))
         move(nextPos);
-        connection->update();
-    }   
+    if (currPos == getPosition()) {
+        auto randMove = randomMove();
+        if (connection->isSafeForSystem(randMove))
+            move(randMove);
+    }
+
+    connection->update();   
 }
 
 void StaticPlatform::iterate() {
+    //std::cout << "Currently " << getDescription() << " is at " << std::endl;
     auto connection = findModuleOfType<ConnectionModule>();
     if (!connection) return;
 
