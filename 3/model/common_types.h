@@ -45,6 +45,11 @@ struct routeNode {
     routeNode(std::weak_ptr<ConnectionModule> gate, std::weak_ptr<ConnectionModule> destination) : destination(destination), gate(gate) {}
 };
 
+enum class GameState {
+    RUNNING,
+    PAUSED
+};
+
 enum class PlaceholderType {
     Suspect,
     MobilePlatform,

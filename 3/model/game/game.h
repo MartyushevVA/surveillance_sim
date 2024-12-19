@@ -27,6 +27,9 @@ public:
     }
     void iterate();
 
+    void pause();
+    void resume();
+
     std::shared_ptr<Environment> getEnvironment() const { return environment_; }
     std::shared_ptr<AI> getAI() const { return ai_; }
     std::chrono::milliseconds getUpdateInterval() const { return updateInterval_; }

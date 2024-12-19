@@ -12,3 +12,13 @@ void Platform::installModule(std::shared_ptr<Module> module) {
     else
         throw std::runtime_error("Module is not attachable to the platform");
 }
+
+void Platform::pause() {
+    for (auto& module : modules_)
+        module->pause();
+}
+
+void Platform::resume() {
+    for (auto& module : modules_)
+        module->resume();
+}

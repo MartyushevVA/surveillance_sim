@@ -26,3 +26,15 @@ void Game::iterate() {
     
     ai_->eliminateAllSuspects();
 }
+
+void Game::pause() {
+    for (auto& [pos, token] : environment_->getTokens()) {
+        token->pause();
+    }
+}
+
+void Game::resume() {
+    for (auto& [pos, token] : environment_->getTokens()) {
+        token->resume();
+    }
+}

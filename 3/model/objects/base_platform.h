@@ -90,6 +90,16 @@ public:
     virtual void iterate() = 0;
 
     /**
+     * @brief Pauses the platform's modules.
+     */
+    void pause();
+
+    /**
+     * @brief Resumes the platform's modules.
+     */
+    void resume();
+
+    /**
      * @brief Gets the AI associated with the platform.
      * @return std::weak_ptr<AI> Pointer to the AI.
      * 

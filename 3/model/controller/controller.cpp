@@ -21,7 +21,15 @@ void Controller::start() {
 
     auto lastUpdate = std::chrono::steady_clock::now();
     while (graphics_->isWindowOpen() && graphics_->isSimulationRunning()) {
-        graphics_->handleSimulationEvents();
+        sf::Event event = graphics_->handleSimulationEvents();
+        if (event.type == sf::Event::KeyPressed)
+            if (event.key.code == sf::Keyboard::P) {
+                if (graphics_->isPaused())
+                    game_->pause();
+                else
+                    game_->resume();
+            }
+
         if (!graphics_->isPaused()) {
             auto currentTime = std::chrono::steady_clock::now();
             auto deltaTime = currentTime - lastUpdate;

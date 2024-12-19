@@ -20,6 +20,7 @@ private:
 
     bool isSimulationPaused;
     bool isGameTyping;
+    bool isEditMode = false;
 
     sf::Font font_;
     
@@ -29,7 +30,7 @@ private:
 
     sf::RectangleShape loadButton;
     sf::Text loadButtonText;
-    
+
     sf::RectangleShape manualButton;
     sf::Text manualButtonText;
 
@@ -46,6 +47,7 @@ private:
     void renderPreviewScreen();
 
     void togglePause();
+    void toggleEditMode();
 
     void handleObjectSelection(const sf::Vector2i& mousePos);
     void handleMouseClickInConfigWindow(const sf::Vector2i& mousePos);
@@ -65,5 +67,5 @@ public:
     void startSimulation();
     
     void renderSimulationScreen();
-    void handleSimulationEvents();
+    sf::Event handleSimulationEvents();
 };

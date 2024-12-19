@@ -30,6 +30,10 @@ public:
     std::shared_ptr<Platform> getHost() const {return host_.lock();}
     void setHost(std::weak_ptr<Platform> host) {host_ = host;}
 
+
+    virtual void pause() = 0;
+    virtual void resume() = 0;
+
     virtual void turnOn() = 0;
     virtual void turnOff() = 0;
     

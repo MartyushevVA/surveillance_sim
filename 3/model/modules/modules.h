@@ -43,6 +43,9 @@ public:
 
     std::shared_mutex& getMutex() {return mutex_;}
 
+    void pause() override {};
+    void resume() override {};
+
     void turnOn() override;
     void turnOff() override;
 
@@ -64,6 +67,9 @@ public:
 
     Report getSurrounding() const override;
 
+    void pause() override {};
+    void resume() override {};
+
     void turnOn() override;
     void turnOff() override;
 
@@ -76,6 +82,9 @@ class WeaponModule :
 private:
     std::chrono::steady_clock::time_point chargingStarted_;
     std::chrono::milliseconds chargingDuration_;
+
+    std::chrono::milliseconds elapsedChargingTime_ = std::chrono::milliseconds(0);
+    bool wasChargingBeforePause_ = false;
     bool isCharging_ = false;
     bool isCharged_ = false;
 
@@ -94,6 +103,9 @@ public:
 
     void startCharging();
     void stopCharging();
+    
+    void pause() override;
+    void resume() override;
 
     void turnOn() override;
     void turnOff() override;

@@ -21,6 +21,9 @@ public:
     std::weak_ptr<Environment> getEnvironment() const {return environment_;}
     Pair getPosition() const {return position_;}
     void setPosition(Pair position) {position_ = position;}
+
+    virtual void pause() = 0;
+    virtual void resume() = 0;
 };
 
 class MovablePlaceholder :

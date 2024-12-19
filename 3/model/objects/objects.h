@@ -29,6 +29,9 @@ public:
     std::weak_ptr<AI> getAI() const override {return ai_;}
 
     void iterate() override;
+
+    void pause() override {Platform::pause();}
+    void resume() override {Platform::resume();}
 };
 
 class MobilePlatform :
@@ -46,6 +49,9 @@ public:
     std::weak_ptr<AI> getAI() const override {return {};}
     
     void iterate() override;
+
+    void pause() override {Platform::pause();}
+    void resume() override {Platform::resume();}
 };
 
 class Suspect : 
@@ -62,10 +68,16 @@ public:
     Pair opponentBasedMove(Pair opponent) const override;
 
     void iterate();
+
+    void pause() override {};
+    void resume() override {};
 };
 
 class Obstacle : public Placeholder {
 public:
     Obstacle(Pair position, std::weak_ptr<Environment> environment) 
         : Placeholder(position, environment) {}
+
+    void pause() override {};
+    void resume() override {};
 };

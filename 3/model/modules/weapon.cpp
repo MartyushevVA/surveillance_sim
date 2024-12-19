@@ -19,6 +19,23 @@ void WeaponModule::stopCharging() {
     isCharging_ = false;
 }
 
+void WeaponModule::pause() {
+    if (isCharging_) {
+        auto currentTime = std::chrono::steady_clock::now();
+        elapsedChargingTime_ += std::chrono::duration_cast<std::chrono::milliseconds>(currentTime - chargingStarted_);
+        isCharging_ = false;
+        wasChargingBeforePause_ = true;
+    }
+}
+
+void WeaponModule::resume() {
+    if (wasChargingBeforePause_) {
+        chargingStarted_ = std::chrono::steady_clock::now() - elapsedChargingTime_;
+        isCharging_ = true;
+        wasChargingBeforePause_ = false;
+    }
+}
+
 bool WeaponModule::attack(Pair target) {
     if (!isCharged_)
         return false;
@@ -50,6 +67,7 @@ void WeaponModule::update() {
         if (elapsedTime >= chargingDuration_) {
             isCharged_ = true;
             isCharging_ = false;
+            elapsedChargingTime_ = std::chrono::milliseconds(0);
         }
         return;
     }

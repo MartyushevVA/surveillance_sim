@@ -59,8 +59,7 @@ void MobilePlatform::iterate() {
     if (connection->isSafeForSystem(nextPos)) {
         move(nextPos);
         connection->update();
-    }
-    
+    }   
 }
 
 void StaticPlatform::iterate() {

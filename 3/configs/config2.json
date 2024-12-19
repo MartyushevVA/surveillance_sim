@@ -40,7 +40,7 @@
                     "slotsOccupied": 1,
                     "energyConsumption": 10,
                     "range": 8,
-                    "chargingDuration": "00:00:01:000"
+                    "chargingDuration": "00:00:03:000"
                 }
             ]
         },
@@ -71,7 +71,7 @@
                     "slotsOccupied": 1,
                     "energyConsumption": 10,
                     "range": 8,
-                    "chargingDuration": "00:00:00:700"
+                    "chargingDuration": "00:00:10:000"
                 }
             ]
         },

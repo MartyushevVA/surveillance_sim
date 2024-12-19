@@ -126,16 +126,19 @@ void Graphics::startSimulation() {
     currentMode = Mode::SIMULATION;
 }
 
-void Graphics::handleSimulationEvents() {
+sf::Event Graphics::handleSimulationEvents() {
     sf::Event event;
     while (window_.pollEvent(event)) {
         if (event.type == sf::Event::Closed)
             window_.close();
 
         if (event.type == sf::Event::KeyPressed)
-            if (event.key.code == sf::Keyboard::P)
+            if (event.key.code == sf::Keyboard::P) {
                 togglePause();
+                return event;
+            }
     }
+    return event;
 }
 
 void Graphics::renderSimulationScreen() {
@@ -196,7 +199,21 @@ SystemConfig Graphics::runConfigurationWindow() {
     return config_;
 }
 
+void Graphics::toggleEditMode() {
+    isEditMode = !isEditMode;
+}
+
 void Graphics::handleMouseClickInConfigWindow(const sf::Vector2i& mousePos) {
+    if (manualButton.getGlobalBounds().contains(static_cast<float>(mousePos.x), static_cast<float>(mousePos.y))) {
+        toggleEditMode();
+        return;
+    }   
+    
+    if (isEditMode) {
+        handleObjectSelection(mousePos);
+        return;
+    }
+
     if (gameInputBox.getGlobalBounds().contains(mousePos.x, mousePos.y)) {
         isGameTyping = true;
     } else {
@@ -207,14 +224,72 @@ void Graphics::handleMouseClickInConfigWindow(const sf::Vector2i& mousePos) {
         std::string gameConfigPath = gameUserInput;
         config_ = Import::loadSystemConfig(gameConfigPath);
         gameUserInput.clear();
-    }
-
-    if (manualButton.getGlobalBounds().contains(static_cast<float>(mousePos.x), static_cast<float>(mousePos.y))) {
-        handleObjectSelection(mousePos);
-    }
+    } 
 }
 
-void Graphics::handleObjectSelection(const sf::Vector2i& mousePos) {}
+void Graphics::handleObjectSelection(const sf::Vector2i& mousePos) {
+    int cellX = mousePos.x / cellSize;
+    int cellY = mousePos.y / cellSize;
+    if (cellX < 0 || cellX >= config_.size.x || cellY < 0 || cellY >= config_.size.y) {
+        toggleEditMode();
+        return;
+    }
+
+    bool isEmpty = true;
+    PlatformConfig placeholderPlatform;
+    SuspectConfig placeholderSuspect;
+
+    for (const auto& token : config_.platforms) {
+        if (token.position.x == cellX && token.position.y == cellY) {
+            isEmpty = false;
+            placeholderPlatform = token;
+            break;
+        }
+    }
+    for (const auto& token : config_.suspects) {
+        if (token.position.x == cellX && token.position.y == cellY) {
+            isEmpty = false;
+            placeholderSuspect = token;
+            break;
+        }
+    }
+
+    if (isEmpty) return;
+    
+    sf::RenderWindow popup;
+    popup.create(sf::VideoMode(200, 100), "Objects Info");
+    popup.clear(sf::Color::White);
+
+    std::string objectInfo;
+    if (placeholderPlatform.position.x == cellX && placeholderPlatform.position.y == cellY) {
+        objectInfo = "Platform\nType: " + std::string(placeholderPlatform.type == PlatformType::STATIC ? "Static" : "Mobile") +
+                            "\nPosition: (" + std::to_string(placeholderPlatform.position.x) + ", " + std::to_string(placeholderPlatform.position.y) + ")" +
+                            "\nSpeed: " + std::to_string(placeholderPlatform.speed) +
+                            "\nMax Energy: " + std::to_string(placeholderPlatform.maxEnergyLevel) +
+                            "\nSlot Count: " + std::to_string(placeholderPlatform.slotCount);
+    }
+    if (placeholderSuspect.position.x == cellX && placeholderSuspect.position.y == cellY) {
+        objectInfo = "Suspect\nPosition: (" + std::to_string(placeholderSuspect.position.x) + ", " + std::to_string(placeholderSuspect.position.y) + ")" +
+                            "\nSensor Range: " + std::to_string(placeholderSuspect.sensorRange) +
+                            "\nSpeed: " + std::to_string(placeholderSuspect.speed);
+    }
+
+    sf::Text infoText(objectInfo, font_, 15);
+    infoText.setFillColor(sf::Color::Black);
+
+    while (popup.isOpen()) {
+        sf::Event event;
+        while (popup.pollEvent(event)) {
+            if (event.type == sf::Event::Closed) {
+                popup.close();
+            }
+        }
+
+        popup.clear(sf::Color::White);
+        popup.draw(infoText);
+        popup.display();
+    }
+}
 
 void Graphics::drawGrid() {
     sf::VertexArray lines(sf::Lines);
