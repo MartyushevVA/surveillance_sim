@@ -39,21 +39,16 @@ void MobilePlatform::iterate() {
             target = env->getClosestOfType<Suspect>(getPosition(), suspects);
         }
     }
-
-    std::future<bool> attackResult;
+    
+    Pair nextPos = target.second ? opponentBasedMove(target.first) : randomMove();
     if (target.second) {
         if (auto weapon = findModuleOfType<WeaponModule>()) {
             weapon->update();
-            attackResult = std::async(std::launch::async, [&]() {
-                return weapon->attack(target.first);
-            });
+            if (weapon->attack(target.first)) {
+                ai->removeSuspect(target.second);
+                return;
+            }
         }
-    }
-
-    Pair nextPos = target.second ? opponentBasedMove(target.first) : randomMove();
-    if (attackResult.valid() && attackResult.get()) {
-        ai->removeSuspect(target.second);
-        return;
     }
 
     if (connection->isSafeForSystem(nextPos)) {

@@ -15,7 +15,6 @@ Vector<std::weak_ptr<ConnectionModule>> ConnectionModule::scanForModules(Pair po
     if (!host) return result;
     auto env = host->getEnvironment().lock();
     if (!env) return result;
-    std::shared_lock<std::shared_mutex> lock(env->getMutex());
     auto area = env->getArea(pos, range_);
     for (const auto& [checkPos, token] : area)
         if (auto platform = std::dynamic_pointer_cast<Platform>(token))

@@ -12,7 +12,6 @@ void Game::iterate() {
 
     std::vector<std::shared_ptr<Suspect>> suspects;
     {
-        std::shared_lock<std::shared_mutex> lock(env->getMutex());
         for (const auto& [pos, token] : env->getTokens()) {
             if (auto suspect = std::dynamic_pointer_cast<Suspect>(token)) {
                 suspects.push_back(suspect);
