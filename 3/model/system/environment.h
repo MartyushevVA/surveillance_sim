@@ -16,6 +16,8 @@ private:
     Pair size_;
     std::map<Pair, std::shared_ptr<Placeholder>> tokens_;
     bool initialized_ = false;
+    mutable std::shared_mutex mutex_;
+
 
     void checkInitialized() const {
         if (!initialized_)
@@ -35,6 +37,7 @@ public:
         return size_;
     }
 
+    std::shared_mutex& getMutex() {return mutex_;}
     void addToken(std::shared_ptr<Placeholder> token);
     std::shared_ptr<Placeholder> getToken(Pair position) const;
     bool removeToken(Pair position);

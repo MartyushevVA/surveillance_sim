@@ -17,6 +17,9 @@ class Placeholder;
 
 class AI : public std::enable_shared_from_this<AI> {
 private:
+    mutable std::shared_mutex platformsMutex_;
+    mutable std::shared_mutex suspectsMutex_;
+
 
     std::weak_ptr<Environment> environment_;
     std::vector<std::shared_ptr<ConnectionModule>> mainHosts_ {};
@@ -34,7 +37,10 @@ public:
     
     void addSuspects(std::map<Pair, std::shared_ptr<Suspect>> suspects);
     void removeSuspect(std::shared_ptr<Suspect> suspect);
-    const std::map<Pair, std::shared_ptr<Suspect>>& getSuspects() const {return spottedSuspects_;}
+    const std::map<Pair, std::shared_ptr<Suspect>>& getSuspects() const {
+        std::shared_lock<std::shared_mutex> lock(suspectsMutex_);
+        return spottedSuspects_;
+    }
 
     std::shared_ptr<AI> getSharedPtr() { return shared_from_this(); }
 };

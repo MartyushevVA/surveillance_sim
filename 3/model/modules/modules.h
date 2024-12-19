@@ -37,10 +37,10 @@ public:
     void recursiveRouteNodeImplementation(std::weak_ptr<ConnectionModule> gate, Vector<routeNode> routeList);
     void recursiveDiscord(std::weak_ptr<ConnectionModule> gate, Vector<routeNode> targetList);
 
+    bool isGateToAI(std::weak_ptr<ConnectionModule> gate) const;
     bool isSafeForSystem(Pair position) const;
     std::shared_ptr<ConnectionModule> getCriticalConnection() const;
     std::weak_ptr<const ConnectionModule> getConnectedToAIDirectly() const;
-    bool isGateToAI(std::weak_ptr<ConnectionModule> gate) const;
 
     std::shared_mutex& getMutex() {return mutex_;}
 

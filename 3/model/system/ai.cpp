@@ -29,6 +29,7 @@ void AI::syncHosts() {
 }
 
 void AI::addConnectedPlatform(std::shared_ptr<ConnectionModule> platform) {
+    std::unique_lock<std::shared_mutex> lock(platformsMutex_);
     if (std::find(allConnectedPlatforms_.begin(), allConnectedPlatforms_.end(), platform) 
         == allConnectedPlatforms_.end()) {
         allConnectedPlatforms_.push_back(platform);
@@ -36,15 +37,28 @@ void AI::addConnectedPlatform(std::shared_ptr<ConnectionModule> platform) {
 }
 
 void AI::eliminateAllSuspects() {
-    for (auto& router : allConnectedPlatforms_) {
-        if (!router) continue;
-        auto platform = router->getHost();
-        if (!platform) continue;
-        platform->iterate();
+    std::vector<std::future<void>> futures;
+    
+    {
+        std::shared_lock<std::shared_mutex> lock(platformsMutex_);
+        futures.reserve(allConnectedPlatforms_.size());
+        for (auto& router : allConnectedPlatforms_) {
+            if (!router) continue;
+            auto platform = router->getHost();
+            if (!platform) continue;
+            futures.emplace_back(std::async(std::launch::async, [platform]() {
+                platform->iterate();
+            }));
+        }
+    }
+
+    for (auto& future : futures) {
+        future.get();
     }
 }
 
 void AI::addSuspects(std::map<Pair, std::shared_ptr<Suspect>> suspects) {
+    std::unique_lock<std::shared_mutex> lock(suspectsMutex_);
     for (auto [pos, suspect] : suspects) {
         for (auto it = spottedSuspects_.begin(); it != spottedSuspects_.end();)
             if (it->second == suspect)
@@ -56,6 +70,7 @@ void AI::addSuspects(std::map<Pair, std::shared_ptr<Suspect>> suspects) {
 }
 
 void AI::removeSuspect(std::shared_ptr<Suspect> suspect) {
+    std::unique_lock<std::shared_mutex> lock(platformsMutex_);
     for (auto it = spottedSuspects_.begin(); it != spottedSuspects_.end();)
         if (it->second == suspect)
             it = spottedSuspects_.erase(it);

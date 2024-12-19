@@ -10,7 +10,6 @@
 #include <iostream>
 
 void MobilePlatform::iterate() {
-    //std::cout << "Currently " << getDescription() << std::endl;
     auto connection = findModuleOfType<ConnectionModule>();
     if (!connection) return;
     
@@ -40,32 +39,40 @@ void MobilePlatform::iterate() {
             target = env->getClosestOfType<Suspect>(getPosition(), suspects);
         }
     }
-    
-    Pair nextPos = target.second ? opponentBasedMove(target.first) : randomMove();
+
+    std::future<bool> attackResult;
     if (target.second) {
         if (auto weapon = findModuleOfType<WeaponModule>()) {
             weapon->update();
-            if (weapon->attack(target.first)) {
-                ai->removeSuspect(target.second);
+            attackResult = std::async(std::launch::async, [&]() {
+                return weapon->attack(target.first);
+            });
+        }
+    }
+
+    if (attackResult.valid() && attackResult.get()) {
+        ai->removeSuspect(target.second);
+        return;
+    }
+    
+    if (target.second) {
+        auto currPos = getPosition();
+        Pair nextPos = opponentBasedMove(target.first);
+        if (connection->isSafeForSystem(nextPos)) {
+            move(nextPos);
+            if (currPos != getPosition()) {
+                connection->update();
                 return;
             }
         }
     }
-
-    auto currPos = getPosition();
-    if (connection->isSafeForSystem(nextPos))
-        move(nextPos);
-    if (currPos == getPosition()) {
-        auto randMove = randomMove();
-        if (connection->isSafeForSystem(randMove))
-            move(randMove);
-    }
-
-    connection->update();   
+    auto randMove = randomMove();
+    if (connection->isSafeForSystem(randMove))
+        move(randMove);
+    connection->update();
 }
 
 void StaticPlatform::iterate() {
-    //std::cout << "Currently " << getDescription() << " is at " << std::endl;
     auto connection = findModuleOfType<ConnectionModule>();
     if (!connection) return;
 
