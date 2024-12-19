@@ -4,6 +4,7 @@
 #include <SFML/Graphics.hpp>
 #include "../import/import.h"
 #include <memory>
+#include <iostream>
 
 enum class Mode {
     CONFIGURATION,

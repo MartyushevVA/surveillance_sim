@@ -9,8 +9,6 @@
 #include "../system/environment.h"
 #include "../../import/import.h"
 
-#include <iostream>
-
 class Game {
 private:
     std::shared_ptr<Environment> environment_;

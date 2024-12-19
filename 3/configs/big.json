@@ -1,5 +1,5 @@
 {
-    "update_interval": "00:00:00:750",
+    "update_interval": "00:00:00:100",
     "size": {
         "width": 50,
         "height": 50
@@ -21,7 +21,7 @@
             "type": "Suspect",
             "position": {"x": 25, "y": 25},
             "sensorRange": 7,
-            "speed": 1
+            "speed": 2
         }
     ],
     "platforms": [
@@ -44,7 +44,7 @@
                     "type": "SensorModule",
                     "slotsOccupied": 1,
                     "energyConsumption": 3,
-                    "range": 8,
+                    "range": 15,
                     "sensorType": "Optical"
                 },
                 {
@@ -74,15 +74,8 @@
                     "type": "SensorModule",
                     "slotsOccupied": 1,
                     "energyConsumption": 5,
-                    "range": 10,
-                    "sensorType": "XRay"
-                },
-                {
-                    "type": "WeaponModule",
-                    "slotsOccupied": 2,
-                    "energyConsumption": 10,
                     "range": 15,
-                    "chargingDuration": "00:00:05:000"
+                    "sensorType": "XRay"
                 }
             ]
         },
@@ -105,8 +98,8 @@
                     "type": "SensorModule",
                     "slotsOccupied": 1,
                     "energyConsumption": 4,
-                    "range": 6,
-                    "sensorType": "Thermal"
+                    "range": 15,
+                    "sensorType": "Optical"
                 }
             ]
         },
@@ -128,8 +121,8 @@
                     "type": "SensorModule",
                     "slotsOccupied": 1,
                     "energyConsumption": 6,
-                    "range": 9,
-                    "sensorType": "Radar"
+                    "range": 15,
+                    "sensorType": "XRay"
                 },
                 {
                     "type": "WeaponModule",
