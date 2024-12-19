@@ -34,10 +34,6 @@ private:
     sf::RectangleShape manualButton;
     sf::Text manualButtonText;
 
-    const int cellSize = 50;
-    const int gridWidth = 20;
-    const int gridHeight = 20;
-
     void adjustGraphicsConfig(GraphicsConfig config);
 
     void drawObject(sf::Sprite& sprite, Pair object);

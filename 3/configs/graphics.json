@@ -3,8 +3,7 @@
         "width": 1000,
         "height": 1000,
         "title": "Surveillance Game",
-        "framerate_limit": 60,
-        "object_size": 50
+        "framerate_limit": 60
     },
     "background_color": {
         "r": 255,

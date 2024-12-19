@@ -1,0 +1,144 @@
+{
+    "update_interval": "00:00:00:050",
+    "size": {
+        "width": 50,
+        "height": 50
+    },
+    "suspects": [
+        {
+            "type": "Suspect",
+            "position": {"x": 5, "y": 5},
+            "sensorRange": 6,
+            "speed": 2
+        },
+        {
+            "type": "Suspect",
+            "position": {"x": 45, "y": 45},
+            "sensorRange": 5,
+            "speed": 3
+        },
+        {
+            "type": "Suspect",
+            "position": {"x": 25, "y": 25},
+            "sensorRange": 7,
+            "speed": 1
+        }
+    ],
+    "platforms": [
+        {
+            "type": "MobilePlatform",
+            "position": {"x": 10, "y": 10},
+            "description": "Agile Mobile Platform",
+            "maxEnergyLevel": 100,
+            "slotCount": 3,
+            "speed": 4,
+            "modules": [
+                {
+                    "type": "ConnectionModule",
+                    "slotsOccupied": 1,
+                    "energyConsumption": 4,
+                    "range": 10,
+                    "maxSessions": 4
+                },
+                {
+                    "type": "SensorModule",
+                    "slotsOccupied": 1,
+                    "energyConsumption": 3,
+                    "range": 8,
+                    "sensorType": "Optical"
+                },
+                {
+                    "type": "WeaponModule",
+                    "slotsOccupied": 1,
+                    "energyConsumption": 8,
+                    "range": 12,
+                    "chargingDuration": "00:00:03:000"
+                }
+            ]
+        },
+        {
+            "type": "StaticPlatform",
+            "position": {"x": 20, "y": 20},
+            "description": "Central Defense Platform",
+            "maxEnergyLevel": 150,
+            "slotCount": 4,
+            "modules": [
+                {
+                    "type": "ConnectionModule",
+                    "slotsOccupied": 1,
+                    "energyConsumption": 6,
+                    "range": 15,
+                    "maxSessions": 6
+                },
+                {
+                    "type": "SensorModule",
+                    "slotsOccupied": 1,
+                    "energyConsumption": 5,
+                    "range": 10,
+                    "sensorType": "XRay"
+                },
+                {
+                    "type": "WeaponModule",
+                    "slotsOccupied": 2,
+                    "energyConsumption": 10,
+                    "range": 15,
+                    "chargingDuration": "00:00:05:000"
+                }
+            ]
+        },
+        {
+            "type": "MobilePlatform",
+            "position": {"x": 40, "y": 10},
+            "description": "Stealth Mobile Platform",
+            "maxEnergyLevel": 90,
+            "slotCount": 2,
+            "speed": 3,
+            "modules": [
+                {
+                    "type": "ConnectionModule",
+                    "slotsOccupied": 1,
+                    "energyConsumption": 5,
+                    "range": 8,
+                    "maxSessions": 3
+                },
+                {
+                    "type": "SensorModule",
+                    "slotsOccupied": 1,
+                    "energyConsumption": 4,
+                    "range": 6,
+                    "sensorType": "Thermal"
+                }
+            ]
+        },
+        {
+            "type": "StaticPlatform",
+            "position": {"x": 5, "y": 45},
+            "description": "Perimeter Guard Platform",
+            "maxEnergyLevel": 120,
+            "slotCount": 3,
+            "modules": [
+                {
+                    "type": "ConnectionModule",
+                    "slotsOccupied": 1,
+                    "energyConsumption": 7,
+                    "range": 12,
+                    "maxSessions": 5
+                },
+                {
+                    "type": "SensorModule",
+                    "slotsOccupied": 1,
+                    "energyConsumption": 6,
+                    "range": 9,
+                    "sensorType": "Radar"
+                },
+                {
+                    "type": "WeaponModule",
+                    "slotsOccupied": 1,
+                    "energyConsumption": 9,
+                    "range": 10,
+                    "chargingDuration": "00:00:04:000"
+                }
+            ]
+        }
+    ]
+} 

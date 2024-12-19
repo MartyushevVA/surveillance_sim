@@ -104,10 +104,10 @@ void Graphics::renderConfigurationUI() {
 }
 
 void Graphics::renderPreviewScreen() {
-    drawGrid();
-    if (currentMode != Mode::CONFIGURATION) {
+    if (currentMode != Mode::CONFIGURATION)
         return;
-    }
+    if (graphicsConfig_.window.objectSize) 
+        drawGrid();
     for (const auto& token : config_.obstacles) drawObject(graphicsConfig_.sprites.obstacle, token.position);
     for (const auto& token : config_.platforms) {
         if (token.type == PlatformType::STATIC)
@@ -223,13 +223,14 @@ void Graphics::handleMouseClickInConfigWindow(const sf::Vector2i& mousePos) {
     if (loadButton.getGlobalBounds().contains(static_cast<float>(mousePos.x), static_cast<float>(mousePos.y))) {
         std::string gameConfigPath = gameUserInput;
         config_ = Import::loadSystemConfig(gameConfigPath);
+        graphicsConfig_.window.objectSize = graphicsConfig_.window.height / config_.size.y;
         gameUserInput.clear();
     } 
 }
 
 void Graphics::handleObjectSelection(const sf::Vector2i& mousePos) {
-    int cellX = mousePos.x / cellSize;
-    int cellY = mousePos.y / cellSize;
+    int cellX = mousePos.x / graphicsConfig_.window.objectSize;
+    int cellY = mousePos.y / graphicsConfig_.window.objectSize;
     if (cellX < 0 || cellX >= config_.size.x || cellY < 0 || cellY >= config_.size.y) {
         toggleEditMode();
         return;
@@ -293,13 +294,13 @@ void Graphics::handleObjectSelection(const sf::Vector2i& mousePos) {
 
 void Graphics::drawGrid() {
     sf::VertexArray lines(sf::Lines);
-    for (int i = 0; i <= gridWidth; ++i) {
-        lines.append(sf::Vertex(sf::Vector2f(i * cellSize, 0), sf::Color::Black));
-        lines.append(sf::Vertex(sf::Vector2f(i * cellSize, gridHeight * cellSize), sf::Color::Black));
+    for (int i = 0; i <= graphicsConfig_.window.width / graphicsConfig_.window.objectSize; ++i) {
+        lines.append(sf::Vertex(sf::Vector2f(i * graphicsConfig_.window.objectSize, 0), sf::Color::Black));
+        lines.append(sf::Vertex(sf::Vector2f(i * graphicsConfig_.window.objectSize, config_.size.y * graphicsConfig_.window.objectSize), sf::Color::Black));
     }
-    for (int j = 0; j <= gridHeight; ++j) {
-        lines.append(sf::Vertex(sf::Vector2f(0, j * cellSize), sf::Color::Black));
-        lines.append(sf::Vertex(sf::Vector2f(gridWidth * cellSize, j * cellSize), sf::Color::Black));
+    for (int j = 0; j <= graphicsConfig_.window.height / graphicsConfig_.window.objectSize; ++j) {
+        lines.append(sf::Vertex(sf::Vector2f(0, j * graphicsConfig_.window.objectSize), sf::Color::Black));
+        lines.append(sf::Vertex(sf::Vector2f(config_.size.x * graphicsConfig_.window.objectSize, j * graphicsConfig_.window.objectSize), sf::Color::Black));
     }
     window_.draw(lines);
 }

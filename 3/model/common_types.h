@@ -114,7 +114,7 @@ struct GraphicsConfig {
         int height;
         std::string title;
         int frameRateLimit;
-        int objectSize;
+        int objectSize = 0;
     } window;
 
     struct Color {
