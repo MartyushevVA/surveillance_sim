@@ -2,7 +2,7 @@
 
 Graphics::Graphics(const std::string& graphicsConfigPath)
     : game_(nullptr), currentMode(Mode::CONFIGURATION), isSimulationPaused(false), isGameTyping(false) {
-    adjustGraphicsConfig(Import::loadGraphicsConfig(graphicsConfigPath));
+    graphicsConfig_ = Import::loadGraphicsConfig(graphicsConfigPath);
     window_.create(sf::VideoMode(graphicsConfig_.window.width + 200, graphicsConfig_.window.height), graphicsConfig_.window.title);
     window_.setFramerateLimit(graphicsConfig_.window.frameRateLimit);
 
@@ -12,8 +12,8 @@ Graphics::Graphics(const std::string& graphicsConfigPath)
     setupConfigurationUI();
 }
 
-void Graphics::adjustGraphicsConfig(GraphicsConfig config) {
-    graphicsConfig_ = config;
+void Graphics::adjustGraphicsConfig() {
+    graphicsConfig_.window.objectSize = graphicsConfig_.window.height / config_.size.y;
 
     auto loadTexture = [](const std::string& path) -> sf::Texture {
         sf::Texture texture;
@@ -223,7 +223,7 @@ void Graphics::handleMouseClickInConfigWindow(const sf::Vector2i& mousePos) {
     if (loadButton.getGlobalBounds().contains(static_cast<float>(mousePos.x), static_cast<float>(mousePos.y))) {
         std::string gameConfigPath = gameUserInput;
         config_ = Import::loadSystemConfig(gameConfigPath);
-        graphicsConfig_.window.objectSize = graphicsConfig_.window.height / config_.size.y;
+        adjustGraphicsConfig();
         gameUserInput.clear();
     } 
 }

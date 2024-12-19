@@ -34,7 +34,7 @@ private:
     sf::RectangleShape manualButton;
     sf::Text manualButtonText;
 
-    void adjustGraphicsConfig(GraphicsConfig config);
+    void adjustGraphicsConfig();
 
     void drawObject(sf::Sprite& sprite, Pair object);
     void setupConfigurationUI();
