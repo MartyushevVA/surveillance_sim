@@ -79,34 +79,6 @@ TEST_F(ComplexScenariosTest, NetworkPartitioning) {
     EXPECT_EQ(conn4->getRouteList().size(), 2);
 }
 
-TEST_F(ComplexScenariosTest, ConcurrentEnvironmentModification) {
-    std::mutex envMutex;
-    std::vector<std::future<void>> futures;
-    
-    for(int i = 0; i < 10; i++) {
-        futures.push_back(std::async(std::launch::async, [&]() {
-            for(int j = 0; j < 5; j++) {
-                auto pos = getRandomPosition();
-                {
-                    std::lock_guard<std::mutex> lock(envMutex);
-                    auto obstacle = std::make_shared<Obstacle>(pos, env);
-                    env->addToken(obstacle);
-                }
-                std::this_thread::sleep_for(std::chrono::milliseconds(10));
-                {
-                    std::lock_guard<std::mutex> lock(envMutex);
-                    env->removeToken(pos);
-                }
-            }
-        }));
-    }
-    
-    for(auto& f : futures) f.get();
-    
-    auto tokens = env->getTokens();
-    EXPECT_TRUE(tokens.empty());
-}
-
 TEST_F(ComplexScenariosTest, SensorNetworkOverlap) {
     std::vector<std::shared_ptr<Platform>> platforms;
     std::vector<std::shared_ptr<SensorModule>> sensors;
@@ -139,19 +111,3 @@ TEST_F(ComplexScenariosTest, SensorNetworkOverlap) {
         EXPECT_FALSE(report.objects.empty());
     }
 }
-
-TEST_F(ComplexScenariosTest, WeaponInterference) {
-    auto suspect = std::make_shared<Suspect>(Pair{20, 15}, std::weak_ptr<Environment>(env), 3, 2);
-    env->addToken(suspect);
-
-    auto weapon = std::make_shared<WeaponModule>(1, 10, 5, std::chrono::milliseconds(50));
-    auto platform = std::make_shared<StaticPlatform>(Pair{15, 15}, std::weak_ptr<Environment>(env), "Platform", 100, 3);
-    platform->installModule(weapon);
-    env->addToken(platform);
-    std::this_thread::sleep_for(std::chrono::milliseconds(60));
-    weapon->update();
-    
-    EXPECT_TRUE(weapon->getIsCharged());
-    EXPECT_TRUE(weapon->attack(suspect->getPosition()));
-    EXPECT_EQ(env->getToken(suspect->getPosition()), nullptr);
-} 

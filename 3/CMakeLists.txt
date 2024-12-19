@@ -72,6 +72,7 @@ if(T)
         tests/movement_test.cpp
         tests/objects_test.cpp
         tests/vector_test.cpp
+        tests/multithreading_test.cpp
     )
     find_package(GTest REQUIRED)
     target_link_libraries(sss game_lib GTest::gtest GTest::gtest_main)
