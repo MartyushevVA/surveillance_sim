@@ -36,8 +36,6 @@ void AI::addConnectedPlatform(std::shared_ptr<ConnectionModule> platform) {
     }
 }
 
-#include <iostream>
-
 void AI::eliminateAllSuspects() {
     std::vector<std::future<void>> futures;
     
@@ -49,7 +47,6 @@ void AI::eliminateAllSuspects() {
             auto platform = router->getHost();
             if (!platform) continue;
             futures.emplace_back(std::async(std::launch::async, [platform]() {
-                //std::cout << "Iterating platform: " << platform->getDescription() << std::endl;
                 platform->iterate();
             }));
         }

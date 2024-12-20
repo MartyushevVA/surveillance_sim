@@ -130,7 +130,6 @@ GraphicsConfig Import::parseGraphicsConfig(const nlohmann::json& graphicsJson) {
     config.window.height = graphicsJson["window"]["height"];
     config.window.title = graphicsJson["window"]["title"];
     config.window.frameRateLimit = graphicsJson["window"]["framerate_limit"];
-    //config.window.objectSize = graphicsJson["window"]["object_size"];
     auto loadColor = [](const nlohmann::json& j) -> GraphicsConfig::Color {
         return {
             static_cast<uint8_t>(j["r"]),
