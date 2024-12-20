@@ -62,14 +62,14 @@
                     "type": "SensorModule",
                     "slotsOccupied": 1,
                     "energyConsumption": 3,
-                    "range": 8,
+                    "range": 10,
                     "sensorType": "Optical"
                 },
                 {
                     "type": "WeaponModule",
                     "slotsOccupied": 1,
                     "energyConsumption": 8,
-                    "range": 8,
+                    "range": 10,
                     "chargingDuration": "00:00:00:750"
                 }
             ]
@@ -139,14 +139,14 @@
                     "type": "SensorModule",
                     "slotsOccupied": 1,
                     "energyConsumption": 4,
-                    "range": 7,
+                    "range": 9,
                     "sensorType": "Optical"
                 },
                 {
                     "type": "WeaponModule",
                     "slotsOccupied": 1,
                     "energyConsumption": 8,
-                    "range": 7,
+                    "range": 9,
                     "chargingDuration": "00:00:00:630"
                 }
             ]

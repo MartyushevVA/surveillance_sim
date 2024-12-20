@@ -58,8 +58,8 @@ target_link_libraries(view_lib nlohmann_json::nlohmann_json sfml-graphics sfml-w
 target_link_libraries(import_lib nlohmann_json::nlohmann_json sfml-graphics sfml-window sfml-system)
 target_link_libraries(controller_lib game_lib view_lib import_lib)
 
-add_compile_options(-fsanitize=thread -g)
-add_link_options(-fsanitize=thread)
+#add_compile_options(-fsanitize=thread -g)
+#add_link_options(-fsanitize=thread)
 
 option(T "Запуск тестов" OFF)
 option(TIMING "Запуск тестов на скорость" OFF)

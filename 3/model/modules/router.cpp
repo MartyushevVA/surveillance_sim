@@ -117,30 +117,31 @@ bool ConnectionModule::isSafeForSystem(Pair newPosition) const {
     if (!host) return false;
     auto env = host->getEnvironment().lock();
     if (!env) return false;
-    auto criticalConnection = getCriticalConnection();
-    if (criticalConnection) {
-        auto distance = host->getEnvironment().lock()->calculateDistance(newPosition, criticalConnection->getHost()->getPosition());
-        if (distance > range_ || distance > criticalConnection->getRange())
-            return false;
-    }
+    auto criticalConnections = getCriticalConnections();
+    if (std::all_of(criticalConnections.begin(), criticalConnections.end(),
+        [&newPosition, this, &env](const std::shared_ptr<ConnectionModule>& connection) {
+            auto distance = env->calculateDistance(newPosition, connection->getHost()->getPosition());
+            return distance > range_ || distance > connection->getRange();
+        }))
+        return false;
+
 
     for (const auto& session : sessionList_) {
         auto sessionPtr = session.lock();
         if (!sessionPtr) continue;
-        auto itsCritical = sessionPtr->getCriticalConnection();
+        auto itsCriticals = sessionPtr->getCriticalConnections();
 
-        /*if (itsCritical)
-            if (itsCritical->getHost() == host) {
-                auto distance = host->getEnvironment().lock()->calculateDistance(newPosition, sessionPtr->getHost()->getPosition());
-                if ((distance > range_) || (distance > sessionPtr->getRange()))
-                    return false;
-            }*/
+        if (itsCriticals.size() == 1 && itsCriticals[0] == shared_from_this()) {
+            auto distance = host->getEnvironment().lock()->calculateDistance(newPosition, sessionPtr->getHost()->getPosition());
+            if ((distance > range_) || (distance > sessionPtr->getRange()))
+                return false;
+        }
 
     
-        auto distance = host->getEnvironment().lock()->calculateDistance(newPosition, sessionPtr->getHost()->getPosition());
+        /*auto distance = host->getEnvironment().lock()->calculateDistance(newPosition, sessionPtr->getHost()->getPosition());
         if ((distance > range_ || distance > sessionPtr->getRange()) && (sessionPtr->isGateToAI(host->findModuleOfType<ConnectionModule>()) || isGateToAI(session))){
             return false;
-        }
+        }*/
     }
 
     return true;
@@ -153,15 +154,15 @@ std::weak_ptr<const ConnectionModule> ConnectionModule::getConnectedToAIDirectly
     return weak_from_this();
 }
 
-std::shared_ptr<ConnectionModule> ConnectionModule::getCriticalConnection() const {
-    std::shared_ptr<ConnectionModule> criticalConnection = nullptr;
+std::vector<std::shared_ptr<ConnectionModule>> ConnectionModule::getCriticalConnections() const {
+    if (auto staticPlatform = dynamic_cast<StaticPlatform*>(getHost().get()); staticPlatform)
+        return {};
+    std::vector<std::shared_ptr<ConnectionModule>> criticalConnections = {};
     for (auto node : routeList_)
         if (auto staticPlatform = dynamic_cast<StaticPlatform*>(node.destination.lock()->getHost().get()); staticPlatform) {
-            if (criticalConnection)
-                return nullptr;
-            criticalConnection = node.gate.lock();
+            criticalConnections.push_back(node.gate.lock());
         }
-    return criticalConnection;
+    return criticalConnections;
 }
 
 void ConnectionModule::update() {
@@ -185,8 +186,10 @@ void ConnectionModule::update() {
         auto session = agedSession.lock();
         if (!session) continue;
         if (std::find_if(newNeighbors.begin(), newNeighbors.end(),
-        [&session](const std::weak_ptr<ConnectionModule>& neighbor) {return neighbor.lock() == session;}) == newNeighbors.end())
+        [&session](const std::weak_ptr<ConnectionModule>& neighbor) {return neighbor.lock() == session;}) == newNeighbors.end()) {
+            //std::cout << "Closing connection between " << host->getDescription() << " and " << session->getHost()->getDescription() << std::endl;
             closeConnection(session);
+        }
     }
 }
 

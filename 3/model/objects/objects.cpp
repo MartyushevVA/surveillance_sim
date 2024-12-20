@@ -55,20 +55,15 @@ void MobilePlatform::iterate() {
         return;
     }
     
-    if (target.second) {
-        auto currPos = getPosition();
-        Pair nextPos = opponentBasedMove(target.first);
-        if (connection->isSafeForSystem(nextPos)) {
-            move(nextPos);
-            if (currPos != getPosition()) {
-                connection->update();
-                return;
-            }
-        }
+    Pair nextPos = target.second ? opponentBasedMove(target.first) : randomMove();
+    auto currPos = getPosition();
+    if (connection->isSafeForSystem(nextPos))
+        move(nextPos);
+    if (currPos == getPosition()) {
+        auto randMove = randomMove();
+        if (connection->isSafeForSystem(randMove))
+            move(randMove);
     }
-    auto randMove = randomMove();
-    if (connection->isSafeForSystem(randMove))
-        move(randMove);
     connection->update();
 }
 
