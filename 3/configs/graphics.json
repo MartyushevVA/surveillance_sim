@@ -1,0 +1,19 @@
+{
+    "window": {
+        "width": 1000,
+        "height": 1000,
+        "title": "Surveillance Game",
+        "framerate_limit": 60
+    },
+    "background_color": {
+        "r": 255,
+        "g": 255,
+        "b": 255
+    },
+    "textures": {
+        "suspect": "configs/suspect.png",
+        "static_platform": "configs/static_platform.png",
+        "mobile_platform": "configs/mobile_platform.png",
+        "obstacle": "configs/obstacle.png"
+    }
+} 

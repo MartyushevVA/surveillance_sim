@@ -1,0 +1,314 @@
+{
+    "update_interval": "00:00:00:100",
+    "size": {
+        "width": 50,
+        "height": 50
+    },
+    "suspects": [
+        {
+            "type": "Suspect",
+            "position": {"x": 4, "y": 7},
+            "sensorRange": 6,
+            "speed": 2
+        },
+        {
+            "type": "Suspect",
+            "position": {"x": 19, "y": 5},
+            "sensorRange": 5,
+            "speed": 3
+        },
+        {
+            "type": "Suspect",
+            "position": {"x": 22, "y": 24},
+            "sensorRange": 7,
+            "speed": 2
+        },
+        {
+            "type": "Suspect",
+            "position": {"x": 6, "y": 44},
+            "sensorRange": 7,
+            "speed": 2
+        },
+        {
+            "type": "Suspect",
+            "position": {"x": 10, "y": 47},
+            "sensorRange": 7,
+            "speed": 2
+        },
+        {
+            "type": "Suspect",
+            "position": {"x": 48, "y": 45},
+            "sensorRange": 7,
+            "speed": 2
+        }
+    ],
+    "platforms": [
+        {
+            "type": "MobilePlatform",
+            "position": {"x": 1, "y": 17},
+            "description": "Remote Agent",
+            "maxEnergyLevel": 100,
+            "slotCount": 3,
+            "speed": 4,
+            "modules": [
+                {
+                    "type": "ConnectionModule",
+                    "slotsOccupied": 1,
+                    "energyConsumption": 4,
+                    "range": 16,
+                    "maxSessions": 4
+                },
+                {
+                    "type": "SensorModule",
+                    "slotsOccupied": 1,
+                    "energyConsumption": 3,
+                    "range": 10,
+                    "sensorType": "Optical"
+                },
+                {
+                    "type": "WeaponModule",
+                    "slotsOccupied": 1,
+                    "energyConsumption": 8,
+                    "range": 10,
+                    "chargingDuration": "00:00:00:750"
+                }
+            ]
+        },
+        {
+            "type": "StaticPlatform",
+            "position": {"x": 13, "y": 11},
+            "description": "Wall Scanner Platform",
+            "maxEnergyLevel": 150,
+            "slotCount": 4,
+            "modules": [
+                {
+                    "type": "ConnectionModule",
+                    "slotsOccupied": 1,
+                    "energyConsumption": 6,
+                    "range": 15,
+                    "maxSessions": 6
+                },
+                {
+                    "type": "SensorModule",
+                    "slotsOccupied": 1,
+                    "energyConsumption": 5,
+                    "range": 20,
+                    "sensorType": "XRay"
+                }
+            ]
+        },
+        {
+            "type": "StaticPlatform",
+            "position": {"x": 8, "y": 29},
+            "description": "Blind Host",
+            "maxEnergyLevel": 150,
+            "slotCount": 4,
+            "modules": [
+                {
+                    "type": "ConnectionModule",
+                    "slotsOccupied": 1,
+                    "energyConsumption": 6,
+                    "range": 15,
+                    "maxSessions": 6
+                },
+                {
+                    "type": "SensorModule",
+                    "slotsOccupied": 1,
+                    "energyConsumption": 5,
+                    "range": 20,
+                    "sensorType": "Optical"
+                }
+            ]
+        },
+        {
+            "type": "MobilePlatform",
+            "position": {"x": 28, "y": 3},
+            "description": "Dependent Agent",
+            "maxEnergyLevel": 90,
+            "slotCount": 3,
+            "speed": 3,
+            "modules": [
+                {
+                    "type": "ConnectionModule",
+                    "slotsOccupied": 1,
+                    "energyConsumption": 5,
+                    "range": 16,
+                    "maxSessions": 1
+                },
+                {
+                    "type": "SensorModule",
+                    "slotsOccupied": 1,
+                    "energyConsumption": 4,
+                    "range": 9,
+                    "sensorType": "Optical"
+                },
+                {
+                    "type": "WeaponModule",
+                    "slotsOccupied": 1,
+                    "energyConsumption": 8,
+                    "range": 9,
+                    "chargingDuration": "00:00:00:630"
+                }
+            ]
+        },
+        {
+            "type": "MobilePlatform",
+            "position": {"x": 41, "y": 10},
+            "description": "Router",
+            "maxEnergyLevel": 90,
+            "slotCount": 4,
+            "speed": 3,
+            "modules": [
+                {
+                    "type": "ConnectionModule",
+                    "slotsOccupied": 1,
+                    "energyConsumption": 6,
+                    "range": 15,
+                    "maxSessions": 3
+                },
+                {
+                    "type": "SensorModule",
+                    "slotsOccupied": 1,
+                    "energyConsumption": 5,
+                    "range": 20,
+                    "sensorType": "Optical"
+                }
+            ]
+        },
+        {
+            "type": "MobilePlatform",
+            "position": {"x": 35, "y": 27},
+            "description": "Simple Agent",
+            "maxEnergyLevel": 90,
+            "slotCount": 4,
+            "speed": 3,
+            "modules": [
+                {
+                    "type": "ConnectionModule",
+                    "slotsOccupied": 1,
+                    "energyConsumption": 6,
+                    "range": 14,
+                    "maxSessions": 3
+                },
+                {
+                    "type": "SensorModule",
+                    "slotsOccupied": 1,
+                    "energyConsumption": 5,
+                    "range": 17,
+                    "sensorType": "Optical"
+                },
+                {
+                    "type": "WeaponModule",
+                    "slotsOccupied": 1,
+                    "energyConsumption": 8,
+                    "range": 12,
+                    "chargingDuration": "00:00:00:520"
+                }
+            ]
+        },
+        {
+            "type": "StaticPlatform",
+            "position": {"x": 30, "y": 38},
+            "description": "Base Host",
+            "maxEnergyLevel": 150,
+            "slotCount": 4,
+            "modules": [
+                {
+                    "type": "ConnectionModule",
+                    "slotsOccupied": 1,
+                    "energyConsumption": 6,
+                    "range": 18,
+                    "maxSessions": 4
+                },
+                {
+                    "type": "SensorModule",
+                    "slotsOccupied": 1,
+                    "energyConsumption": 5,
+                    "range": 17,
+                    "sensorType": "Optical"
+                }
+            ]
+        },
+        {
+            "type": "MobilePlatform",
+            "position": {"x": 48, "y": 48},
+            "description": "Lost Agent",
+            "maxEnergyLevel": 90,
+            "slotCount": 4,
+            "speed": 3,
+            "modules": [
+                {
+                    "type": "ConnectionModule",
+                    "slotsOccupied": 1,
+                    "energyConsumption": 6,
+                    "range": 20,
+                    "maxSessions": 3
+                },
+                {
+                    "type": "SensorModule",
+                    "slotsOccupied": 1,
+                    "energyConsumption": 5,
+                    "range": 17,
+                    "sensorType": "Optical"
+                },
+                {
+                    "type": "WeaponModule",
+                    "slotsOccupied": 1,
+                    "energyConsumption": 8,
+                    "range": 12,
+                    "chargingDuration": "00:00:00:520"
+                }
+            ]
+        },
+        {
+            "type": "StaticPlatform",
+            "position": {"x": 49, "y": 0},
+            "description": "Perimeter Host",
+            "maxEnergyLevel": 120,
+            "slotCount": 3,
+            "speed": 3,
+            "modules": [
+                {
+                    "type": "ConnectionModule",
+                    "slotsOccupied": 1,
+                    "energyConsumption": 6,
+                    "range": 20,
+                    "maxSessions": 3
+                },
+                {
+                    "type": "SensorModule",
+                    "slotsOccupied": 1,
+                    "energyConsumption": 5,
+                    "range": 17,
+                    "sensorType": "Optical"
+                }
+            ]
+        }
+    ],
+    "obstacles": [
+        {"position": {"x": 9, "y": 7}},
+        {"position": {"x": 9, "y": 8}},
+        {"position": {"x": 9, "y": 9}},
+        {"position": {"x": 9, "y": 10}},
+        {"position": {"x": 9, "y": 11}},
+        {"position": {"x": 9, "y": 12}},
+        {"position": {"x": 9, "y": 13}},
+        {"position": {"x": 9, "y": 14}},
+        {"position": {"x": 9, "y": 15}},
+        {"position": {"x": 9, "y": 16}},
+        {"position": {"x": 9, "y": 17}},
+        {"position": {"x": 9, "y": 18}},
+        {"position": {"x": 9, "y": 19}},
+        {"position": {"x": 9, "y": 20}},
+        {"position": {"x": 4, "y": 40}},
+        {"position": {"x": 5, "y": 40}},
+        {"position": {"x": 6, "y": 40}},
+        {"position": {"x": 7, "y": 40}},
+        {"position": {"x": 8, "y": 40}},
+        {"position": {"x": 9, "y": 40}},
+        {"position": {"x": 10, "y": 40}},
+        {"position": {"x": 11, "y": 40}},
+        {"position": {"x": 12, "y": 40}},
+        {"position": {"x": 13, "y": 40}}
+    ]
+} 

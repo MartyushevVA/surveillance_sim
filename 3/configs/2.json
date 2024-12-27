@@ -1,0 +1,102 @@
+{
+    "update_interval": "00:00:00:100",
+    "size": {
+        "width": 20,
+        "height": 20
+    },
+    "suspects": [
+        {
+            "type": "Suspect",
+            "position": {"x": 10, "y": 10},
+            "sensorRange": 5,
+            "speed": 2
+        }
+    ],
+    "platforms": [
+        {
+            "type": "MobilePlatform",
+            "position": {"x": 5, "y": 5},
+            "description": "Agile Mobile Platform11",
+            "maxEnergyLevel": 120,
+            "slotCount": 3,
+            "speed": 2,
+            "modules": [
+                {
+                    "type": "ConnectionModule",
+                    "slotsOccupied": 1,
+                    "energyConsumption": 8,
+                    "range": 8,
+                    "maxSessions": 4
+                },
+                {
+                    "type": "SensorModule",
+                    "slotsOccupied": 1,
+                    "energyConsumption": 6,
+                    "range": 5,
+                    "sensorType": "Optical"
+                },
+                {
+                    "type": "WeaponModule",
+                    "slotsOccupied": 1,
+                    "energyConsumption": 10,
+                    "range": 8,
+                    "chargingDuration": "00:00:03:000"
+                }
+            ]
+        },
+        {
+            "type": "MobilePlatform",
+            "position": {"x": 5, "y": 15},
+            "description": "Agile Mobile Platform22",
+            "maxEnergyLevel": 120,
+            "slotCount": 3,
+            "speed": 2,
+            "modules": [
+                {
+                    "type": "ConnectionModule",
+                    "slotsOccupied": 1,
+                    "energyConsumption": 8,
+                    "range": 8,
+                    "maxSessions": 4
+                },
+                {
+                    "type": "SensorModule",
+                    "slotsOccupied": 1,
+                    "energyConsumption": 6,
+                    "range": 8,
+                    "sensorType": "Optical"
+                },
+                {
+                    "type": "WeaponModule",
+                    "slotsOccupied": 1,
+                    "energyConsumption": 10,
+                    "range": 8,
+                    "chargingDuration": "00:00:10:000"
+                }
+            ]
+        },
+        {
+            "type": "StaticPlatform",
+            "position": {"x": 10, "y": 5},
+            "description": "Defense Static Platform",
+            "maxEnergyLevel": 200,
+            "slotCount": 4,
+            "modules": [
+                {
+                    "type": "ConnectionModule",
+                    "slotsOccupied": 1,
+                    "energyConsumption": 12,
+                    "range": 8,
+                    "maxSessions": 4
+                },
+                {
+                    "type": "SensorModule",
+                    "slotsOccupied": 1,
+                    "energyConsumption": 5,
+                    "range": 10,
+                    "sensorType": "XRay"
+                }
+            ]
+        }
+    ]
+}
