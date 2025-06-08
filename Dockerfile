@@ -7,11 +7,9 @@ RUN apt-get update && apt-get install -y \
     cmake \
     git \
     libsfml-dev \
-    libjsoncpp-dev \
     libgtest-dev \
     nlohmann-json3-dev \
     ninja-build \
-    x11-apps \
     && apt-get clean
 
 # GTest требует компиляции, если не используем CMake FetchContent

@@ -1,7 +1,7 @@
 #include "import.h"
 
 SystemConfig Import::loadSystemConfig(const std::string& configPath) {
-    std::ifstream file(configPath);
+    std::ifstream file("../configs/"+configPath);
     if (!file.is_open()) {
         throw std::runtime_error("Could not open file: " + configPath);
     }

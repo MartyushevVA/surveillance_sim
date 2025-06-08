@@ -6,7 +6,7 @@
 
 Controller::Controller() : 
     game_(nullptr),
-    graphics_(std::make_unique<Graphics>("configs/graphics.json")) {}
+    graphics_(std::make_unique<Graphics>("../view/graphics.json")) {}
 
 void Controller::startSimulation() {
     game_ = std::make_shared<Game>(config_);
