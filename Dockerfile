@@ -33,7 +33,7 @@ ARG TIMING=OFF
 RUN cmake .. \
     #-DCMAKE_BUILD_TYPE=Release \
     -DT=${ENABLE_TESTS} \
-    -DTIMIG=${TIMING} \
+    -DTIMING=${TIMING} \
     -G Ninja \
  && cmake --build .
 

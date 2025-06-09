@@ -90,9 +90,14 @@ void Environment::addToken(std::shared_ptr<Placeholder> token) {
 bool Environment::removeToken(Pair position) {
     std::unique_lock<std::shared_mutex> lock(mutex_, std::try_to_lock);
     if (!lock.owns_lock()) {
-        std::this_thread::sleep_for(std::chrono::milliseconds(5));
-        return removeToken(position);
+        return false;
     }
+
+    
+    // if (!lock.owns_lock()) {
+    //     std::this_thread::sleep_for(std::chrono::milliseconds(5));
+    //     return removeToken(position);
+    // }
     auto token = getToken(position);
     if (!token) return false;
     tokens_.erase(token->getPosition());

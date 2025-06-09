@@ -30,13 +30,13 @@ void MobilePlatform::iterate() {
 
     std::pair<Pair, std::shared_ptr<Suspect>> target = {{-1, -1}, nullptr};
     {
-        auto detected = env->getEnemies<Suspect>(sensor->getSurrounding().objects);
-        if (!detected.empty()) {
-            ai->addSuspects(detected);
-        }
         auto suspects = ai->getSuspects();
         if (!suspects.empty()) {
             target = env->getClosestOfType<Suspect>(getPosition(), suspects);
+        }
+        auto detected = env->getEnemies<Suspect>(sensor->getSurrounding().objects);
+        if (!detected.empty()) {
+            ai->addSuspects(detected);
         }
     }
 
