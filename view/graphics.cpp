@@ -6,7 +6,7 @@ Graphics::Graphics(const std::string& graphicsConfigPath)
     window_.create(sf::VideoMode(graphicsConfig_.window.width + 200, graphicsConfig_.window.height), graphicsConfig_.window.title);
     window_.setFramerateLimit(graphicsConfig_.window.frameRateLimit);
 
-    if (!font_.loadFromFile("../Arial.ttf")) {
+    if (!font_.loadFromFile("Arial.ttf")) {
         throw std::runtime_error("Failed to load font for UI elements");
     }
     setupConfigurationUI();

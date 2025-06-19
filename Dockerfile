@@ -1,46 +1,52 @@
-# Базовый образ с CMake, GCC и необходимыми библиотеками
-FROM ubuntu:latest
+# ======= Этап сборки =======
+FROM debian:bookworm-slim AS builder
 
-# Установим зависимости
-RUN apt-get update && apt-get install -y \
-    build-essential \
+# Обновление и установка зависимостей (без лишнего)
+RUN apt-get update && apt-get install -y --no-install-recommends \
     cmake \
+    g++ \
     git \
     libsfml-dev \
-    libgtest-dev \
     nlohmann-json3-dev \
     ninja-build \
-    && apt-get clean
+    --fix-missing \
+ && rm -rf /var/lib/apt/lists/*
 
-# GTest требует компиляции, если не используем CMake FetchContent
-RUN cd /usr/src/gtest && cmake . && make && cp lib/*.a /usr/lib
 
-# Рабочая директория
+# Создание рабочей директории
 WORKDIR /app
 
-# Скопировать все в контейнер
+# Копирование исходников
 COPY . .
 
-# Создаем build-папку
-RUN mkdir -p build
-WORKDIR /app/build
-
-# Можно передавать флаги через ARG
+# Параметры сборки
 ARG ENABLE_TESTS=OFF
 ARG TIMING=OFF
 
-# Конфигурация проекта (включаем или отключаем тесты)
-RUN cmake .. \
-    #-DCMAKE_BUILD_TYPE=Release \
-    -DT=${ENABLE_TESTS} \
-    -DTIMING=${TIMING} \
-    -G Ninja \
- && cmake --build .
+# Создание папки сборки и компиляция
+RUN mkdir -p build && cd build && \
+    cmake .. \
+      -DT=${ENABLE_TESTS} \
+      -DTIMING=${TIMING} \
+      -G Ninja && \
+    cmake --build .
 
-# По умолчанию запускаем приложение (можно переопределить в docker run)
+# ======= Этап рантайма =======
+FROM debian:bookworm-slim
+
+# Установка только необходимых библиотек для запуска (без компилятора!)
+RUN apt-get update && apt-get install -y --no-install-recommends \
+    libsfml-dev \
+    nlohmann-json3-dev \
+ && rm -rf /var/lib/apt/lists/*
+
+# Копирование исполняемого файла из builder-этапа
+WORKDIR /app
+COPY --from=builder /app/build/sss .
+COPY --from=builder /app/view /app/view
+COPY --from=builder /app/configs /app/configs
+COPY --from=builder /app/Arial.ttf .
+
+
+# Запуск по умолчанию
 CMD ["./sss"]
-
-#sudo docker build -t surv_sys .
-#xhost +local:docker
-#sudo docker run --rm -e DISPLAY=$DISPLAY -e XDG_RUNTIME_DIR=/tmp/runtime -v /tmp/.X11-unix:/tmp/.X11-unix surv_sys
-#xhost -local:docker

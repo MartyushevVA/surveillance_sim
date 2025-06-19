@@ -76,11 +76,11 @@ if(T)
     target_link_libraries(sss game_lib GTest::gtest GTest::gtest_main)
 elseif(TIMING)
     add_executable(sss tests/timing.cpp)
-    find_package(SFML 2.6.1 COMPONENTS graphics window system REQUIRED)
+    find_package(SFML COMPONENTS graphics window system REQUIRED)
     target_link_libraries(sss game_lib)
 else()
     add_executable(sss main.cpp)
-    find_package(SFML 2.6.1 COMPONENTS graphics window system REQUIRED)
+    find_package(SFML COMPONENTS graphics window system REQUIRED)
     target_link_libraries(sss controller_lib)
 endif()
 
@@ -92,3 +92,9 @@ endif()
 
 
 # doxygen; firefox doxygen/html/index.html
+
+
+#sudo docker build -t surv_sys .
+#xhost +local:docker
+#sudo docker run --rm -e DISPLAY=$DISPLAY -e XDG_RUNTIME_DIR=/tmp/runtime -v /tmp/.X11-unix:/tmp/.X11-unix surv_sys_slim
+#xhost -local:docker

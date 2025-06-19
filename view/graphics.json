@@ -11,9 +11,9 @@
         "b": 255
     },
     "textures": {
-        "suspect": "../view/textures/suspect.png",
-        "static_platform": "../view/textures/static_platform.png",
-        "mobile_platform": "../view/textures/mobile_platform.png",
-        "obstacle": "../view/textures/obstacle.png"
+        "suspect": "view/textures/suspect.png",
+        "static_platform": "view/textures/static_platform.png",
+        "mobile_platform": "view/textures/mobile_platform.png",
+        "obstacle": "view/textures/obstacle.png"
     }
 } 
