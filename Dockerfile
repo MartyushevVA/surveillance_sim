@@ -1,5 +1,5 @@
 # ======= Этап сборки =======
-FROM debian:bookworm-slim AS builder
+FROM debian:stable-slim AS builder
 
 # Обновление и установка зависимостей (без лишнего)
 RUN apt-get update && apt-get install -y --no-install-recommends \
@@ -32,7 +32,7 @@ RUN mkdir -p build && cd build && \
     cmake --build .
 
 # ======= Этап рантайма =======
-FROM debian:bookworm-slim
+FROM debian:stable-slim
 
 # Установка только необходимых библиотек для запуска (без компилятора!)
 RUN apt-get update && apt-get install -y --no-install-recommends \
